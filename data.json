@@ -1,0 +1,322 @@
+{
+    "project": {
+        "name": "fxa-js-client",
+        "description": "Web client that talks to the Firefox Accounts API server",
+        "version": "0.1.0"
+    },
+    "files": {
+        "client/lib/credentials.js": {
+            "name": "client/lib/credentials.js",
+            "modules": {},
+            "classes": {
+                "credentials": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "client/lib/hawkCredentials.js": {
+            "name": "client/lib/hawkCredentials.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "client/lib/hkdf.js": {
+            "name": "client/lib/hkdf.js",
+            "modules": {},
+            "classes": {
+                "hkdf": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "client/lib/pbkdf2.js": {
+            "name": "client/lib/pbkdf2.js",
+            "modules": {},
+            "classes": {
+                "pbkdf2": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "client/FxAccountClient.js": {
+            "name": "client/FxAccountClient.js",
+            "modules": {},
+            "classes": {
+                "FxAccountClient": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "credentials": {
+            "name": "credentials",
+            "shortname": "credentials",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/lib/credentials.js",
+            "line": 40,
+            "is_constructor": 1
+        },
+        "FxAccountClient": {
+            "name": "FxAccountClient",
+            "shortname": "FxAccountClient",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/FxAccountClient.js",
+            "line": 7,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "uri",
+                    "description": "Auth Server URI",
+                    "type": "String"
+                },
+                {
+                    "name": "config",
+                    "description": "Configuration",
+                    "type": "Object"
+                }
+            ]
+        },
+        "hkdf": {
+            "name": "hkdf",
+            "shortname": "hkdf",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/lib/hkdf.js",
+            "line": 7,
+            "description": "hkdf - The HMAC-based Key Derivation Function\nbased on https://github.com/mozilla/node-hkdf",
+            "params": [
+                {
+                    "name": "ikm",
+                    "description": "Initial keying material",
+                    "type": "BitArray"
+                },
+                {
+                    "name": "info",
+                    "description": "Key derivation data",
+                    "type": "BitArray"
+                },
+                {
+                    "name": "salt",
+                    "description": "Salt",
+                    "type": "BitArray"
+                },
+                {
+                    "name": "length",
+                    "description": "Length of the derived key in bytes",
+                    "type": "Integer"
+                }
+            ],
+            "return": {
+                "description": "promise object- It will resolve with `output` data"
+            }
+        },
+        "pbkdf2": {
+            "name": "pbkdf2",
+            "shortname": "pbkdf2",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/lib/pbkdf2.js",
+            "line": 7,
+            "is_constructor": 1
+        }
+    },
+    "classitems": [
+        {
+            "file": "client/lib/credentials.js",
+            "line": 15,
+            "description": "Key Wrapping with a name and an email",
+            "itemtype": "method",
+            "name": "kwe",
+            "static": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The name of the salt",
+                    "type": "String"
+                },
+                {
+                    "name": "email",
+                    "description": "The email of the user.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "the salt combination with the namespace",
+                "type": "BitArray"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/credentials.js",
+            "line": 28,
+            "description": "Key Wrapping with a name",
+            "itemtype": "method",
+            "name": "kw",
+            "static": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The name of the salt",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "the salt combination with the namespace",
+                "type": "BitArray"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/credentials.js",
+            "line": 45,
+            "description": "Setup credentials",
+            "itemtype": "method",
+            "name": "setup",
+            "params": [
+                {
+                    "name": "emailInput",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "passwordInput",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of generated credentials",
+                "type": "Promise"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/pbkdf2.js",
+            "line": 12,
+            "itemtype": "method",
+            "name": "derive",
+            "params": [
+                {
+                    "name": "input",
+                    "description": "The password hex buffer.",
+                    "type": "BitArray"
+                },
+                {
+                    "name": "salt",
+                    "description": "The salt string buffer.",
+                    "type": "BitArray"
+                }
+            ],
+            "return": {
+                "description": "iterations the derived key bit array.",
+                "type": "Int"
+            },
+            "class": "pbkdf2"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 25,
+            "itemtype": "method",
+            "name": "signUp",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "Email input",
+                    "type": "String"
+                },
+                {
+                    "name": "password",
+                    "description": "Password input",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 47,
+            "itemtype": "method",
+            "name": "signIn",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "Email input",
+                    "type": "String"
+                },
+                {
+                    "name": "password",
+                    "description": "Password input",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 69,
+            "itemtype": "method",
+            "name": "verifyCode",
+            "params": [
+                {
+                    "name": "uid",
+                    "description": "Account ID",
+                    "type": "String"
+                },
+                {
+                    "name": "code",
+                    "description": "Verification code",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 82,
+            "itemtype": "method",
+            "name": "recoveryEmailStatus",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        }
+    ],
+    "warnings": []
+}
