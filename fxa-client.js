@@ -13,7 +13,7 @@
     }
 }(this, function () {
 /**
- * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
+ * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -30,8 +30,7 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice,
-        jsSuffixRegExp = /\.js$/;
+        aps = [].slice;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -46,7 +45,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
+        var nameParts, nameSegment, mapValue, foundMap,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -64,15 +63,8 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
-                name = name.split('/');
-                lastIndex = name.length - 1;
 
-                // Node .js allowance:
-                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
-                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
-                }
-
-                name = baseParts.concat(name);
+                name = baseParts.concat(name.split("/"));
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -281,14 +273,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
-            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (callbackType === 'undefined' || callbackType === 'function') {
+        if (typeof callback === 'function') {
+
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -319,7 +311,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback ? callback.apply(defined[name], args) : undefined;
+            ret = callback.apply(defined[name], args);
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -354,13 +346,6 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
-            if (config.deps) {
-                req(config.deps, config.callback);
-            }
-            if (!callback) {
-                return;
-            }
-
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -405,7 +390,11 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        return req(cfg);
+        config = cfg;
+        if (config.deps) {
+            req(config.deps, config.callback);
+        }
+        return req;
     };
 
     /**
@@ -1628,7 +1617,7 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
       )
         .then(
         function (unwrapBKey) {
-          result.unwrapBkey = unwrapBKey;
+          result.unwrapBKey = unwrapBKey;
           return result;
         }
       );
@@ -1739,17 +1728,24 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
       .then(
         function (result) {
           var endpoint = "/account/login";
+          var keys = options && options.keys === true;
 
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (options && options.keys === true) {
+          if (keys) {
             endpoint += '?keys=true';
           }
 
-          return self.request.send(endpoint, "POST", null, data);
+          return self.request.send(endpoint, "POST", null, data)
+          .then(function(accountData) {
+            if (keys) {
+              accountData.unwrapBKey = result.unwrapBKey;
+            }
+            return accountData;
+          });
         }
       );
   };
