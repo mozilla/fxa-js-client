@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>hkdf - fxa-js-client</title>
+    <title>client/lib/request.js - fxa-js-client</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -92,64 +92,80 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>hkdf Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: client/lib/request.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p) {
+  &#x27;use strict&#x27;;
+  /* global XMLHttpRequest */
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/client_lib_hkdf.js.html#l7"><code>client&#x2F;lib&#x2F;hkdf.js:7</code></a>
-        </div>
-    
+  /**
+   * @class Request
+   * @constructor
+   * @param {String} baseUri Base URI
+   * @param {Object} xhr XMLHttpRequest constructor
+   */
+  function Request (baseUri, xhr) {
+    this.baseUri = baseUri;
+    this.xhr = xhr || XMLHttpRequest;
+  }
 
-    
+  /**
+   * @method send
+   * @param {String} path Request path
+   * @param {String} method HTTP Method
+   * @param {Object} credentials HAWK Headers
+   * @param {Object} jsonPayload JSON Payload
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  Request.prototype.send = function request(path, method, credentials, jsonPayload) {
+    var deferred = p.defer();
+    var xhr = new this.xhr();
+    var uri = this.baseUri + path;
+    var payload;
 
-    
-</div>
+    if (jsonPayload) {
+      payload = JSON.stringify(jsonPayload);
+    }
 
+    xhr.open(method, uri);
+    xhr.onerror = function onerror() {
+      deferred.reject(xhr.responseText);
+    };
+    xhr.onload = function onload() {
+      var result = JSON.parse(xhr.responseText);
+      if (result.error) {
+        return deferred.reject(result);
+      }
+      deferred.resolve(result);
+    };
 
+    // calculate Hawk header if credentials are supplied
+    if (credentials) {
+      var header = hawk.client.header(uri, method, {
+                          credentials: credentials,
+                          payload: payload,
+                          contentType: &#x27;application/json&#x27;
+                        });
+      xhr.setRequestHeader(&quot;authorization&quot;, header.field);
+    }
 
-<div class="box intro">
-    <p>hkdf - The HMAC-based Key Derivation Function
-based on <a href="https://github.com/mozilla/node-hkdf">https://github.com/mozilla/node-hkdf</a></p>
+    xhr.setRequestHeader(&quot;Content-Type&quot;, &quot;application/json&quot;);
 
-</div>
+    xhr.send(payload);
 
+    return deferred.promise;
+  };
 
+  return Request;
 
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
+});
 
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

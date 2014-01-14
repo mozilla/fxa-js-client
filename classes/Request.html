@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>credentials - fxa-js-client</title>
+    <title>Request - fxa-js-client</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -92,7 +92,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>credentials Class</h1>
+                        <h1>Request Class</h1>
 <div class="box meta">
     
 
@@ -100,7 +100,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/client_lib_credentials.js.html#l40"><code>client&#x2F;lib&#x2F;credentials.js:40</code></a>
+            Defined in: <a href="../files/client_lib_request.js.html#l8"><code>client&#x2F;lib&#x2F;request.js:8</code></a>
         </div>
     
 
@@ -118,11 +118,27 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_credentials" class="method item">
-    <h3 class="name"><code>credentials</code></h3>
+        <div id="method_Request" class="method item">
+    <h3 class="name"><code>Request</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>baseUri</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xhr</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -150,7 +166,7 @@
             
         
         
-        <a href="../files/client_lib_credentials.js.html#l40"><code>client&#x2F;lib&#x2F;credentials.js:40</code></a>
+        <a href="../files/client_lib_request.js.html#l8"><code>client&#x2F;lib&#x2F;request.js:8</code></a>
         
         </p>
 
@@ -164,6 +180,46 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">baseUri</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Base URI</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xhr</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>XMLHttpRequest constructor</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -197,25 +253,7 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_kw">kw</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_kwe">kwe</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setup">setup</a>
+                                <a href="#method_send">send</a>
 
                                 
                                 
@@ -237,8 +275,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_kw" class="method item">
-    <h3 class="name"><code>kw</code></h3>
+                    <div id="method_send" class="method item">
+    <h3 class="name"><code>send</code></h3>
 
     
         <div class="args">
@@ -246,253 +284,25 @@
             
                 <li class="arg">
                     
-                        <code>name</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">BitArray</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/client_lib_credentials.js.html#l28"><code>client&#x2F;lib&#x2F;credentials.js:28</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Key Wrapping with a name</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The name of the salt</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">BitArray</span>:
-                    
-                    <p>the salt combination with the namespace</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_kwe" class="method item">
-    <h3 class="name"><code>kwe</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>name</code>
+                        <code>path</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>email</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">BitArray</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/client_lib_credentials.js.html#l15"><code>client&#x2F;lib&#x2F;credentials.js:15</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Key Wrapping with a name and an email</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The name of the salt</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">email</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The email of the user.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">BitArray</span>:
-                    
-                    <p>the salt combination with the namespace</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_setup" class="method item">
-    <h3 class="name"><code>setup</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>emailInput</code>
+                        <code>method</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>passwordInput</code>
+                        <code>credentials</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>jsonPayload</code>
                     
                 </li>
             
@@ -529,7 +339,7 @@
             
         
         
-        <a href="../files/client_lib_credentials.js.html#l45"><code>client&#x2F;lib&#x2F;credentials.js:45</code></a>
+        <a href="../files/client_lib_request.js.html#l19"><code>client&#x2F;lib&#x2F;request.js:19</code></a>
         
         </p>
 
@@ -540,8 +350,7 @@
     </div>
 
     <div class="description">
-        <p>Setup credentials</p>
-
+        
     </div>
 
     
@@ -552,14 +361,15 @@
             
                 <li class="param">
                     
-                        <code class="param-name">emailInput</code>
+                        <code class="param-name">path</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>Request path</p>
+
                     </div>
 
                     
@@ -567,14 +377,47 @@
             
                 <li class="param">
                     
-                        <code class="param-name">passwordInput</code>
+                        <code class="param-name">method</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>HTTP Method</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">credentials</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>HAWK Headers</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">jsonPayload</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>JSON Payload</p>
+
                     </div>
 
                     
@@ -593,7 +436,7 @@
                     
                         <span class="type">Promise</span>:
                     
-                    <p>A promise that will be fulfilled with <code>result</code> of generated credentials</p>
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
                 
             </div>

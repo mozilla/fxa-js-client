@@ -45,9 +45,13 @@
             
                 <li><a href="../classes/FxAccountClient.html">FxAccountClient</a></li>
             
+                <li><a href="../classes/hawkCredentials.html">hawkCredentials</a></li>
+            
                 <li><a href="../classes/hkdf.html">hkdf</a></li>
             
                 <li><a href="../classes/pbkdf2.html">pbkdf2</a></li>
+            
+                <li><a href="../classes/Request.html">Request</a></li>
             
             </ul>
 
@@ -249,6 +253,41 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_accountKeys">accountKeys</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_accountReset">accountReset</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_passwordForgotResendCode">passwordForgotResendCode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_passwordForgotSendCode">passwordForgotSendCode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_passwordForgotVerifyCode">passwordForgotVerifyCode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_recoveryEmailStatus">recoveryEmailStatus</a>
 
                                 
@@ -290,6 +329,625 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_accountKeys" class="method item">
+    <h3 class="name"><code>accountKeys</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>keyFetchToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l190"><code>client&#x2F;FxAccountClient.js:190</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the base16 bundle of encrypted kA|wrapKb.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">keyFetchToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_accountReset" class="method item">
+    <h3 class="name"><code>accountReset</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>email</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>newPassword</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>accountResetToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l160"><code>client&#x2F;FxAccountClient.js:160</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The API returns reset result to the client.
+HAWK-authenticated with accountResetToken</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">email</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">newPassword</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">accountResetToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_passwordForgotResendCode" class="method item">
+    <h3 class="name"><code>passwordForgotResendCode</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>email</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>passwordForgotToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l119"><code>client&#x2F;FxAccountClient.js:119</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Re-sends a verification code to the account&#39;s recovery email address.
+HAWK-authenticated with the passwordForgotToken.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">email</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">passwordForgotToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_passwordForgotSendCode" class="method item">
+    <h3 class="name"><code>passwordForgotSendCode</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>email</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l105"><code>client&#x2F;FxAccountClient.js:105</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Used to ask the server to send a recovery code.
+The API returns passwordForgotToken to the client.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">email</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_passwordForgotVerifyCode" class="method item">
+    <h3 class="name"><code>passwordForgotVerifyCode</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>code</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>passwordForgotToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l139"><code>client&#x2F;FxAccountClient.js:139</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Submits the verification token to the server.
+The API returns accountResetToken to the client.
+HAWK-authenticated with the passwordForgotToken.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">code</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">passwordForgotToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
 
                 
                     <div id="method_recoveryEmailStatus" class="method item">
@@ -338,7 +996,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l82"><code>client&#x2F;FxAccountClient.js:82</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l92"><code>client&#x2F;FxAccountClient.js:92</code></a>
         
         </p>
 
@@ -414,6 +1072,12 @@
                 <li class="arg">
                     
                         <code>password</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[options={}]</code>
                     
                 </li>
             
@@ -502,6 +1166,42 @@
                     
                 </li>
             
+                <li class="param">
+                    
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[keys]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>If <code>true</code>, calls the API with <code>?keys=true</code> to get the keyFetchToken</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
             </ul>
         </div>
     
@@ -515,7 +1215,7 @@
                     
                         <span class="type">Promise</span>:
                     
-                    <p>A promise that will be fulfilled with <code>result</code> of an XHR request</p>
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
                 
             </div>
@@ -706,7 +1406,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l69"><code>client&#x2F;FxAccountClient.js:69</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l79"><code>client&#x2F;FxAccountClient.js:79</code></a>
         
         </p>
 

@@ -17,7 +17,9 @@
         "client/lib/hawkCredentials.js": {
             "name": "client/lib/hawkCredentials.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "hawkCredentials": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -35,6 +37,15 @@
             "modules": {},
             "classes": {
                 "pbkdf2": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "client/lib/request.js": {
+            "name": "client/lib/request.js",
+            "modules": {},
+            "classes": {
+                "Request": 1
             },
             "fors": {},
             "namespaces": {}
@@ -63,29 +74,38 @@
             "line": 40,
             "is_constructor": 1
         },
-        "FxAccountClient": {
-            "name": "FxAccountClient",
-            "shortname": "FxAccountClient",
+        "hawkCredentials": {
+            "name": "hawkCredentials",
+            "shortname": "hawkCredentials",
             "classitems": [],
             "plugins": [],
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "client/FxAccountClient.js",
-            "line": 7,
-            "is_constructor": 1,
+            "file": "client/lib/hawkCredentials.js",
+            "line": 11,
+            "itemtype": "method",
             "params": [
                 {
-                    "name": "uri",
-                    "description": "Auth Server URI",
+                    "name": "tokenHex",
+                    "description": "",
                     "type": "String"
                 },
                 {
-                    "name": "config",
-                    "description": "Configuration",
-                    "type": "Object"
+                    "name": "context",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "size",
+                    "description": "",
+                    "type": "Int"
                 }
-            ]
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            }
         },
         "hkdf": {
             "name": "hkdf",
@@ -135,6 +155,54 @@
             "file": "client/lib/pbkdf2.js",
             "line": 7,
             "is_constructor": 1
+        },
+        "Request": {
+            "name": "Request",
+            "shortname": "Request",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/lib/request.js",
+            "line": 8,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "baseUri",
+                    "description": "Base URI",
+                    "type": "String"
+                },
+                {
+                    "name": "xhr",
+                    "description": "XMLHttpRequest constructor",
+                    "type": "Object"
+                }
+            ]
+        },
+        "FxAccountClient": {
+            "name": "FxAccountClient",
+            "shortname": "FxAccountClient",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "client/FxAccountClient.js",
+            "line": 7,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "uri",
+                    "description": "Auth Server URI",
+                    "type": "String"
+                },
+                {
+                    "name": "config",
+                    "description": "Configuration",
+                    "type": "Object"
+                }
+            ]
         }
     },
     "classitems": [
@@ -231,6 +299,39 @@
             "class": "pbkdf2"
         },
         {
+            "file": "client/lib/request.js",
+            "line": 19,
+            "itemtype": "method",
+            "name": "send",
+            "params": [
+                {
+                    "name": "path",
+                    "description": "Request path",
+                    "type": "String"
+                },
+                {
+                    "name": "method",
+                    "description": "HTTP Method",
+                    "type": "String"
+                },
+                {
+                    "name": "credentials",
+                    "description": "HAWK Headers",
+                    "type": "Object"
+                },
+                {
+                    "name": "jsonPayload",
+                    "description": "JSON Payload",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "Request"
+        },
+        {
             "file": "client/FxAccountClient.js",
             "line": 25,
             "itemtype": "method",
@@ -268,17 +369,32 @@
                     "name": "password",
                     "description": "Password input",
                     "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "keys",
+                            "description": "If `true`, calls the API with `?keys=true` to get the keyFetchToken",
+                            "type": "Boolean",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "return": {
-                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
                 "type": "Promise"
             },
             "class": "FxAccountClient"
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 69,
+            "line": 79,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -301,7 +417,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 82,
+            "line": 92,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -316,7 +432,127 @@
                 "type": "Promise"
             },
             "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 105,
+            "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
+            "itemtype": "method",
+            "name": "passwordForgotSendCode",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 119,
+            "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
+            "itemtype": "method",
+            "name": "passwordForgotResendCode",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "passwordForgotToken",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 139,
+            "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
+            "itemtype": "method",
+            "name": "passwordForgotVerifyCode",
+            "params": [
+                {
+                    "name": "code",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "passwordForgotToken",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 160,
+            "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
+            "itemtype": "method",
+            "name": "accountReset",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "newPassword",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "accountResetToken",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 190,
+            "description": "Get the base16 bundle of encrypted kA|wrapKb.",
+            "itemtype": "method",
+            "name": "accountKeys",
+            "params": [
+                {
+                    "name": "keyFetchToken",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
         }
     ],
-    "warnings": []
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/lib/hawkCredentials.js:11"
+        }
+    ]
 }

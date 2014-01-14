@@ -45,9 +45,13 @@
             
                 <li><a href="../classes/FxAccountClient.html">FxAccountClient</a></li>
             
+                <li><a href="../classes/hawkCredentials.html">hawkCredentials</a></li>
+            
                 <li><a href="../classes/hkdf.html">hkdf</a></li>
             
                 <li><a href="../classes/pbkdf2.html">pbkdf2</a></li>
+            
+                <li><a href="../classes/Request.html">Request</a></li>
             
             </ul>
 
@@ -142,20 +146,30 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    * @method signIn
    * @param {String} email Email input
    * @param {String} password Password input
-   * @return {Promise} A promise that will be fulfilled with &#x60;result&#x60; of an XHR request
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.signIn = function (email, password) {
+  FxAccountClient.prototype.signIn = function (email, password, options) {
     var self = this;
+
 
     return credentials.setup(email, password)
       .then(
         function (result) {
+          var endpoint = &quot;/account/login&quot;;
+
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          return self.request.send(&quot;/account/login&quot;, &quot;POST&quot;, null, data);
+          if (options &amp;&amp; options.keys === true) {
+            endpoint += &#x27;?keys=true&#x27;;
+          }
+
+          return self.request.send(endpoint, &quot;POST&quot;, null, data);
         }
       );
   };
@@ -185,6 +199,108 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
         return self.request.send(&quot;/recovery_email/status&quot;, &quot;GET&quot;, creds);
       });
   };
+
+  /**
+   * Used to ask the server to send a recovery code.
+   * The API returns passwordForgotToken to the client.
+   *
+   * @method passwordForgotSendCode
+   * @param {String} email
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotSendCode = function(email) {
+    return this.request.send(&#x27;/password/forgot/send_code&#x27;, &#x27;POST&#x27;, null, {
+      email: email
+    });
+  };
+
+  /**
+   * Re-sends a verification code to the account&#x27;s recovery email address.
+   * HAWK-authenticated with the passwordForgotToken.
+   *
+   * @method passwordForgotResendCode
+   * @param {String} email
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken) {
+    var self = this;
+
+    return hawkCredentials(passwordForgotToken, &quot;passwordForgotToken&quot;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/resend_code&#x27;, &#x27;POST&#x27;, creds, {
+          email: email
+        });
+      });
+  };
+
+  /**
+   * Submits the verification token to the server.
+   * The API returns accountResetToken to the client.
+   * HAWK-authenticated with the passwordForgotToken.
+   *
+   * @method passwordForgotVerifyCode
+   * @param {String} code
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
+    var self = this;
+
+    return hawkCredentials(passwordForgotToken, &quot;passwordForgotToken&quot;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, {
+          code: code
+        });
+      });
+  };
+
+  /**
+   * The API returns reset result to the client.
+   * HAWK-authenticated with accountResetToken
+   *
+   * @method accountReset
+   * @param {String} email
+   * @param {String} newPassword
+   * @param {String} accountResetToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken) {
+    var self = this;
+    var authPW;
+
+    return credentials.setup(email, newPassword)
+      .then(
+        function (result) {
+          authPW = sjcl.codec.hex.fromBits(result.authPW);
+
+          return hawkCredentials(accountResetToken, &#x27;accountResetToken&#x27;,  2 * 32);
+        }
+      ).then(
+        function (creds) {
+          return self.request.send(&#x27;/account/reset&#x27;, &#x27;POST&#x27;, creds, {
+            authPW: authPW
+          });
+        }
+      );
+  };
+
+  /**
+   * Get the base16 bundle of encrypted kA|wrapKb.
+   *
+   * @method accountKeys
+   * @param {String} keyFetchToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountKeys = function(keyFetchToken) {
+    var self = this;
+
+    return hawkCredentials(keyFetchToken, &quot;keyFetchToken&quot;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/account/keys&#x27;, &#x27;POST&#x27;, creds);
+      });
+  };
+
 
   return FxAccountClient;
 });
