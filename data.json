@@ -394,7 +394,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 79,
+            "line": 86,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -417,7 +417,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 92,
+            "line": 99,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -435,7 +435,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 105,
+            "line": 112,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -454,7 +454,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 119,
+            "line": 126,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -478,7 +478,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 139,
+            "line": 146,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -502,7 +502,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 160,
+            "line": 167,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -531,7 +531,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 190,
+            "line": 197,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",

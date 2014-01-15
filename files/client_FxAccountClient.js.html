@@ -159,17 +159,24 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
       .then(
         function (result) {
           var endpoint = &quot;/account/login&quot;;
+          var keys = options &amp;&amp; options.keys === true;
 
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (options &amp;&amp; options.keys === true) {
+          if (keys) {
             endpoint += &#x27;?keys=true&#x27;;
           }
 
-          return self.request.send(endpoint, &quot;POST&quot;, null, data);
+          return self.request.send(endpoint, &quot;POST&quot;, null, data)
+          .then(function(accountData) {
+            if (keys) {
+              accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+            }
+            return accountData;
+          });
         }
       );
   };
