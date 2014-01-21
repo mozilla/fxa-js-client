@@ -177,6 +177,21 @@
                     "name": "xhr",
                     "description": "XMLHttpRequest constructor",
                     "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "localtimeOffsetMsec",
+                            "description": "Local time offset with the remote auth server's clock",
+                            "type": "Number",
+                            "optional": true
+                        }
+                    ]
                 }
             ]
         },
@@ -324,7 +339,7 @@
         },
         {
             "file": "client/lib/request.js",
-            "line": 19,
+            "line": 26,
             "itemtype": "method",
             "name": "send",
             "params": [
@@ -347,6 +362,11 @@
                     "name": "jsonPayload",
                     "description": "JSON Payload",
                     "type": "Object"
+                },
+                {
+                    "name": "retrying",
+                    "description": "Flag indicating if the request is a retry",
+                    "type": "Boolean"
                 }
             ],
             "return": {

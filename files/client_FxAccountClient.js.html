@@ -117,7 +117,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
       config = {};
     }
 
-    this.request = new Request(uri, config.xhr);
+    this.request = new Request(uri, config.xhr, { localtimeOffsetMsec: config.localtimeOffsetMsec });
   }
 
   /**

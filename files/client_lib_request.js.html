@@ -108,9 +108,16 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p
    * @constructor
    * @param {String} baseUri Base URI
    * @param {Object} xhr XMLHttpRequest constructor
+   * @param {Object} [options={}] Options
+   *   @param {Number} [options.localtimeOffsetMsec]
+   *   Local time offset with the remote auth server&#x27;s clock
    */
-  function Request (baseUri, xhr) {
+  function Request (baseUri, xhr, options) {
+    if (!options) {
+      options = {};
+    }
     this.baseUri = baseUri;
+    this._localtimeOffsetMsec = options.localtimeOffsetMsec;
     this.xhr = xhr || XMLHttpRequest;
   }
 
@@ -120,13 +127,15 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p
    * @param {String} method HTTP Method
    * @param {Object} credentials HAWK Headers
    * @param {Object} jsonPayload JSON Payload
+   * @param {Boolean} retrying Flag indicating if the request is a retry
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  Request.prototype.send = function request(path, method, credentials, jsonPayload) {
+  Request.prototype.send = function request(path, method, credentials, jsonPayload, retrying) {
     var deferred = p.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
     var payload;
+    var self = this;
 
     if (jsonPayload) {
       payload = JSON.stringify(jsonPayload);
@@ -139,7 +148,16 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p
     xhr.onload = function onload() {
       var result = JSON.parse(xhr.responseText);
       if (result.error) {
-        return deferred.reject(result);
+        // Try to recover from a timeskew error
+        if (result.errno === 111 &amp;&amp; !retrying) {
+          var serverTime = Date.parse(xhr.getResponseHeader(&#x27;Date&#x27;));
+          self._localtimeOffsetMsec = serverTime - new Date();
+          return self.send(path, method, credentials, jsonPayload, true)
+            .then(deferred.resolve, deferred.reject);
+
+        } else {
+          return deferred.reject(result);
+        }
       }
       deferred.resolve(result);
     };
@@ -149,7 +167,8 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p
       var header = hawk.client.header(uri, method, {
                           credentials: credentials,
                           payload: payload,
-                          contentType: &#x27;application/json&#x27;
+                          contentType: &#x27;application/json&#x27;,
+                          localtimeOffsetMsec: this._localtimeOffsetMsec || 0
                         });
       xhr.setRequestHeader(&#x27;authorization&#x27;, header.field);
     }
