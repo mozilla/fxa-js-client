@@ -113,7 +113,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
       config = uri || {};
       uri = config.uri;
     }
-    if (typeof config === &quot;undefined&quot;) {
+    if (typeof config === &#x27;undefined&#x27;) {
       config = {};
     }
 
@@ -137,7 +137,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          return self.request.send(&quot;/account/create&quot;, &quot;POST&quot;, null, data);
+          return self.request.send(&#x27;/account/create&#x27;, &#x27;POST&#x27;, null, data);
         }
       );
   };
@@ -154,11 +154,10 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
   FxAccountClient.prototype.signIn = function (email, password, options) {
     var self = this;
 
-
     return credentials.setup(email, password)
       .then(
         function (result) {
-          var endpoint = &quot;/account/login&quot;;
+          var endpoint = &#x27;/account/login&#x27;;
           var keys = options &amp;&amp; options.keys === true;
 
           var data = {
@@ -170,7 +169,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             endpoint += &#x27;?keys=true&#x27;;
           }
 
-          return self.request.send(endpoint, &quot;POST&quot;, null, data)
+          return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
           .then(function(accountData) {
             if (keys) {
               accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
@@ -188,7 +187,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    * @return {Promise} A promise that will be fulfilled with &#x60;result&#x60; of an XHR request
    */
   FxAccountClient.prototype.verifyCode = function(uid, code) {
-    return this.request.send(&quot;/recovery_email/verify_code&quot;, &quot;POST&quot;, null, {
+    return this.request.send(&#x27;/recovery_email/verify_code&#x27;, &#x27;POST&#x27;, null, {
       uid: uid,
       code: code
     });
@@ -201,9 +200,26 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    */
   FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
     var self = this;
-    return hawkCredentials(sessionToken, &quot;sessionToken&quot;,  2 * 32)
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
-        return self.request.send(&quot;/recovery_email/status&quot;, &quot;GET&quot;, creds);
+        return self.request.send(&#x27;/recovery_email/status&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * Re-sends a verification code to the account&#x27;s recovery email address.
+   *
+   * @method recoveryEmailResendCode
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with &#x60;result&#x60; of an XHR request
+   */
+  FxAccountClient.prototype.recoveryEmailResendCode = function(sessionToken) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/recovery_email/resend_code&#x27;, &#x27;POST&#x27;, creds);
       });
   };
 
@@ -233,7 +249,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken) {
     var self = this;
 
-    return hawkCredentials(passwordForgotToken, &quot;passwordForgotToken&quot;,  2 * 32)
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/password/forgot/resend_code&#x27;, &#x27;POST&#x27;, creds, {
           email: email
@@ -254,7 +270,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
     var self = this;
 
-    return hawkCredentials(passwordForgotToken, &quot;passwordForgotToken&quot;,  2 * 32)
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, {
           code: code
@@ -302,12 +318,178 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
   FxAccountClient.prototype.accountKeys = function(keyFetchToken) {
     var self = this;
 
-    return hawkCredentials(keyFetchToken, &quot;keyFetchToken&quot;,  2 * 32)
+    return hawkCredentials(keyFetchToken, &#x27;keyFetchToken&#x27;,  2 * 32)
       .then(function(creds) {
-        return self.request.send(&#x27;/account/keys&#x27;, &#x27;POST&#x27;, creds);
+        return self.request.send(&#x27;/account/keys&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 
+  /**
+   * Gets the collection of devices currently authenticated and syncing for the user.
+   *
+   * @method accountDevices
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountDevices = function(sessionToken) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * This deletes the account completely. All stored data is erased.
+   *
+   * @method accountDestroy
+   * @param {String} email Email input
+   * @param {String} password Password input
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountDestroy = function(email, password) {
+    var self = this;
+
+    return credentials.setup(email, password)
+      .then(
+      function (result) {
+        var data = {
+          email: result.emailUTF8,
+          authPW: sjcl.codec.hex.fromBits(result.authPW)
+        };
+
+        return self.request.send(&#x27;/account/destroy&#x27;, &#x27;POST&#x27;, null, data);
+      }
+    );
+  };
+
+  /**
+   * Destroys this session, by invalidating the sessionToken.
+   *
+   * @method sessionDestroy
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.sessionDestroy = function(sessionToken) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds);
+      });
+  };
+
+  /**
+   * Sign a BrowserID public key
+   *
+   * @method certificateSign
+   * @param {String} sessionToken User session token
+   * @param {Object} publicKey The key to sign
+   * @param {int} duration Time interval from now when the certificate will expire in seconds
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds);
+      });
+  };
+
+  /**
+   * Change the password from one known value to another.
+   *
+   * @method passwordChange
+   * @param {String} email
+   * @param {String} oldPassword
+   * @param {String} newPassword
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordChange = function(email, oldPassword, newPassword) {
+    var self = this;
+
+    return self._passwordChangeStart(email, oldPassword)
+      .then(function (oldCreds) {
+
+        return self._passwordChangeFinish(email, newPassword, oldCreds);
+      });
+  };
+
+  /**
+   * First step to change the password.
+   *
+   * @method passwordChangeStart
+   * @private
+   * @param {String} email
+   * @param {String} oldPassword
+   * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60; and &#x60;oldUnwrapBKey&#x60;
+   */
+  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword) {
+    var self = this;
+
+    return credentials.setup(email, oldPassword)
+      .then(function (oldCreds) {
+        var data = {
+          email: oldCreds.emailUTF8,
+          oldAuthPW: sjcl.codec.hex.fromBits(oldCreds.authPW)
+        };
+
+        return self.request.send(&#x27;/password/change/start&#x27;, &#x27;POST&#x27;, null, data)
+          .then(function(passwordData) {
+            passwordData.oldUnwrapBKey = sjcl.codec.hex.fromBits(oldCreds.unwrapBKey);
+          return passwordData;
+        });
+      });
+  };
+
+  /**
+   * Second step to change the password.
+   *
+   * @method _passwordChangeFinish
+   * @private
+   * @param {String} email
+   * @param {String} newPassword
+   * @param {Object} oldCreds This object should consists of &#x60;oldUnwrapBKey&#x60; and &#x60;passwordChangeToken&#x60;.
+   * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
+   */
+  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds) {
+    var self = this;
+    var wrapKb;
+    var authPW;
+
+    return credentials.setup(email, newPassword)
+      .then(function(newCreds) {
+        wrapKb = sjcl.codec.hex.fromBits(
+          credentials.wrap(
+            sjcl.codec.hex.toBits(oldCreds.oldUnwrapBKey),
+            newCreds.unwrapBKey
+          )
+        );
+
+        authPW = sjcl.codec.hex.fromBits(newCreds.authPW);
+
+        return hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  2 * 32);
+      }).then(function(hawkCreds) {
+
+        return self.request.send(&#x27;/password/change/finish&#x27;, &#x27;POST&#x27;, hawkCreds, {
+          wrapKb: wrapKb,
+          authPW: authPW
+        });
+      });
+  };
+
+  /**
+   * Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.
+   *
+   * @method getRandomBytes
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.getRandomBytes = function() {
+
+    return this.request.send(&#x27;/get_random_bytes&#x27;, &#x27;POST&#x27;);
+  };
 
   return FxAccountClient;
 });

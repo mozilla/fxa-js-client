@@ -127,7 +127,7 @@ define([&#x27;../../components/sjcl/sjcl&#x27;, &#x27;../../components/p/p&#x27;
     var num_blocks = Math.ceil(length / hashLength);
     var prev = sjcl.codec.hex.toBits(&#x27;&#x27;);
 
-    for (var i=0; i &lt; num_blocks; i++) {
+    for (var i = 0; i &lt; num_blocks; i++) {
       var hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
 
       var input = sjcl.bitArray.concat(

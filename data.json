@@ -276,6 +276,30 @@
             "class": "credentials"
         },
         {
+            "file": "client/lib/credentials.js",
+            "line": 83,
+            "description": "Wrap",
+            "itemtype": "method",
+            "name": "wrap",
+            "params": [
+                {
+                    "name": "bitArray1",
+                    "description": "",
+                    "type": "BitArray"
+                },
+                {
+                    "name": "bitArray2",
+                    "description": "",
+                    "type": "BitArray"
+                }
+            ],
+            "return": {
+                "description": "wrap result of the two bitArrays",
+                "type": "BitArray"
+            },
+            "class": "credentials"
+        },
+        {
             "file": "client/lib/pbkdf2.js",
             "line": 12,
             "itemtype": "method",
@@ -394,7 +418,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 86,
+            "line": 85,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -417,7 +441,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 99,
+            "line": 98,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -436,6 +460,25 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 112,
+            "description": "Re-sends a verification code to the account's recovery email address.",
+            "itemtype": "method",
+            "name": "recoveryEmailResendCode",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 128,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -454,7 +497,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 126,
+            "line": 142,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -478,7 +521,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 146,
+            "line": 162,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -502,7 +545,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 167,
+            "line": 183,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -531,7 +574,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 197,
+            "line": 213,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -542,6 +585,195 @@
                     "type": "String"
                 }
             ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 229,
+            "description": "Gets the collection of devices currently authenticated and syncing for the user.",
+            "itemtype": "method",
+            "name": "accountDevices",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "User session token",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 245,
+            "description": "This deletes the account completely. All stored data is erased.",
+            "itemtype": "method",
+            "name": "accountDestroy",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "Email input",
+                    "type": "String"
+                },
+                {
+                    "name": "password",
+                    "description": "Password input",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 269,
+            "description": "Destroys this session, by invalidating the sessionToken.",
+            "itemtype": "method",
+            "name": "sessionDestroy",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "User session token",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 285,
+            "description": "Sign a BrowserID public key",
+            "itemtype": "method",
+            "name": "certificateSign",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "User session token",
+                    "type": "String"
+                },
+                {
+                    "name": "publicKey",
+                    "description": "The key to sign",
+                    "type": "Object"
+                },
+                {
+                    "name": "duration",
+                    "description": "Time interval from now when the certificate will expire in seconds",
+                    "type": "Int"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 303,
+            "description": "Change the password from one known value to another.",
+            "itemtype": "method",
+            "name": "passwordChange",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "oldPassword",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "newPassword",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 322,
+            "description": "First step to change the password.",
+            "itemtype": "method",
+            "name": "passwordChangeStart",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "oldPassword",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON of `xhr.responseText` and `oldUnwrapBKey`",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 349,
+            "description": "Second step to change the password.",
+            "itemtype": "method",
+            "name": "_passwordChangeFinish",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "newPassword",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "oldCreds",
+                    "description": "This object should consists of `oldUnwrapBKey` and `passwordChangeToken`.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON of `xhr.responseText`",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 385,
+            "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
+            "itemtype": "method",
+            "name": "getRandomBytes",
             "return": {
                 "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
                 "type": "Promise"
