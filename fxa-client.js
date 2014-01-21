@@ -1397,9 +1397,16 @@ define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, 
    * @constructor
    * @param {String} baseUri Base URI
    * @param {Object} xhr XMLHttpRequest constructor
+   * @param {Object} [options={}] Options
+   *   @param {Number} [options.localtimeOffsetMsec]
+   *   Local time offset with the remote auth server's clock
    */
-  function Request (baseUri, xhr) {
+  function Request (baseUri, xhr, options) {
+    if (!options) {
+      options = {};
+    }
     this.baseUri = baseUri;
+    this._localtimeOffsetMsec = options.localtimeOffsetMsec;
     this.xhr = xhr || XMLHttpRequest;
   }
 
@@ -1409,13 +1416,15 @@ define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, 
    * @param {String} method HTTP Method
    * @param {Object} credentials HAWK Headers
    * @param {Object} jsonPayload JSON Payload
+   * @param {Boolean} retrying Flag indicating if the request is a retry
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  Request.prototype.send = function request(path, method, credentials, jsonPayload) {
+  Request.prototype.send = function request(path, method, credentials, jsonPayload, retrying) {
     var deferred = p.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
     var payload;
+    var self = this;
 
     if (jsonPayload) {
       payload = JSON.stringify(jsonPayload);
@@ -1428,7 +1437,16 @@ define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, 
     xhr.onload = function onload() {
       var result = JSON.parse(xhr.responseText);
       if (result.error) {
-        return deferred.reject(result);
+        // Try to recover from a timeskew error
+        if (result.errno === 111 && !retrying) {
+          var serverTime = Date.parse(xhr.getResponseHeader('Date'));
+          self._localtimeOffsetMsec = serverTime - new Date();
+          return self.send(path, method, credentials, jsonPayload, true)
+            .then(deferred.resolve, deferred.reject);
+
+        } else {
+          return deferred.reject(result);
+        }
       }
       deferred.resolve(result);
     };
@@ -1438,7 +1456,8 @@ define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, 
       var header = hawk.client.header(uri, method, {
                           credentials: credentials,
                           payload: payload,
-                          contentType: 'application/json'
+                          contentType: 'application/json',
+                          localtimeOffsetMsec: this._localtimeOffsetMsec || 0
                         });
       xhr.setRequestHeader('authorization', header.field);
     }
@@ -1703,7 +1722,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
       config = {};
     }
 
-    this.request = new Request(uri, config.xhr);
+    this.request = new Request(uri, config.xhr, { localtimeOffsetMsec: config.localtimeOffsetMsec });
   }
 
   /**
