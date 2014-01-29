@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.0"
+        "version": "0.1.7"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -204,7 +204,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/FxAccountClient.js",
-            "line": 7,
+            "line": 12,
             "is_constructor": 1,
             "params": [
                 {
@@ -377,7 +377,13 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 25,
+            "line": 7,
+            "description": "Constants",
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 30,
             "itemtype": "method",
             "name": "signUp",
             "params": [
@@ -390,17 +396,44 @@
                     "name": "password",
                     "description": "Password input",
                     "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "service",
+                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "redirectTo",
+                            "description": "a URL that the client should be redirected to after handling the request",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "preVerified",
+                            "description": "set email to be verified if possible",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "return": {
-                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
                 "type": "Promise"
             },
             "class": "FxAccountClient"
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 47,
+            "line": 78,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -438,7 +471,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 85,
+            "line": 126,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -454,58 +487,20 @@
                 }
             ],
             "return": {
-                "description": "A promise that will be fulfilled with `result` of an XHR request",
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
                 "type": "Promise"
             },
             "class": "FxAccountClient"
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 98,
+            "line": 139,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
                 {
                     "name": "sessionToken",
                     "description": "sessionToken obtained from signIn",
-                    "type": "String"
-                }
-            ],
-            "return": {
-                "description": "A promise that will be fulfilled with `result` of an XHR request",
-                "type": "Promise"
-            },
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 112,
-            "description": "Re-sends a verification code to the account's recovery email address.",
-            "itemtype": "method",
-            "name": "recoveryEmailResendCode",
-            "params": [
-                {
-                    "name": "sessionToken",
-                    "description": "sessionToken obtained from signIn",
-                    "type": "String"
-                }
-            ],
-            "return": {
-                "description": "A promise that will be fulfilled with `result` of an XHR request",
-                "type": "Promise"
-            },
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 128,
-            "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
-            "itemtype": "method",
-            "name": "passwordForgotSendCode",
-            "params": [
-                {
-                    "name": "email",
-                    "description": "",
                     "type": "String"
                 }
             ],
@@ -517,7 +512,87 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 142,
+            "line": 153,
+            "description": "Re-sends a verification code to the account's recovery email address.",
+            "itemtype": "method",
+            "name": "recoveryEmailResendCode",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "service",
+                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "redirectTo",
+                            "description": "a URL that the client should be redirected to after handling the request",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 185,
+            "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
+            "itemtype": "method",
+            "name": "passwordForgotSendCode",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "service",
+                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "redirectTo",
+                            "description": "a URL that the client should be redirected to after handling the request",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 216,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -531,6 +606,27 @@
                     "name": "passwordForgotToken",
                     "description": "",
                     "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "service",
+                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "redirectTo",
+                            "description": "a URL that the client should be redirected to after handling the request",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "return": {
@@ -541,7 +637,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 162,
+            "line": 252,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -565,7 +661,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 183,
+            "line": 273,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -594,7 +690,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 213,
+            "line": 303,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -613,7 +709,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 229,
+            "line": 319,
             "description": "Gets the collection of devices currently authenticated and syncing for the user.",
             "itemtype": "method",
             "name": "accountDevices",
@@ -632,7 +728,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 245,
+            "line": 335,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -656,7 +752,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 269,
+            "line": 372,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -675,7 +771,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 285,
+            "line": 388,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -704,7 +800,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 303,
+            "line": 406,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -733,7 +829,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 322,
+            "line": 425,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -759,7 +855,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 349,
+            "line": 462,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -790,7 +886,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 385,
+            "line": 498,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -805,6 +901,10 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " client/lib/hawkCredentials.js:11"
+        },
+        {
+            "message": "Missing item type\nConstants",
+            "line": " client/FxAccountClient.js:7"
         }
     ]
 }
