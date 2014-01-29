@@ -1829,7 +1829,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
                 if (error && error.email && error.errno === WRONG_CASE_ERROR) {
                   return self.signIn(error.email, password);
                 } else {
-                  return error;
+                  throw error;
                 }
               }
             );
@@ -2075,7 +2075,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
               if (error && error.email && error.errno === WRONG_CASE_ERROR) {
                 return self.accountDestroy(error.email, password);
               } else {
-                return error;
+                throw error;
               }
             }
           );
@@ -2166,7 +2166,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
               if (error && error.email && error.errno === WRONG_CASE_ERROR) {
                 return self._passwordChangeStart(error.email, oldPassword);
               } else {
-                return error;
+                throw error;
               }
             }
           );
