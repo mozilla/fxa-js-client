@@ -5,7 +5,7 @@
         //in another project. That other project will only
         //see this AMD call, not the internal modules in
         //the closure below.
-        define(factory);
+        define([], factory);
     } else {
         //Browser globals case. Just assign the
         //result to a property on the global.
@@ -13,7 +13,7 @@
     }
 }(this, function () {
 /**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+ * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -30,7 +30,8 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice;
+        aps = [].slice,
+        jsSuffixRegExp = /\.js$/;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -45,7 +46,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap,
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -63,8 +64,15 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
+                name = name.split('/');
+                lastIndex = name.length - 1;
 
-                name = baseParts.concat(name.split("/"));
+                // Node .js allowance:
+                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                }
+
+                name = baseParts.concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -273,14 +281,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
+            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (typeof callback === 'function') {
-
+        if (callbackType === 'undefined' || callbackType === 'function') {
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -311,7 +319,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback.apply(defined[name], args);
+            ret = callback ? callback.apply(defined[name], args) : undefined;
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -346,6 +354,13 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
+            if (config.deps) {
+                req(config.deps, config.callback);
+            }
+            if (!callback) {
+                return;
+            }
+
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -390,11 +405,7 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        config = cfg;
-        if (config.deps) {
-            req(config.deps, config.callback);
-        }
-        return req;
+        return req(cfg);
     };
 
     /**
@@ -1617,7 +1628,7 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
       var password = sjcl.codec.utf8String.toBits(passwordInput);
 
       result.emailUTF8 = emailInput;
-      result.passwordUtf8 = passwordInput;
+      result.passwordUTF8 = passwordInput;
 
       return pbkdf2.derive(password, email, PBKDF2_ROUNDS, STRETCHED_PASS_LENGTH_BYTES)
         .then(
@@ -1708,6 +1719,11 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
   
 
   /**
+   * Constants
+   */
+  var WRONG_CASE_ERROR = 120;
+
+  /**
    * @class FxAccountClient
    * @constructor
    * @param {String} uri Auth Server URI
@@ -1729,20 +1745,46 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @method signUp
    * @param {String} email Email input
    * @param {String} password Password input
-   * @return {Promise} A promise that will be fulfilled with `result` of an XHR request
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.preVerified]
+   *   set email to be verified if possible
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.signUp = function (email, password) {
+  FxAccountClient.prototype.signUp = function (email, password, options) {
     var self = this;
 
     return credentials.setup(email, password)
       .then(
         function (result) {
+          var endpoint = '/account/create';
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          return self.request.send('/account/create', 'POST', null, data);
+          if (options) {
+            if (options.service) {
+              data.service = options.service;
+            }
+
+            if (options.redirectTo) {
+              data.redirectTo = options.redirectTo;
+            }
+
+            if (options.preVerified) {
+              data.preVerified = options.preVerified;
+            }
+
+            if (options.keys) {
+              endpoint += '?keys=true';
+            }
+          }
+
+          return self.request.send(endpoint, 'POST', null, data);
         }
       );
   };
@@ -1775,12 +1817,22 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
           }
 
           return self.request.send(endpoint, 'POST', null, data)
-          .then(function(accountData) {
-            if (keys) {
-              accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
-            }
-            return accountData;
-          });
+            .then(
+              function(accountData) {
+                if (keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              },
+              function(error) {
+                // if incorrect email case error
+                if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+                  return self.signIn(error.email, password);
+                } else {
+                  return error;
+                }
+              }
+            );
         }
       );
   };
@@ -1789,7 +1841,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @method verifyCode
    * @param {String} uid Account ID
    * @param {String} code Verification code
-   * @return {Promise} A promise that will be fulfilled with `result` of an XHR request
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.verifyCode = function(uid, code) {
     return this.request.send('/recovery_email/verify_code', 'POST', null, {
@@ -1801,7 +1853,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
   /**
    * @method recoveryEmailStatus
    * @param {String} sessionToken sessionToken obtained from signIn
-   * @return {Promise} A promise that will be fulfilled with `result` of an XHR request
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
     var self = this;
@@ -1817,14 +1869,30 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *
    * @method recoveryEmailResendCode
    * @param {String} sessionToken sessionToken obtained from signIn
-   * @return {Promise} A promise that will be fulfilled with `result` of an XHR request
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.recoveryEmailResendCode = function(sessionToken) {
+  FxAccountClient.prototype.recoveryEmailResendCode = function(sessionToken, options) {
     var self = this;
+    var data = {};
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+    }
 
     return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
       .then(function(creds) {
-        return self.request.send('/recovery_email/resend_code', 'POST', creds);
+        return self.request.send('/recovery_email/resend_code', 'POST', creds, data);
       });
   };
 
@@ -1834,12 +1902,29 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *
    * @method passwordForgotSendCode
    * @param {String} email
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.passwordForgotSendCode = function(email) {
-    return this.request.send('/password/forgot/send_code', 'POST', null, {
+  FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
+    var data = {
       email: email
-    });
+    };
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+    }
+
+    return this.request.send('/password/forgot/send_code', 'POST', null, data);
   };
 
   /**
@@ -1849,16 +1934,32 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @method passwordForgotResendCode
    * @param {String} email
    * @param {String} passwordForgotToken
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken) {
+  FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
     var self = this;
+    var data = {
+      email: email
+    };
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+    }
 
     return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
       .then(function(creds) {
-        return self.request.send('/password/forgot/resend_code', 'POST', creds, {
-          email: email
-        });
+        return self.request.send('/password/forgot/resend_code', 'POST', creds, data);
       });
   };
 
@@ -1964,7 +2065,20 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
           authPW: sjcl.codec.hex.fromBits(result.authPW)
         };
 
-        return self.request.send('/account/destroy', 'POST', null, data);
+        return self.request.send('/account/destroy', 'POST', null, data)
+          .then(
+            function(response) {
+              return response;
+            },
+            function(error) {
+              // if incorrect email case error
+              if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+                return self.accountDestroy(error.email, password);
+              } else {
+                return error;
+              }
+            }
+          );
       }
     );
   };
@@ -2042,10 +2156,20 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
         };
 
         return self.request.send('/password/change/start', 'POST', null, data)
-          .then(function(passwordData) {
-            passwordData.oldUnwrapBKey = sjcl.codec.hex.fromBits(oldCreds.unwrapBKey);
-          return passwordData;
-        });
+          .then(
+            function(passwordData) {
+              passwordData.oldUnwrapBKey = sjcl.codec.hex.fromBits(oldCreds.unwrapBKey);
+              return passwordData;
+            },
+            function(error) {
+              // if incorrect email case error
+              if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+                return self._passwordChangeStart(error.email, oldPassword);
+              } else {
+                return error;
+              }
+            }
+          );
       });
   };
 
