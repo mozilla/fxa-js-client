@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.7</em>
+            <em>API Docs for: 0.1.8</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -213,7 +213,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
                 if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
                   return self.signIn(error.email, password);
                 } else {
-                  return error;
+                  throw error;
                 }
               }
             );
@@ -459,7 +459,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
               if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
                 return self.accountDestroy(error.email, password);
               } else {
-                return error;
+                throw error;
               }
             }
           );
@@ -550,7 +550,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
               if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
                 return self._passwordChangeStart(error.email, oldPassword);
               } else {
-                return error;
+                throw error;
               }
             }
           );
