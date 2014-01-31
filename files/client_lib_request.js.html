@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.8</em>
+            <em>API Docs for: 0.1.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -99,7 +99,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p) {
+define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;, &#x27;./errors&#x27;], function (hawk, p, ERRORS) {
   &#x27;use strict&#x27;;
   /* global XMLHttpRequest */
 
@@ -149,9 +149,9 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;], function (hawk, p
       var result = JSON.parse(xhr.responseText);
       if (result.error) {
         // Try to recover from a timeskew error
-        if (result.errno === 111 &amp;&amp; !retrying) {
-          var serverTime = Date.parse(xhr.getResponseHeader(&#x27;Date&#x27;));
-          self._localtimeOffsetMsec = serverTime - new Date();
+        if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; !retrying) {
+          var serverTime = result.serverTime;
+          self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
           return self.send(path, method, credentials, jsonPayload, true)
             .then(deferred.resolve, deferred.reject);
 

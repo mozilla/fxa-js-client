@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.8</em>
+            <em>API Docs for: 0.1.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -99,13 +99,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./lib/credentials&#x27;, &#x27;./lib/hawkCredentials&#x27;], function (Request, sjcl, credentials, hawkCredentials) {
+define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./lib/credentials&#x27;, &#x27;./lib/hawkCredentials&#x27;, &#x27;./lib/errors&#x27;], function (Request, sjcl, credentials, hawkCredentials, ERRORS) {
   &#x27;use strict&#x27;;
-
-  /**
-   * Constants
-   */
-  var WRONG_CASE_ERROR = 120;
 
   /**
    * @class FxAccountClient
@@ -210,7 +205,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
               },
               function(error) {
                 // if incorrect email case error
-                if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
+                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                   return self.signIn(error.email, password);
                 } else {
                   throw error;
@@ -456,7 +451,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             },
             function(error) {
               // if incorrect email case error
-              if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
+              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                 return self.accountDestroy(error.email, password);
               } else {
                 throw error;
@@ -547,7 +542,7 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             },
             function(error) {
               // if incorrect email case error
-              if (error &amp;&amp; error.email &amp;&amp; error.errno === WRONG_CASE_ERROR) {
+              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                 return self._passwordChangeStart(error.email, oldPassword);
               } else {
                 throw error;
