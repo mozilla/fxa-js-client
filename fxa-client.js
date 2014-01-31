@@ -1399,7 +1399,17 @@ define('client/lib/hawk',['../../components/sjcl/sjcl'], function (sjcl) {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, p) {
+define('client/lib/errors',[], function () {
+  return {
+    INVALID_TIMESTAMP: 111,
+    INCORRECT_EMAIL_CASE: 120
+  };
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+define('client/lib/request',['./hawk', '../../components/p/p', './errors'], function (hawk, p, ERRORS) {
   
   /* global XMLHttpRequest */
 
@@ -1449,9 +1459,9 @@ define('client/lib/request',['./hawk', '../../components/p/p'], function (hawk, 
       var result = JSON.parse(xhr.responseText);
       if (result.error) {
         // Try to recover from a timeskew error
-        if (result.errno === 111 && !retrying) {
-          var serverTime = Date.parse(xhr.getResponseHeader('Date'));
-          self._localtimeOffsetMsec = serverTime - new Date();
+        if (result.errno === ERRORS.INVALID_TIMESTAMP && !retrying) {
+          var serverTime = result.serverTime;
+          self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
           return self.send(path, method, credentials, jsonPayload, true)
             .then(deferred.resolve, deferred.reject);
 
@@ -1715,13 +1725,8 @@ define('client/lib/hawkCredentials',['../../components/sjcl/sjcl', './hkdf'], fu
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './lib/credentials', './lib/hawkCredentials'], function (Request, sjcl, credentials, hawkCredentials) {
+define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './lib/credentials', './lib/hawkCredentials', './lib/errors'], function (Request, sjcl, credentials, hawkCredentials, ERRORS) {
   
-
-  /**
-   * Constants
-   */
-  var WRONG_CASE_ERROR = 120;
 
   /**
    * @class FxAccountClient
@@ -1826,7 +1831,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
               },
               function(error) {
                 // if incorrect email case error
-                if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+                if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                   return self.signIn(error.email, password);
                 } else {
                   throw error;
@@ -2072,7 +2077,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             },
             function(error) {
               // if incorrect email case error
-              if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                 return self.accountDestroy(error.email, password);
               } else {
                 throw error;
@@ -2163,7 +2168,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             },
             function(error) {
               // if incorrect email case error
-              if (error && error.email && error.errno === WRONG_CASE_ERROR) {
+              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
                 return self._passwordChangeStart(error.email, oldPassword);
               } else {
                 throw error;
