@@ -2115,10 +2115,14 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    */
   FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
     var self = this;
+    var data = {
+      publicKey: publicKey,
+      duration: duration
+    };
 
     return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
       .then(function(creds) {
-        return self.request.send('/session/destroy', 'POST', creds);
+        return self.request.send('/certificate/sign', 'POST', creds, data);
       });
   };
 
