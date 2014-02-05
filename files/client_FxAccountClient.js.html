@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.9</em>
+            <em>API Docs for: 0.1.10</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -489,10 +489,14 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    */
   FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
     var self = this;
+    var data = {
+      publicKey: publicKey,
+      duration: duration
+    };
 
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
-        return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds);
+        return self.request.send(&#x27;/certificate/sign&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
 

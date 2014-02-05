@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.9"
+        "version": "0.1.10"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -794,7 +794,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 401,
+            "line": 405,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -823,7 +823,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 420,
+            "line": 424,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -849,7 +849,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 457,
+            "line": 461,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -880,7 +880,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 493,
+            "line": 497,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
