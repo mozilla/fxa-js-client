@@ -1401,6 +1401,7 @@ define('client/lib/hawk',['../../components/sjcl/sjcl'], function (sjcl) {
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/errors',[], function () {
   return {
+    UNKNOWN_USER: 102,
     INVALID_TIMESTAMP: 111,
     INCORRECT_EMAIL_CASE: 120
   };
@@ -1457,7 +1458,7 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
     };
     xhr.onload = function onload() {
       var result = JSON.parse(xhr.responseText);
-      if (result.error) {
+      if (result.error || result.errno) {
         // Try to recover from a timeskew error
         if (result.errno === ERRORS.INVALID_TIMESTAMP && !retrying) {
           var serverTime = result.serverTime;
