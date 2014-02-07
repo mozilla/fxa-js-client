@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.10</em>
+            <em>API Docs for: 0.1.11</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -147,7 +147,7 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;, &#x27;./errors&#x2
     };
     xhr.onload = function onload() {
       var result = JSON.parse(xhr.responseText);
-      if (result.error) {
+      if (result.error || result.errno) {
         // Try to recover from a timeskew error
         if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; !retrying) {
           var serverTime = result.serverTime;
