@@ -13,7 +13,7 @@
     }
 }(this, function () {
 /**
- * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
+ * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -30,8 +30,7 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice,
-        jsSuffixRegExp = /\.js$/;
+        aps = [].slice;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -46,7 +45,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
+        var nameParts, nameSegment, mapValue, foundMap,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -64,15 +63,8 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
-                name = name.split('/');
-                lastIndex = name.length - 1;
 
-                // Node .js allowance:
-                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
-                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
-                }
-
-                name = baseParts.concat(name);
+                name = baseParts.concat(name.split("/"));
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -281,14 +273,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
-            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (callbackType === 'undefined' || callbackType === 'function') {
+        if (typeof callback === 'function') {
+
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -319,7 +311,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback ? callback.apply(defined[name], args) : undefined;
+            ret = callback.apply(defined[name], args);
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -354,13 +346,6 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
-            if (config.deps) {
-                req(config.deps, config.callback);
-            }
-            if (!callback) {
-                return;
-            }
-
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -405,7 +390,11 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        return req(cfg);
+        config = cfg;
+        if (config.deps) {
+            req(config.deps, config.callback);
+        }
+        return req;
     };
 
     /**
@@ -1438,10 +1427,14 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
    * @param {String} method HTTP Method
    * @param {Object} credentials HAWK Headers
    * @param {Object} jsonPayload JSON Payload
-   * @param {Boolean} retrying Flag indicating if the request is a retry
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.retrying]
+   *   Flag indicating if the request is a retry
+   *   @param {Array} [options.headers]
+   *   A set of extra headers to add to the request
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  Request.prototype.send = function request(path, method, credentials, jsonPayload, retrying) {
+  Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
     var deferred = p.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
@@ -1452,18 +1445,31 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
       payload = JSON.stringify(jsonPayload);
     }
 
-    xhr.open(method, uri);
+    try {
+      xhr.open(method, uri);
+    } catch (e) {
+      deferred.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
+    }
+
     xhr.onerror = function onerror() {
       deferred.reject(xhr.responseText);
     };
     xhr.onload = function onload() {
-      var result = JSON.parse(xhr.responseText);
-      if (result.error || result.errno) {
-        // Try to recover from a timeskew error
-        if (result.errno === ERRORS.INVALID_TIMESTAMP && !retrying) {
+      var result = xhr.responseText;
+      try {
+        result = JSON.parse(xhr.responseText);
+      } catch (e) { }
+
+      if (result.errno) {
+        // Try to recover from a timeskew error and not already tried
+        if (result.errno === ERRORS.INVALID_TIMESTAMP && options && !options.retrying) {
           var serverTime = result.serverTime;
           self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
-          return self.send(path, method, credentials, jsonPayload, true)
+
+          // add to options that the request is retrying
+          options.retrying = true;
+
+          return self.send(path, method, credentials, jsonPayload, options)
             .then(deferred.resolve, deferred.reject);
 
         } else {
@@ -1475,16 +1481,23 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
 
     // calculate Hawk header if credentials are supplied
     if (credentials) {
-      var header = hawk.client.header(uri, method, {
+      var hawkHeader = hawk.client.header(uri, method, {
                           credentials: credentials,
                           payload: payload,
                           contentType: 'application/json',
                           localtimeOffsetMsec: this._localtimeOffsetMsec || 0
                         });
-      xhr.setRequestHeader('authorization', header.field);
+      xhr.setRequestHeader('authorization', hawkHeader.field);
     }
 
     xhr.setRequestHeader('Content-Type', 'application/json');
+
+    if (options && options.headers) {
+      // set extra headers for this request
+      for (var header in options.headers) {
+        xhr.setRequestHeader(header, options.headers[header]);
+      }
+    }
 
     xhr.send(payload);
 
@@ -1758,6 +1771,8 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *   a URL that the client should be redirected to after handling the request
    *   @param {String} [options.preVerified]
    *   set email to be verified if possible
+   *   @param {String} [options.lang]
+   *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -1771,6 +1786,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
+          var requestOpts = {};
 
           if (options) {
             if (options.service) {
@@ -1788,9 +1804,14 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             if (options.keys) {
               endpoint += '?keys=true';
             }
+
+            if (options.lang) {
+              requestOpts.headers = {};
+              requestOpts.headers['Accept-Language'] = options.lang;
+            }
           }
 
-          return self.request.send(endpoint, 'POST', null, data);
+          return self.request.send(endpoint, 'POST', null, data, requestOpts);
         }
       );
   };
@@ -1880,11 +1901,14 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.lang]
+   *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.recoveryEmailResendCode = function(sessionToken, options) {
     var self = this;
     var data = {};
+    var requestOpts = {};
 
     if (options) {
       if (options.service) {
@@ -1894,11 +1918,17 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
       }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          'Accept-Langauge': options.lang
+        };
+      }
     }
 
     return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
       .then(function(creds) {
-        return self.request.send('/recovery_email/resend_code', 'POST', creds, data);
+        return self.request.send('/recovery_email/resend_code', 'POST', creds, data, requestOpts);
       });
   };
 
@@ -1913,12 +1943,15 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.lang]
+   *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
     var data = {
       email: email
     };
+    var requestOpts = {};
 
     if (options) {
       if (options.service) {
@@ -1928,9 +1961,15 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
       }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          'Accept-Langauge': options.lang
+        };
+      }
     }
 
-    return this.request.send('/password/forgot/send_code', 'POST', null, data);
+    return this.request.send('/password/forgot/send_code', 'POST', null, data, requestOpts);
   };
 
   /**
@@ -1945,6 +1984,8 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.lang]
+   *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
@@ -1952,6 +1993,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
     var data = {
       email: email
     };
+    var requestOpts = {};
 
     if (options) {
       if (options.service) {
@@ -1961,11 +2003,17 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
       }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          'Accept-Langauge': options.lang
+        };
+      }
     }
 
     return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
       .then(function(creds) {
-        return self.request.send('/password/forgot/resend_code', 'POST', creds, data);
+        return self.request.send('/password/forgot/resend_code', 'POST', creds, data, requestOpts);
       });
   };
 
