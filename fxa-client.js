@@ -1921,7 +1921,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
 
       if (options.lang) {
         requestOpts.headers = {
-          'Accept-Langauge': options.lang
+          'Accept-Language': options.lang
         };
       }
     }
@@ -1964,7 +1964,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
 
       if (options.lang) {
         requestOpts.headers = {
-          'Accept-Langauge': options.lang
+          'Accept-Language': options.lang
         };
       }
     }
@@ -2006,7 +2006,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
 
       if (options.lang) {
         requestOpts.headers = {
-          'Accept-Langauge': options.lang
+          'Accept-Language': options.lang
         };
       }
     }
