@@ -364,9 +364,25 @@
                     "type": "Object"
                 },
                 {
-                    "name": "retrying",
-                    "description": "Flag indicating if the request is a retry",
-                    "type": "Boolean"
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "retrying",
+                            "description": "Flag indicating if the request is a retry",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "headers",
+                            "description": "A set of extra headers to add to the request",
+                            "type": "Array",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "return": {
@@ -415,6 +431,12 @@
                             "description": "set email to be verified if possible",
                             "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "lang",
+                            "description": "set the language for the 'Accept-Language' header",
+                            "type": "String",
+                            "optional": true
                         }
                     ]
                 }
@@ -427,7 +449,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 73,
+            "line": 81,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -465,7 +487,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 121,
+            "line": 129,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -488,7 +510,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 134,
+            "line": 142,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -506,7 +528,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 148,
+            "line": 156,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -534,6 +556,12 @@
                             "description": "a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "lang",
+                            "description": "set the language for the 'Accept-Language' header",
+                            "type": "String",
+                            "optional": true
                         }
                     ]
                 }
@@ -546,7 +574,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 180,
+            "line": 197,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -574,6 +602,12 @@
                             "description": "a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "lang",
+                            "description": "set the language for the 'Accept-Language' header",
+                            "type": "String",
+                            "optional": true
                         }
                     ]
                 }
@@ -586,7 +620,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 211,
+            "line": 237,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -619,6 +653,12 @@
                             "description": "a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "lang",
+                            "description": "set the language for the 'Accept-Language' header",
+                            "type": "String",
+                            "optional": true
                         }
                     ]
                 }
@@ -631,7 +671,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 247,
+            "line": 282,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -655,7 +695,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 268,
+            "line": 303,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -684,7 +724,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 298,
+            "line": 333,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -703,7 +743,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 314,
+            "line": 349,
             "description": "Gets the collection of devices currently authenticated and syncing for the user.",
             "itemtype": "method",
             "name": "accountDevices",
@@ -722,7 +762,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 330,
+            "line": 365,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -746,7 +786,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 367,
+            "line": 402,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -765,7 +805,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 383,
+            "line": 418,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -794,7 +834,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 405,
+            "line": 440,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -823,7 +863,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 424,
+            "line": 459,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -849,7 +889,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 461,
+            "line": 496,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -880,7 +920,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 497,
+            "line": 532,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",

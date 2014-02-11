@@ -127,10 +127,14 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;, &#x27;./errors&#x2
    * @param {String} method HTTP Method
    * @param {Object} credentials HAWK Headers
    * @param {Object} jsonPayload JSON Payload
-   * @param {Boolean} retrying Flag indicating if the request is a retry
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.retrying]
+   *   Flag indicating if the request is a retry
+   *   @param {Array} [options.headers]
+   *   A set of extra headers to add to the request
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  Request.prototype.send = function request(path, method, credentials, jsonPayload, retrying) {
+  Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
     var deferred = p.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
@@ -141,18 +145,31 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;, &#x27;./errors&#x2
       payload = JSON.stringify(jsonPayload);
     }
 
-    xhr.open(method, uri);
+    try {
+      xhr.open(method, uri);
+    } catch (e) {
+      deferred.reject({ error: &#x27;Unknown error&#x27;, message: e.toString(), errno: 999 });
+    }
+
     xhr.onerror = function onerror() {
       deferred.reject(xhr.responseText);
     };
     xhr.onload = function onload() {
-      var result = JSON.parse(xhr.responseText);
-      if (result.error || result.errno) {
-        // Try to recover from a timeskew error
-        if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; !retrying) {
+      var result = xhr.responseText;
+      try {
+        result = JSON.parse(xhr.responseText);
+      } catch (e) { }
+
+      if (result.errno) {
+        // Try to recover from a timeskew error and not already tried
+        if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; options &amp;&amp; !options.retrying) {
           var serverTime = result.serverTime;
           self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
-          return self.send(path, method, credentials, jsonPayload, true)
+
+          // add to options that the request is retrying
+          options.retrying = true;
+
+          return self.send(path, method, credentials, jsonPayload, options)
             .then(deferred.resolve, deferred.reject);
 
         } else {
@@ -164,16 +181,23 @@ define([&#x27;./hawk&#x27;, &#x27;../../components/p/p&#x27;, &#x27;./errors&#x2
 
     // calculate Hawk header if credentials are supplied
     if (credentials) {
-      var header = hawk.client.header(uri, method, {
+      var hawkHeader = hawk.client.header(uri, method, {
                           credentials: credentials,
                           payload: payload,
                           contentType: &#x27;application/json&#x27;,
                           localtimeOffsetMsec: this._localtimeOffsetMsec || 0
                         });
-      xhr.setRequestHeader(&#x27;authorization&#x27;, header.field);
+      xhr.setRequestHeader(&#x27;authorization&#x27;, hawkHeader.field);
     }
 
     xhr.setRequestHeader(&#x27;Content-Type&#x27;, &#x27;application/json&#x27;);
+
+    if (options &amp;&amp; options.headers) {
+      // set extra headers for this request
+      for (var header in options.headers) {
+        xhr.setRequestHeader(header, options.headers[header]);
+      }
+    }
 
     xhr.send(payload);
 

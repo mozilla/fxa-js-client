@@ -350,7 +350,7 @@
             
                 <li class="arg">
                     
-                        <code>retrying</code>
+                        <code class="optional">[options={}]</code>
                     
                 </li>
             
@@ -473,17 +473,52 @@
             
                 <li class="param">
                     
-                        <code class="param-name">retrying</code>
-                        <span class="type">Boolean</span>
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Flag indicating if the request is a retry</p>
+                        <p>Options</p>
 
                     </div>
 
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[retrying]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Flag indicating if the request is a retry</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[headers]</code>
+                                    <span class="type">Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A set of extra headers to add to the request</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
