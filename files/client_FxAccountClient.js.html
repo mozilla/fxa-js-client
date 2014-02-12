@@ -166,8 +166,9 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             }
 
             if (options.lang) {
-              requestOpts.headers = {};
-              requestOpts.headers[&#x27;Accept-Language&#x27;] = options.lang;
+              requestOpts.headers = {
+                &#x27;Accept-Language&#x27;: options.lang
+              };
             }
           }
 
@@ -183,38 +184,41 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.keys]
    *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, password)
       .then(
         function (result) {
           var endpoint = &#x27;/account/login&#x27;;
-          var keys = options &amp;&amp; options.keys === true;
 
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (keys) {
+          if (options.keys) {
             endpoint += &#x27;?keys=true&#x27;;
           }
 
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
             .then(
               function(accountData) {
-                if (keys) {
+                if (options.keys) {
                   accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
                 }
                 return accountData;
               },
               function(error) {
-                // if incorrect email case error
-                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                  return self.signIn(error.email, password);
+                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                    options.skipCaseError = true;
+
+                    return self.signIn(error.email, password, options);
                 } else {
                   throw error;
                 }
@@ -466,10 +470,14 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    * @method accountDestroy
    * @param {String} email Email input
    * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.accountDestroy = function(email, password) {
+  FxAccountClient.prototype.accountDestroy = function(email, password, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, password)
       .then(
@@ -486,8 +494,10 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             },
             function(error) {
               // if incorrect email case error
-              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                return self.accountDestroy(error.email, password);
+              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                options.skipCaseError = true;
+
+                return self.accountDestroy(error.email, password, options);
               } else {
                 throw error;
               }
@@ -561,10 +571,14 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
    * @private
    * @param {String} email
    * @param {String} oldPassword
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60; and &#x60;oldUnwrapBKey&#x60;
    */
-  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword) {
+  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, oldPassword)
       .then(function (oldCreds) {
@@ -581,8 +595,10 @@ define([&#x27;./lib/request&#x27;, &#x27;../components/sjcl/sjcl&#x27;, &#x27;./
             },
             function(error) {
               // if incorrect email case error
-              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                return self._passwordChangeStart(error.email, oldPassword);
+              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                options.skipCaseError = true;
+
+                return self._passwordChangeStart(error.email, oldPassword, options);
               } else {
                 throw error;
               }
