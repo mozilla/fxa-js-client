@@ -1390,7 +1390,6 @@ define('client/lib/hawk',['../../components/sjcl/sjcl'], function (sjcl) {
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/errors',[], function () {
   return {
-    UNKNOWN_USER: 102,
     INVALID_TIMESTAMP: 111,
     INCORRECT_EMAIL_CASE: 120
   };
@@ -1440,6 +1439,7 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
     var uri = this.baseUri + path;
     var payload;
     var self = this;
+    options = options || {};
 
     if (jsonPayload) {
       payload = JSON.stringify(jsonPayload);
@@ -1462,7 +1462,7 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
 
       if (result.errno) {
         // Try to recover from a timeskew error and not already tried
-        if (result.errno === ERRORS.INVALID_TIMESTAMP && options && !options.retrying) {
+        if (result.errno === ERRORS.INVALID_TIMESTAMP && !options.retrying) {
           var serverTime = result.serverTime;
           self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
 
@@ -1806,8 +1806,9 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             }
 
             if (options.lang) {
-              requestOpts.headers = {};
-              requestOpts.headers['Accept-Language'] = options.lang;
+              requestOpts.headers = {
+                'Accept-Language': options.lang
+              };
             }
           }
 
@@ -1823,38 +1824,41 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.keys]
    *   If `true`, calls the API with `?keys=true` to get the keyFetchToken
+   *   @param {Boolean} [options.skipCaseError]
+   *   If `true`, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, password)
       .then(
         function (result) {
           var endpoint = '/account/login';
-          var keys = options && options.keys === true;
 
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (keys) {
+          if (options.keys) {
             endpoint += '?keys=true';
           }
 
           return self.request.send(endpoint, 'POST', null, data)
             .then(
               function(accountData) {
-                if (keys) {
+                if (options.keys) {
                   accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
                 }
                 return accountData;
               },
               function(error) {
-                // if incorrect email case error
-                if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                  return self.signIn(error.email, password);
+                if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE && !options.skipCaseError) {
+                    options.skipCaseError = true;
+
+                    return self.signIn(error.email, password, options);
                 } else {
                   throw error;
                 }
@@ -2106,10 +2110,14 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @method accountDestroy
    * @param {String} email Email input
    * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If `true`, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.accountDestroy = function(email, password) {
+  FxAccountClient.prototype.accountDestroy = function(email, password, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, password)
       .then(
@@ -2126,8 +2134,10 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             },
             function(error) {
               // if incorrect email case error
-              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                return self.accountDestroy(error.email, password);
+              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE && !options.skipCaseError) {
+                options.skipCaseError = true;
+
+                return self.accountDestroy(error.email, password, options);
               } else {
                 throw error;
               }
@@ -2201,10 +2211,14 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    * @private
    * @param {String} email
    * @param {String} oldPassword
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If `true`, the request will skip the incorrect case error
    * @return {Promise} A promise that will be fulfilled with JSON of `xhr.responseText` and `oldUnwrapBKey`
    */
-  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword) {
+  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword, options) {
     var self = this;
+    options = options || {};
 
     return credentials.setup(email, oldPassword)
       .then(function (oldCreds) {
@@ -2221,8 +2235,10 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
             },
             function(error) {
               // if incorrect email case error
-              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE) {
-                return self._passwordChangeStart(error.email, oldPassword);
+              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE && !options.skipCaseError) {
+                options.skipCaseError = true;
+
+                return self._passwordChangeStart(error.email, oldPassword, options);
               } else {
                 throw error;
               }
