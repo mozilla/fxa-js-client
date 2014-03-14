@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.11</em>
+            <em>API Docs for: 0.1.15</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -100,7 +100,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/client_FxAccountClient.js.html#l7"><code>client&#x2F;FxAccountClient.js:7</code></a>
+            Defined in: <a href="../files/client_FxAccountClient.js.html#l8"><code>client&#x2F;FxAccountClient.js:8</code></a>
         </div>
     
 
@@ -166,7 +166,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l7"><code>client&#x2F;FxAccountClient.js:7</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l8"><code>client&#x2F;FxAccountClient.js:8</code></a>
         
         </p>
 
@@ -254,6 +254,13 @@
                         
                             <li class="index-item method private">
                                 <a href="#method__passwordChangeFinish">_passwordChangeFinish</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__passwordChangeKeys">_passwordChangeKeys</a>
 
                                 
                                 
@@ -454,7 +461,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l512"><code>client&#x2F;FxAccountClient.js:512</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l552"><code>client&#x2F;FxAccountClient.js:552</code></a>
         
         </p>
 
@@ -465,7 +472,7 @@
     </div>
 
     <div class="description">
-        <p>Second step to change the password.</p>
+        <p>Third step to change the password.</p>
 
     </div>
 
@@ -514,7 +521,116 @@
                     
 
                     <div class="param-description">
-                        <p>This object should consists of <code>oldUnwrapBKey</code> and <code>passwordChangeToken</code>.</p>
+                        <p>This object should consists of <code>oldUnwrapBKey</code>, <code>keyFetchToken</code> and <code>passwordChangeToken</code>.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON of <code>xhr.responseText</code></p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method__passwordChangeKeys" class="method item private">
+    <h3 class="name"><code>_passwordChangeKeys</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>oldCreds</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l539"><code>client&#x2F;FxAccountClient.js:539</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Second step to change the password.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">oldCreds</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>This object should consists of <code>oldUnwrapBKey</code>, <code>keyFetchToken</code> and <code>passwordChangeToken</code>.</p>
 
                     </div>
 
@@ -603,7 +719,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l369"><code>client&#x2F;FxAccountClient.js:369</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l389"><code>client&#x2F;FxAccountClient.js:389</code></a>
         
         </p>
 
@@ -762,7 +878,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l353"><code>client&#x2F;FxAccountClient.js:353</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l373"><code>client&#x2F;FxAccountClient.js:373</code></a>
         
         </p>
 
@@ -836,6 +952,12 @@
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>oldUnwrapBKey</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -869,7 +991,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l337"><code>client&#x2F;FxAccountClient.js:337</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l338"><code>client&#x2F;FxAccountClient.js:338</code></a>
         
         </p>
 
@@ -905,6 +1027,21 @@
                     
                 </li>
             
+                <li class="param">
+                    
+                        <code class="param-name">oldUnwrapBKey</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
             </ul>
         </div>
     
@@ -918,7 +1055,7 @@
                     
                         <span class="type">Promise</span>:
                     
-                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+                    <p>A promise that will be fulfilled with JSON of {kA, kB}  of the key bundle</p>
 
                 
             </div>
@@ -987,7 +1124,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l307"><code>client&#x2F;FxAccountClient.js:307</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l308"><code>client&#x2F;FxAccountClient.js:308</code></a>
         
         </p>
 
@@ -1136,7 +1273,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l428"><code>client&#x2F;FxAccountClient.js:428</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l448"><code>client&#x2F;FxAccountClient.js:448</code></a>
         
         </p>
 
@@ -1265,7 +1402,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l548"><code>client&#x2F;FxAccountClient.js:548</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l583"><code>client&#x2F;FxAccountClient.js:583</code></a>
         
         </p>
 
@@ -1360,7 +1497,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l450"><code>client&#x2F;FxAccountClient.js:450</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l470"><code>client&#x2F;FxAccountClient.js:470</code></a>
         
         </p>
 
@@ -1510,7 +1647,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l469"><code>client&#x2F;FxAccountClient.js:469</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l496"><code>client&#x2F;FxAccountClient.js:496</code></a>
         
         </p>
 
@@ -1679,7 +1816,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l241"><code>client&#x2F;FxAccountClient.js:241</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l242"><code>client&#x2F;FxAccountClient.js:242</code></a>
         
         </p>
 
@@ -1873,7 +2010,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l201"><code>client&#x2F;FxAccountClient.js:201</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l202"><code>client&#x2F;FxAccountClient.js:202</code></a>
         
         </p>
 
@@ -2052,7 +2189,7 @@ The API returns passwordForgotToken to the client.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l286"><code>client&#x2F;FxAccountClient.js:286</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l287"><code>client&#x2F;FxAccountClient.js:287</code></a>
         
         </p>
 
@@ -2181,7 +2318,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l160"><code>client&#x2F;FxAccountClient.js:160</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l161"><code>client&#x2F;FxAccountClient.js:161</code></a>
         
         </p>
 
@@ -2354,7 +2491,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l146"><code>client&#x2F;FxAccountClient.js:146</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l147"><code>client&#x2F;FxAccountClient.js:147</code></a>
         
         </p>
 
@@ -2460,7 +2597,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l412"><code>client&#x2F;FxAccountClient.js:412</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l432"><code>client&#x2F;FxAccountClient.js:432</code></a>
         
         </p>
 
@@ -2579,7 +2716,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l82"><code>client&#x2F;FxAccountClient.js:82</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l83"><code>client&#x2F;FxAccountClient.js:83</code></a>
         
         </p>
 
@@ -2764,7 +2901,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l25"><code>client&#x2F;FxAccountClient.js:25</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l26"><code>client&#x2F;FxAccountClient.js:26</code></a>
         
         </p>
 
@@ -2973,7 +3110,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l133"><code>client&#x2F;FxAccountClient.js:133</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l134"><code>client&#x2F;FxAccountClient.js:134</code></a>
         
         </p>
 

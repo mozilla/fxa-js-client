@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.11"
+        "version": "0.1.15"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -204,7 +204,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/FxAccountClient.js",
-            "line": 7,
+            "line": 8,
             "is_constructor": 1,
             "params": [
                 {
@@ -224,6 +224,26 @@
         {
             "file": "client/lib/credentials.js",
             "line": 15,
+            "description": "Key Wrapping with a name",
+            "itemtype": "method",
+            "name": "kw",
+            "static": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The name of the salt",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "the salt combination with the namespace",
+                "type": "BitArray"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/credentials.js",
+            "line": 27,
             "description": "Key Wrapping with a name and an email",
             "itemtype": "method",
             "name": "kwe",
@@ -237,26 +257,6 @@
                 {
                     "name": "email",
                     "description": "The email of the user.",
-                    "type": "String"
-                }
-            ],
-            "return": {
-                "description": "the salt combination with the namespace",
-                "type": "BitArray"
-            },
-            "class": "credentials"
-        },
-        {
-            "file": "client/lib/credentials.js",
-            "line": 28,
-            "description": "Key Wrapping with a name",
-            "itemtype": "method",
-            "name": "kw",
-            "static": 1,
-            "params": [
-                {
-                    "name": "name",
-                    "description": "The name of the salt",
                     "type": "String"
                 }
             ],
@@ -311,6 +311,50 @@
             "return": {
                 "description": "wrap result of the two bitArrays",
                 "type": "BitArray"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/credentials.js",
+            "line": 100,
+            "description": "Unbundle the WrapKB",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "Bundle Key in hex",
+                    "type": "String"
+                },
+                {
+                    "name": "bundle",
+                    "description": "Key bundle in hex",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "*"
+            },
+            "class": "credentials"
+        },
+        {
+            "file": "client/lib/credentials.js",
+            "line": 131,
+            "description": "Derive the HMAC and XOR keys required to encrypt a given size of payload.",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "Hex Bundle Key",
+                    "type": "String"
+                },
+                {
+                    "name": "keyInfo",
+                    "description": "Bundle Key Info",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "hmacKey, xorKey",
+                "type": "Object"
             },
             "class": "credentials"
         },
@@ -393,7 +437,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 25,
+            "line": 26,
             "itemtype": "method",
             "name": "signUp",
             "params": [
@@ -449,7 +493,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 82,
+            "line": 83,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -493,7 +537,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 133,
+            "line": 134,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -516,7 +560,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 146,
+            "line": 147,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -534,7 +578,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 160,
+            "line": 161,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -580,7 +624,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 201,
+            "line": 202,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -626,7 +670,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 241,
+            "line": 242,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -677,7 +721,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 286,
+            "line": 287,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -701,7 +745,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 307,
+            "line": 308,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -730,7 +774,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 337,
+            "line": 338,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -739,17 +783,22 @@
                     "name": "keyFetchToken",
                     "description": "",
                     "type": "String"
+                },
+                {
+                    "name": "oldUnwrapBKey",
+                    "description": "",
+                    "type": "String"
                 }
             ],
             "return": {
-                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "description": "A promise that will be fulfilled with JSON of {kA, kB}  of the key bundle",
                 "type": "Promise"
             },
             "class": "FxAccountClient"
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 353,
+            "line": 373,
             "description": "Gets the collection of devices currently authenticated and syncing for the user.",
             "itemtype": "method",
             "name": "accountDevices",
@@ -768,7 +817,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 369,
+            "line": 389,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -807,7 +856,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 412,
+            "line": 432,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -826,7 +875,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 428,
+            "line": 448,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -855,7 +904,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 450,
+            "line": 470,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -884,7 +933,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 469,
+            "line": 496,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -925,8 +974,29 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 512,
+            "line": 539,
             "description": "Second step to change the password.",
+            "itemtype": "method",
+            "name": "_passwordChangeKeys",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "oldCreds",
+                    "description": "This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON of `xhr.responseText`",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 552,
+            "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
             "access": "private",
@@ -944,7 +1014,7 @@
                 },
                 {
                     "name": "oldCreds",
-                    "description": "This object should consists of `oldUnwrapBKey` and `passwordChangeToken`.",
+                    "description": "This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.",
                     "type": "Object"
                 }
             ],
@@ -956,7 +1026,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 548,
+            "line": 583,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -970,7 +1040,23 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
+            "line": " client/lib/credentials.js:100"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/lib/credentials.js:131"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
             "line": " client/lib/hawkCredentials.js:11"
+        },
+        {
+            "message": "Missing item type\nUnbundle the WrapKB",
+            "line": " client/lib/credentials.js:100"
+        },
+        {
+            "message": "Missing item type\nDerive the HMAC and XOR keys required to encrypt a given size of payload.",
+            "line": " client/lib/credentials.js:131"
         }
     ]
 }

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.11</em>
+            <em>API Docs for: 0.1.15</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -99,7 +99,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define([&#x27;../../components/sjcl/sjcl&#x27;, &#x27;../../components/p/p&#x27;], function (sjcl, P) {
+define([&#x27;sjcl&#x27;, &#x27;p&#x27;], function (sjcl, P) {
   &#x27;use strict&#x27;;
 
   /**
@@ -121,11 +121,11 @@ define([&#x27;../../components/sjcl/sjcl&#x27;, &#x27;../../components/p/p&#x27;
     // compute the PRK
     var prk = mac.digest();
 
-    var buffers = [];
     // hash length is 32 because only sjcl.hash.sha256 is used at this moment
     var hashLength = 32;
     var num_blocks = Math.ceil(length / hashLength);
     var prev = sjcl.codec.hex.toBits(&#x27;&#x27;);
+    var output = &#x27;&#x27;;
 
     for (var i = 0; i &lt; num_blocks; i++) {
       var hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
@@ -138,15 +138,10 @@ define([&#x27;../../components/sjcl/sjcl&#x27;, &#x27;../../components/p/p&#x27;
       hmac.update(input);
 
       prev = hmac.digest();
-      buffers.push(prev);
+      output += sjcl.codec.hex.fromBits(prev);
     }
 
-    var output = buffers[0];
-    if (buffers.length &gt; 1) {
-      output = sjcl.bitArray.concat.apply(null, buffers);
-    }
-
-    var truncated = sjcl.bitArray.clamp(output, length * 8);
+    var truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
 
     return P(truncated);
   }
