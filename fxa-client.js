@@ -11,9 +11,8 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {
-/**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+}(this, function () {/**
+ * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -30,7 +29,8 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice;
+        aps = [].slice,
+        jsSuffixRegExp = /\.js$/;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -45,7 +45,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap,
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -63,8 +63,15 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
+                name = name.split('/');
+                lastIndex = name.length - 1;
 
-                name = baseParts.concat(name.split("/"));
+                // Node .js allowance:
+                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                }
+
+                name = baseParts.concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -273,14 +280,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
+            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (typeof callback === 'function') {
-
+        if (callbackType === 'undefined' || callbackType === 'function') {
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -311,7 +318,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback.apply(defined[name], args);
+            ret = callback ? callback.apply(defined[name], args) : undefined;
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -346,6 +353,13 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
+            if (config.deps) {
+                req(config.deps, config.callback);
+            }
+            if (!callback) {
+                return;
+            }
+
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -390,11 +404,7 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        config = cfg;
-        if (config.deps) {
-            req(config.deps, config.callback);
-        }
-        return req;
+        return req(cfg);
     };
 
     /**
@@ -425,7 +435,7 @@ var requirejs, require, define;
 
 define("components/almond/almond", function(){});
 
-define('components/sjcl/sjcl',[], function () {var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
+define('sjcl',[], function () {var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
 "undefined"!==typeof module&&module.exports&&(module.exports=sjcl);
 sjcl.cipher.aes=function(a){this.b[0][0][0]||this.g();var b,c,d,e,g=this.b[0][4],f=this.b[1];b=a.length;var h=1;if(4!==b&&6!==b&&8!==b)throw new sjcl.exception.invalid("invalid aes key size");this.e=[d=a.slice(0),e=[]];for(a=b;a<4*b+28;a++){c=d[a-1];if(0===a%b||8===b&&4===a%b)c=g[c>>>24]<<24^g[c>>16&255]<<16^g[c>>8&255]<<8^g[c&255],0===a%b&&(c=c<<8^c>>>24^h<<24,h=h<<1^283*(h>>7));d[a]=d[a-b]^c}for(b=0;a;b++,a--)c=d[b&3?a:a-4],e[b]=4>=a||4>b?c:f[0][g[c>>>24]]^f[1][g[c>>16&255]]^f[2][g[c>>8&255]]^f[3][g[c&
 255]]};
@@ -450,7 +460,7 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/hawk',['../../components/sjcl/sjcl'], function (sjcl) {
+define('client/lib/hawk',['sjcl'], function (sjcl) {
   
 
   /*
@@ -959,7 +969,7 @@ define('client/lib/hawk',['../../components/sjcl/sjcl'], function (sjcl) {
 
 	// RequireJS
 	} else if ( typeof define === "function" && define.amd ) {
-		define( 'components/p/p',factory );
+		define( 'p',factory );
 
 	// global
 	} else {
@@ -1398,7 +1408,7 @@ define('client/lib/errors',[], function () {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/request',['./hawk', '../../components/p/p', './errors'], function (hawk, p, ERRORS) {
+define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRORS) {
   
   /* global XMLHttpRequest */
 
@@ -1434,7 +1444,7 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
-    var deferred = p.defer();
+    var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
     var payload;
@@ -1511,7 +1521,7 @@ define('client/lib/request',['./hawk', '../../components/p/p', './errors'], func
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/hkdf',['../../components/sjcl/sjcl', '../../components/p/p'], function (sjcl, P) {
+define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
   
 
   /**
@@ -1533,11 +1543,11 @@ define('client/lib/hkdf',['../../components/sjcl/sjcl', '../../components/p/p'],
     // compute the PRK
     var prk = mac.digest();
 
-    var buffers = [];
     // hash length is 32 because only sjcl.hash.sha256 is used at this moment
     var hashLength = 32;
     var num_blocks = Math.ceil(length / hashLength);
     var prev = sjcl.codec.hex.toBits('');
+    var output = '';
 
     for (var i = 0; i < num_blocks; i++) {
       var hmac = new sjcl.misc.hmac(prk, sjcl.hash.sha256);
@@ -1550,15 +1560,10 @@ define('client/lib/hkdf',['../../components/sjcl/sjcl', '../../components/p/p'],
       hmac.update(input);
 
       prev = hmac.digest();
-      buffers.push(prev);
+      output += sjcl.codec.hex.fromBits(prev);
     }
 
-    var output = buffers[0];
-    if (buffers.length > 1) {
-      output = sjcl.bitArray.concat.apply(null, buffers);
-    }
-
-    var truncated = sjcl.bitArray.clamp(output, length * 8);
+    var truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
 
     return P(truncated);
   }
@@ -1570,7 +1575,7 @@ define('client/lib/hkdf',['../../components/sjcl/sjcl', '../../components/p/p'],
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/pbkdf2',['../../components/sjcl/sjcl', '../../components/p/p'], function (sjcl, P) {
+define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
   
 
   /**
@@ -1597,7 +1602,7 @@ define('client/lib/pbkdf2',['../../components/sjcl/sjcl', '../../components/p/p'
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../../components/p/p', './hkdf', './pbkdf2'], function (Request, sjcl, P, hkdf, pbkdf2) {
+define('client/lib/credentials',['./request', 'sjcl', 'p', './hkdf', './pbkdf2'], function (Request, sjcl, P, hkdf, pbkdf2) {
   
 
   // Key wrapping and stretching configuration.
@@ -1607,6 +1612,18 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
 
   var HKDF_SALT = sjcl.codec.hex.toBits('00');
   var HKDF_LENGTH = 32;
+
+  /**
+   * Key Wrapping with a name
+   *
+   * @method kw
+   * @static
+   * @param {String} name The name of the salt
+   * @return {bitArray} the salt combination with the namespace
+   */
+  function kw(name) {
+    return sjcl.codec.utf8String.toBits(NAMESPACE + name);
+  }
 
   /**
    * Key Wrapping with a name and an email
@@ -1619,18 +1636,6 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
    */
   function kwe(name, email) {
     return sjcl.codec.utf8String.toBits(NAMESPACE + name + ':' + email);
-  }
-
-  /**
-   * Key Wrapping with a name
-   *
-   * @method kw
-   * @static
-   * @param {String} name The name of the salt
-   * @return {bitArray} the salt combination with the namespace
-   */
-  function kw(name) {
-    return sjcl.codec.utf8String.toBits(NAMESPACE + name);
   }
 
   /**
@@ -1684,7 +1689,7 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
      * @param {bitArray} bitArray2
      * @return {bitArray} wrap result of the two bitArrays
      */
-    wrap: function (bitArray1, bitArray2) {
+    xor: function (bitArray1, bitArray2) {
       var result = [];
 
       for (var i = 0; i < bitArray1.length; i++) {
@@ -1692,6 +1697,59 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
       }
 
       return result;
+    },
+    /**
+     * Unbundle the WrapKB
+     * @param {String} key Bundle Key in hex
+     * @param {String} bundle Key bundle in hex
+     * @returns {*}
+     */
+    unbundleKeyFetchResponse: function (key, bundle) {
+      var self = this;
+      var bitBundle = sjcl.codec.hex.toBits(bundle);
+
+      return this.deriveBundleKeys(key, 'account/keys')
+        .then(
+          function (keys) {
+            var ciphertext = sjcl.bitArray.bitSlice(bitBundle, 0, 8 * 64);
+            var expectedHmac = sjcl.bitArray.bitSlice(bitBundle, 8 * -32);
+            var hmac = new sjcl.misc.hmac(keys.hmacKey, sjcl.hash.sha256);
+            hmac.update(ciphertext);
+
+            if (!sjcl.bitArray.equal(hmac.digest(), expectedHmac)) {
+              throw new Error('Bad HMac');
+            }
+
+            var keyAWrapB = self.xor(sjcl.bitArray.bitSlice(bitBundle, 0, 8 * 64), keys.xorKey);
+
+            return {
+              kA: sjcl.codec.hex.fromBits(sjcl.bitArray.bitSlice(keyAWrapB, 0, 8 * 32)),
+              wrapKB: sjcl.codec.hex.fromBits(sjcl.bitArray.bitSlice(keyAWrapB, 8 * 32))
+            };
+          }
+        );
+    },
+    /**
+     * Derive the HMAC and XOR keys required to encrypt a given size of payload.
+     * @param {String} key Hex Bundle Key
+     * @param {String} keyInfo Bundle Key Info
+     * @returns {Object} hmacKey, xorKey
+     */
+    deriveBundleKeys: function(key, keyInfo) {
+      var bitKeyInfo = kw(keyInfo);
+      var salt = sjcl.codec.hex.toBits('');
+      key = sjcl.codec.hex.toBits(key);
+
+      return hkdf(key, bitKeyInfo, salt, 3 * 32)
+        .then(
+          function (keyMaterial) {
+
+            return {
+              hmacKey: sjcl.bitArray.bitSlice(keyMaterial, 0, 8 * 32),
+              xorKey: sjcl.bitArray.bitSlice(keyMaterial, 8 * 32)
+            };
+          }
+        );
     }
   };
 
@@ -1700,7 +1758,7 @@ define('client/lib/credentials',['./request', '../../components/sjcl/sjcl', '../
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/hawkCredentials',['../../components/sjcl/sjcl', './hkdf'], function (sjcl, hkdf) {
+define('client/lib/hawkCredentials',['sjcl', './hkdf'], function (sjcl, hkdf) {
   
 
   var PREFIX_NAME = 'identity.mozilla.com/picl/v1/';
@@ -1739,7 +1797,8 @@ define('client/lib/hawkCredentials',['../../components/sjcl/sjcl', './hkdf'], fu
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './lib/credentials', './lib/hawkCredentials', './lib/errors'], function (Request, sjcl, credentials, hawkCredentials, ERRORS) {
+define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credentials', './lib/hawkCredentials', './lib/errors'],
+  function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
   
 
   /**
@@ -2077,14 +2136,33 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
    *
    * @method accountKeys
    * @param {String} keyFetchToken
-   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   * @param {String} oldUnwrapBKey
+   * @return {Promise} A promise that will be fulfilled with JSON of {kA, kB}  of the key bundle
    */
-  FxAccountClient.prototype.accountKeys = function(keyFetchToken) {
+  FxAccountClient.prototype.accountKeys = function(keyFetchToken, oldUnwrapBKey) {
     var self = this;
 
-    return hawkCredentials(keyFetchToken, 'keyFetchToken',  2 * 32)
+    return hawkCredentials(keyFetchToken, 'keyFetchToken',  3 * 32)
       .then(function(creds) {
-        return self.request.send('/account/keys', 'GET', creds);
+        var bundleKey = sjcl.codec.hex.fromBits(creds.bundleKey);
+
+        return self.request.send('/account/keys', 'GET', creds)
+          .then(
+            function(payload) {
+
+              return credentials.unbundleKeyFetchResponse(bundleKey, payload.bundle);
+              });
+      })
+      .then(function(keys) {
+        return {
+          kB: sjcl.codec.hex.fromBits(
+            credentials.xor(
+              sjcl.codec.hex.toBits(keys.wrapKB),
+              sjcl.codec.hex.toBits(oldUnwrapBKey)
+            )
+          ),
+          kA: keys.kA
+        };
       });
   };
 
@@ -2121,30 +2199,30 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
 
     return credentials.setup(email, password)
       .then(
-      function (result) {
-        var data = {
-          email: result.emailUTF8,
-          authPW: sjcl.codec.hex.fromBits(result.authPW)
-        };
+        function (result) {
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
 
-        return self.request.send('/account/destroy', 'POST', null, data)
-          .then(
-            function(response) {
-              return response;
-            },
-            function(error) {
-              // if incorrect email case error
-              if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE && !options.skipCaseError) {
-                options.skipCaseError = true;
+          return self.request.send('/account/destroy', 'POST', null, data)
+            .then(
+              function(response) {
+                return response;
+              },
+              function(error) {
+                // if incorrect email case error
+                if (error && error.email && error.errno === ERRORS.INCORRECT_EMAIL_CASE && !options.skipCaseError) {
+                  options.skipCaseError = true;
 
-                return self.accountDestroy(error.email, password, options);
-              } else {
-                throw error;
+                  return self.accountDestroy(error.email, password, options);
+                } else {
+                  throw error;
+                }
               }
-            }
-          );
-      }
-    );
+            );
+        }
+      );
   };
 
   /**
@@ -2198,10 +2276,17 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
     var self = this;
 
     return self._passwordChangeStart(email, oldPassword)
-      .then(function (oldCreds) {
+      .then(function (credentials) {
 
-        return self._passwordChangeFinish(email, newPassword, oldCreds);
+        var oldCreds = credentials;
+
+        return self._passwordChangeKeys(oldCreds)
+          .then(function (keys) {
+
+            return self._passwordChangeFinish(email, newPassword, oldCreds, keys);
+        });
       });
+
   };
 
   /**
@@ -2250,35 +2335,43 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
   /**
    * Second step to change the password.
    *
+   * @method _passwordChangeKeys
+   * @private
+   * @param {Object} oldCreds This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.
+   * @return {Promise} A promise that will be fulfilled with JSON of `xhr.responseText`
+   */
+  FxAccountClient.prototype._passwordChangeKeys = function(oldCreds) {
+
+    return this.accountKeys(oldCreds.keyFetchToken, oldCreds.oldUnwrapBKey);
+  };
+
+  /**
+   * Third step to change the password.
+   *
    * @method _passwordChangeFinish
    * @private
    * @param {String} email
    * @param {String} newPassword
-   * @param {Object} oldCreds This object should consists of `oldUnwrapBKey` and `passwordChangeToken`.
+   * @param {Object} oldCreds This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.
    * @return {Promise} A promise that will be fulfilled with JSON of `xhr.responseText`
    */
-  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds) {
+  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
     var self = this;
-    var wrapKb;
-    var authPW;
+    var p1 = credentials.setup(email, newPassword);
+    var p2 = hawkCredentials(oldCreds.passwordChangeToken, 'passwordChangeToken',  2 * 32);
 
-    return credentials.setup(email, newPassword)
-      .then(function(newCreds) {
-        wrapKb = sjcl.codec.hex.fromBits(
-          credentials.wrap(
-            sjcl.codec.hex.toBits(oldCreds.oldUnwrapBKey),
+    return P.all([p1, p2])
+      .spread(function(newCreds, hawkCreds) {
+        var newWrapKb = sjcl.codec.hex.fromBits(
+          credentials.xor(
+            sjcl.codec.hex.toBits(keys.kB),
             newCreds.unwrapBKey
           )
         );
 
-        authPW = sjcl.codec.hex.fromBits(newCreds.authPW);
-
-        return hawkCredentials(oldCreds.passwordChangeToken, 'passwordChangeToken',  2 * 32);
-      }).then(function(hawkCreds) {
-
         return self.request.send('/password/change/finish', 'POST', hawkCreds, {
-          wrapKb: wrapKb,
-          authPW: authPW
+          wrapKb: newWrapKb,
+          authPW: sjcl.codec.hex.fromBits(newCreds.authPW)
         });
       });
   };
@@ -2296,6 +2389,7 @@ define('client/FxAccountClient',['./lib/request', '../components/sjcl/sjcl', './
 
   return FxAccountClient;
 });
+
 
 
     //The modules for your project will be inlined above
