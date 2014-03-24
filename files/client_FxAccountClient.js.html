@@ -103,6 +103,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
   &#x27;use strict&#x27;;
 
+  var VERSION = &#x27;v1&#x27;;
+  var uriVersionRegExp = new RegExp(&#x27;/&#x27; + VERSION + &#x27;$&#x27;);
+
   /**
    * @class FxAccountClient
    * @constructor
@@ -117,9 +120,14 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     if (typeof config === &#x27;undefined&#x27;) {
       config = {};
     }
+    if (!uriVersionRegExp.test(uri)) {
+      uri = uri + &#x27;/&#x27; + VERSION;
+    }
 
     this.request = new Request(uri, config.xhr, { localtimeOffsetMsec: config.localtimeOffsetMsec });
   }
+
+  FxAccountClient.VERSION = VERSION;
 
   /**
    * @method signUp

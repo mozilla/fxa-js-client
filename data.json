@@ -204,7 +204,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/FxAccountClient.js",
-            "line": 8,
+            "line": 11,
             "is_constructor": 1,
             "params": [
                 {
@@ -437,7 +437,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 26,
+            "line": 34,
             "itemtype": "method",
             "name": "signUp",
             "params": [
@@ -493,7 +493,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 83,
+            "line": 91,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -537,7 +537,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 134,
+            "line": 142,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -560,7 +560,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 147,
+            "line": 155,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -578,7 +578,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 161,
+            "line": 169,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -624,7 +624,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 202,
+            "line": 210,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -670,7 +670,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 242,
+            "line": 250,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -721,7 +721,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 287,
+            "line": 295,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -745,7 +745,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 308,
+            "line": 316,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -774,7 +774,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 338,
+            "line": 346,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -798,7 +798,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 373,
+            "line": 381,
             "description": "Gets the collection of devices currently authenticated and syncing for the user.",
             "itemtype": "method",
             "name": "accountDevices",
@@ -817,7 +817,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 389,
+            "line": 397,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -856,7 +856,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 432,
+            "line": 440,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -875,7 +875,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 448,
+            "line": 456,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -904,7 +904,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 470,
+            "line": 478,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -933,7 +933,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 496,
+            "line": 504,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -974,7 +974,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 539,
+            "line": 547,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -995,7 +995,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 552,
+            "line": 560,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1026,7 +1026,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 583,
+            "line": 591,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
