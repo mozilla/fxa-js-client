@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.16</em>
+            <em>API Docs for: 0.1.17</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -337,6 +337,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_passwordForgotStatus">passwordForgotStatus</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_passwordForgotVerifyCode">passwordForgotVerifyCode</a>
 
                                 
@@ -359,6 +366,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_sessionDestroy">sessionDestroy</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sessionStatus">sessionStatus</a>
 
                                 
                                 
@@ -461,7 +475,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l560"><code>client&#x2F;FxAccountClient.js:560</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l593"><code>client&#x2F;FxAccountClient.js:593</code></a>
         
         </p>
 
@@ -600,7 +614,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l547"><code>client&#x2F;FxAccountClient.js:547</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l580"><code>client&#x2F;FxAccountClient.js:580</code></a>
         
         </p>
 
@@ -719,7 +733,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l397"><code>client&#x2F;FxAccountClient.js:397</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l414"><code>client&#x2F;FxAccountClient.js:414</code></a>
         
         </p>
 
@@ -878,7 +892,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l381"><code>client&#x2F;FxAccountClient.js:381</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l398"><code>client&#x2F;FxAccountClient.js:398</code></a>
         
         </p>
 
@@ -991,7 +1005,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l346"><code>client&#x2F;FxAccountClient.js:346</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l363"><code>client&#x2F;FxAccountClient.js:363</code></a>
         
         </p>
 
@@ -1124,7 +1138,7 @@
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l316"><code>client&#x2F;FxAccountClient.js:316</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l333"><code>client&#x2F;FxAccountClient.js:333</code></a>
         
         </p>
 
@@ -1273,7 +1287,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l456"><code>client&#x2F;FxAccountClient.js:456</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l489"><code>client&#x2F;FxAccountClient.js:489</code></a>
         
         </p>
 
@@ -1402,7 +1416,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l591"><code>client&#x2F;FxAccountClient.js:591</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l624"><code>client&#x2F;FxAccountClient.js:624</code></a>
         
         </p>
 
@@ -1497,7 +1511,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l478"><code>client&#x2F;FxAccountClient.js:478</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l511"><code>client&#x2F;FxAccountClient.js:511</code></a>
         
         </p>
 
@@ -1647,7 +1661,7 @@ HAWK-authenticated with accountResetToken</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l504"><code>client&#x2F;FxAccountClient.js:504</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l537"><code>client&#x2F;FxAccountClient.js:537</code></a>
         
         </p>
 
@@ -2137,6 +2151,113 @@ The API returns passwordForgotToken to the client.</p>
 </div>
 
                 
+                    <div id="method_passwordForgotStatus" class="method item">
+    <h3 class="name"><code>passwordForgotStatus</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>passwordForgotToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l316"><code>client&#x2F;FxAccountClient.js:316</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Returns the status for the passwordForgotToken.
+If the request returns a success response, the token has not yet been consumed.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">passwordForgotToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_passwordForgotVerifyCode" class="method item">
     <h3 class="name"><code>passwordForgotVerifyCode</code></h3>
 
@@ -2597,7 +2718,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
             
         
         
-        <a href="../files/client_FxAccountClient.js.html#l440"><code>client&#x2F;FxAccountClient.js:440</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l457"><code>client&#x2F;FxAccountClient.js:457</code></a>
         
         </p>
 
@@ -2609,6 +2730,113 @@ HAWK-authenticated with the passwordForgotToken.</p>
 
     <div class="description">
         <p>Destroys this session, by invalidating the sessionToken.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>User session token</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Promise</span>:
+                    
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sessionStatus" class="method item">
+    <h3 class="name"><code>sessionStatus</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>sessionToken</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/client_FxAccountClient.js.html#l473"><code>client&#x2F;FxAccountClient.js:473</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Responds successfully if the session status is valid, requires the sessionToken.</p>
 
     </div>
 

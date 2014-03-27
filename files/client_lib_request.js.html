@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.16</em>
+            <em>API Docs for: 0.1.17</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -152,32 +152,36 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
       deferred.reject({ error: &#x27;Unknown error&#x27;, message: e.toString(), errno: 999 });
     }
 
-    xhr.onerror = function onerror() {
-      deferred.reject(xhr.responseText);
-    };
-    xhr.onload = function onload() {
-      var result = xhr.responseText;
-      try {
-        result = JSON.parse(xhr.responseText);
-      } catch (e) { }
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var result = xhr.responseText;
+        try {
+          result = JSON.parse(xhr.responseText);
+        } catch (e) { }
 
-      if (result.errno) {
-        // Try to recover from a timeskew error and not already tried
-        if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; !options.retrying) {
-          var serverTime = result.serverTime;
-          self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
+        if (result.errno) {
+          // Try to recover from a timeskew error and not already tried
+          if (result.errno === ERRORS.INVALID_TIMESTAMP &amp;&amp; !options.retrying) {
+            var serverTime = result.serverTime;
+            self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
 
-          // add to options that the request is retrying
-          options.retrying = true;
+            // add to options that the request is retrying
+            options.retrying = true;
 
-          return self.send(path, method, credentials, jsonPayload, options)
-            .then(deferred.resolve, deferred.reject);
+            return self.send(path, method, credentials, jsonPayload, options)
+              .then(deferred.resolve, deferred.reject);
 
-        } else {
+          } else {
+            return deferred.reject(result);
+          }
+        }
+
+        if (typeof xhr.status === &#x27;undefined&#x27; || xhr.status !== 200) {
           return deferred.reject(result);
         }
+
+        deferred.resolve(result);
       }
-      deferred.resolve(result);
     };
 
     // calculate Hawk header if credentials are supplied

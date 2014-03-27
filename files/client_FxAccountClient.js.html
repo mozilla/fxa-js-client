@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.16</em>
+            <em>API Docs for: 0.1.17</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -412,6 +412,23 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   };
 
   /**
+   * Returns the status for the passwordForgotToken.
+   * If the request returns a success response, the token has not yet been consumed.
+
+   * @method passwordForgotStatus
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
+    var self = this;
+
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/status&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
    * The API returns reset result to the client.
    * HAWK-authenticated with accountResetToken
    *
@@ -548,6 +565,22 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds);
+      });
+  };
+
+  /**
+   * Responds successfully if the session status is valid, requires the sessionToken.
+   *
+   * @method sessionStatus
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.sessionStatus = function(sessionToken) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
+      .then(function(creds) {
+        return self.request.send(&#x27;/session/status&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 
