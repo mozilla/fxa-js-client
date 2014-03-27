@@ -11,9 +11,8 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {
-/**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+}(this, function () {/**
+ * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -30,7 +29,8 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice;
+        aps = [].slice,
+        jsSuffixRegExp = /\.js$/;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -45,7 +45,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap,
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -63,8 +63,15 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
+                name = name.split('/');
+                lastIndex = name.length - 1;
 
-                name = baseParts.concat(name.split("/"));
+                // Node .js allowance:
+                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                }
+
+                name = baseParts.concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -273,14 +280,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
+            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (typeof callback === 'function') {
-
+        if (callbackType === 'undefined' || callbackType === 'function') {
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -311,7 +318,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback.apply(defined[name], args);
+            ret = callback ? callback.apply(defined[name], args) : undefined;
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -346,6 +353,13 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
+            if (config.deps) {
+                req(config.deps, config.callback);
+            }
+            if (!callback) {
+                return;
+            }
+
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -390,11 +404,7 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        config = cfg;
-        if (config.deps) {
-            req(config.deps, config.callback);
-        }
-        return req;
+        return req(cfg);
     };
 
     /**
@@ -528,7 +538,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
         return result;
       }
 
-      if (hawk.crypto.algorithms.indexOf(credentials.algorithm) === -1) {
+      if (hawk.utils.baseIndexOf(hawk.crypto.algorithms, credentials.algorithm) === -1) {
         result.err = 'Unknown algorithm';
         return result;
       }
@@ -913,6 +923,18 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
       }
 
       return result.join('');
+    },
+
+    baseIndexOf: function(array, value, fromIndex) {
+      var index = (fromIndex || 0) - 1,
+        length = array ? array.length : 0;
+
+      while (++index < length) {
+        if (array[index] === value) {
+          return index;
+        }
+      }
+      return -1;
     },
 
     parseUri: function (input) {
@@ -1451,32 +1473,36 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
       deferred.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
     }
 
-    xhr.onerror = function onerror() {
-      deferred.reject(xhr.responseText);
-    };
-    xhr.onload = function onload() {
-      var result = xhr.responseText;
-      try {
-        result = JSON.parse(xhr.responseText);
-      } catch (e) { }
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        var result = xhr.responseText;
+        try {
+          result = JSON.parse(xhr.responseText);
+        } catch (e) { }
 
-      if (result.errno) {
-        // Try to recover from a timeskew error and not already tried
-        if (result.errno === ERRORS.INVALID_TIMESTAMP && !options.retrying) {
-          var serverTime = result.serverTime;
-          self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
+        if (result.errno) {
+          // Try to recover from a timeskew error and not already tried
+          if (result.errno === ERRORS.INVALID_TIMESTAMP && !options.retrying) {
+            var serverTime = result.serverTime;
+            self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
 
-          // add to options that the request is retrying
-          options.retrying = true;
+            // add to options that the request is retrying
+            options.retrying = true;
 
-          return self.send(path, method, credentials, jsonPayload, options)
-            .then(deferred.resolve, deferred.reject);
+            return self.send(path, method, credentials, jsonPayload, options)
+              .then(deferred.resolve, deferred.reject);
 
-        } else {
+          } else {
+            return deferred.reject(result);
+          }
+        }
+
+        if (typeof xhr.status === 'undefined' || xhr.status !== 200) {
           return deferred.reject(result);
         }
+
+        deferred.resolve(result);
       }
-      deferred.resolve(result);
     };
 
     // calculate Hawk header if credentials are supplied
@@ -2100,6 +2126,23 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
   };
 
   /**
+   * Returns the status for the passwordForgotToken.
+   * If the request returns a success response, the token has not yet been consumed.
+
+   * @method passwordForgotStatus
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
+    var self = this;
+
+    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
+      .then(function(creds) {
+        return self.request.send('/password/forgot/status', 'GET', creds);
+      });
+  };
+
+  /**
    * The API returns reset result to the client.
    * HAWK-authenticated with accountResetToken
    *
@@ -2236,6 +2279,22 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
     return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
       .then(function(creds) {
         return self.request.send('/session/destroy', 'POST', creds);
+      });
+  };
+
+  /**
+   * Responds successfully if the session status is valid, requires the sessionToken.
+   *
+   * @method sessionStatus
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.sessionStatus = function(sessionToken) {
+    var self = this;
+
+    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+      .then(function(creds) {
+        return self.request.send('/session/status', 'GET', creds);
       });
   };
 
@@ -2387,6 +2446,7 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
   return FxAccountClient;
 });
+
 
 
     //The modules for your project will be inlined above
