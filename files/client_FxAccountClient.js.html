@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.17</em>
+            <em>API Docs for: 0.1.18</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -106,6 +106,12 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   var VERSION = &#x27;v1&#x27;;
   var uriVersionRegExp = new RegExp(&#x27;/&#x27; + VERSION + &#x27;$&#x27;);
 
+  function required(val, name) {
+    if (!val) {
+      throw new Error(&#x27;Missing &#x27; + name);
+    }
+  }
+
   /**
    * @class FxAccountClient
    * @constructor
@@ -146,6 +152,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
     var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
 
     return credentials.setup(email, password)
       .then(
@@ -201,6 +210,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     var self = this;
     options = options || {};
 
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
+
     return credentials.setup(email, password)
       .then(
         function (result) {
@@ -244,6 +256,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.verifyCode = function(uid, code) {
+    required(uid, &#x27;uid&#x27;);
+    required(code, &#x27;verify code&#x27;);
+
     return this.request.send(&#x27;/recovery_email/verify_code&#x27;, &#x27;POST&#x27;, null, {
       uid: uid,
       code: code
@@ -257,6 +272,7 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
     var self = this;
+    required(sessionToken, &#x27;sessionToken&#x27;);
 
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
@@ -282,6 +298,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     var self = this;
     var data = {};
     var requestOpts = {};
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
 
     if (options) {
       if (options.service) {
@@ -326,6 +344,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     };
     var requestOpts = {};
 
+    required(email, &#x27;email&#x27;);
+
     if (options) {
       if (options.service) {
         data.service = options.service;
@@ -368,6 +388,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     };
     var requestOpts = {};
 
+    required(email, &#x27;email&#x27;);
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+
     if (options) {
       if (options.service) {
         data.service = options.service;
@@ -402,6 +425,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
     var self = this;
+    required(code, &#x27;reset code&#x27;);
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
     return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  2 * 32)
       .then(function(creds) {
@@ -422,6 +447,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
     var self = this;
 
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+
     return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/password/forgot/status&#x27;, &#x27;GET&#x27;, creds);
@@ -441,6 +468,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken) {
     var self = this;
     var authPW;
+
+    required(email, &#x27;email&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
+    required(accountResetToken, &#x27;accountResetToken&#x27;);
 
     return credentials.setup(email, newPassword)
       .then(
@@ -468,6 +499,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.accountKeys = function(keyFetchToken, oldUnwrapBKey) {
     var self = this;
+
+    required(keyFetchToken, &#x27;keyFetchToken&#x27;);
+    required(oldUnwrapBKey, &#x27;oldUnwrapBKey&#x27;);
 
     return hawkCredentials(keyFetchToken, &#x27;keyFetchToken&#x27;,  3 * 32)
       .then(function(creds) {
@@ -503,6 +537,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   FxAccountClient.prototype.accountDevices = function(sessionToken) {
     var self = this;
 
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
@@ -523,6 +559,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   FxAccountClient.prototype.accountDestroy = function(email, password, options) {
     var self = this;
     options = options || {};
+
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
 
     return credentials.setup(email, password)
       .then(
@@ -553,6 +592,19 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
   };
 
   /**
+   * Gets the status of an account
+   *
+   * @method accountStatus
+   * @param {String} uid User account id
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountStatus = function(uid) {
+    required(uid, &#x27;uid&#x27;);
+
+    return this.request.send(&#x27;/account/status?uid=&#x27; + uid, &#x27;GET&#x27;);
+  };
+
+  /**
    * Destroys this session, by invalidating the sessionToken.
    *
    * @method sessionDestroy
@@ -561,6 +613,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.sessionDestroy = function(sessionToken) {
     var self = this;
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
 
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
@@ -577,6 +631,8 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.sessionStatus = function(sessionToken) {
     var self = this;
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
 
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
@@ -600,6 +656,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
       duration: duration
     };
 
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(publicKey, &#x27;publicKey&#x27;);
+    required(duration, &#x27;duration&#x27;);
+
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
       .then(function(creds) {
         return self.request.send(&#x27;/certificate/sign&#x27;, &#x27;POST&#x27;, creds, data);
@@ -617,6 +677,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype.passwordChange = function(email, oldPassword, newPassword) {
     var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(oldPassword, &#x27;old password&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
 
     return self._passwordChangeStart(email, oldPassword)
       .then(function (credentials) {
@@ -648,6 +712,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
     var self = this;
     options = options || {};
 
+    required(email, &#x27;email&#x27;);
+    required(oldPassword, &#x27;old password&#x27;);
+
     return credentials.setup(email, oldPassword)
       .then(function (oldCreds) {
         var data = {
@@ -675,6 +742,13 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
       });
   };
 
+  function checkCreds(creds) {
+    required(creds, &#x27;credentials&#x27;);
+    required(creds.oldUnwrapBKey, &#x27;credentials.oldUnwrapBKey&#x27;);
+    required(creds.keyFetchToken, &#x27;credentials.keyFetchToken&#x27;);
+    required(creds.passwordChangeToken, &#x27;credentials.passwordChangeToken&#x27;);
+  }
+
   /**
    * Second step to change the password.
    *
@@ -684,6 +758,7 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
    */
   FxAccountClient.prototype._passwordChangeKeys = function(oldCreds) {
+    checkCreds(oldCreds);
 
     return this.accountKeys(oldCreds.keyFetchToken, oldCreds.oldUnwrapBKey);
   };
@@ -700,6 +775,13 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    */
   FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
     var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
+    checkCreds(oldCreds);
+    required(keys, &#x27;keys&#x27;);
+    required(keys.kB, &#x27;keys.kB&#x27;);
+
     var p1 = credentials.setup(email, newPassword);
     var p2 = hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  2 * 32);
 
