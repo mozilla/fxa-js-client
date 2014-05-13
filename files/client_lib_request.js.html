@@ -119,6 +119,7 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
     this.baseUri = baseUri;
     this._localtimeOffsetMsec = options.localtimeOffsetMsec;
     this.xhr = xhr || XMLHttpRequest;
+    this.timeout = options.timeout || 30 * 1000;
   }
 
   /**
@@ -152,6 +153,8 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
       deferred.reject({ error: &#x27;Unknown error&#x27;, message: e.toString(), errno: 999 });
     }
 
+    xhr.timeout = this.timeout;
+
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         var result = xhr.responseText;
@@ -177,7 +180,11 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
         }
 
         if (typeof xhr.status === &#x27;undefined&#x27; || xhr.status !== 200) {
-          return deferred.reject(result);
+          if (result.length === 0) {
+            return deferred.reject({ error: &#x27;Timeout error&#x27;, errno: 999 });
+          } else {
+            return deferred.reject(result);
+          }
         }
 
         deferred.resolve(result);

@@ -383,7 +383,7 @@
         },
         {
             "file": "client/lib/request.js",
-            "line": 26,
+            "line": 27,
             "itemtype": "method",
             "name": "send",
             "params": [
