@@ -11,8 +11,7 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {
-/**
+}(this, function () {/**
  * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
@@ -1450,7 +1449,7 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
     var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
-    var payload;
+    var payload = null;
     var self = this;
     options = options || {};
 
@@ -2525,6 +2524,7 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
   return FxAccountClient;
 });
+
 
 
     //The modules for your project will be inlined above
