@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.19</em>
+            <em>API Docs for: 0.1.20</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -139,7 +139,7 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
     var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
-    var payload;
+    var payload = null;
     var self = this;
     options = options || {};
 
