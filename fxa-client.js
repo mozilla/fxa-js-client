@@ -11,8 +11,9 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {/**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+}(this, function () {
+/**
+ * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -29,7 +30,8 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice;
+        aps = [].slice,
+        jsSuffixRegExp = /\.js$/;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -44,7 +46,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap,
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -62,8 +64,15 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
+                name = name.split('/');
+                lastIndex = name.length - 1;
 
-                name = baseParts.concat(name.split("/"));
+                // Node .js allowance:
+                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                }
+
+                name = baseParts.concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -272,14 +281,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
+            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (typeof callback === 'function') {
-
+        if (callbackType === 'undefined' || callbackType === 'function') {
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -310,7 +319,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback.apply(defined[name], args);
+            ret = callback ? callback.apply(defined[name], args) : undefined;
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -345,6 +354,13 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
+            if (config.deps) {
+                req(config.deps, config.callback);
+            }
+            if (!callback) {
+                return;
+            }
+
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -389,11 +405,7 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        config = cfg;
-        if (config.deps) {
-            req(config.deps, config.callback);
-        }
-        return req;
+        return req(cfg);
     };
 
     /**
@@ -962,8 +974,6 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
  * Copyright 2013 Robert Katić
  * Released under the MIT license
  * https://github.com/rkatic/p/blob/master/LICENSE
- *
- * High-priority-tasks code-portion based on https://github.com/kriskowal/asap
  */
 ;(function( factory ){
 	// CommonJS
@@ -982,165 +992,88 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 	
 
 	var
-		isNodeJS = ot(typeof process) &&
-			({}).toString.call(process) === "[object process]",
-
-		hasSetImmediate = ot(typeof setImmediate),
-
 		head = { f: null, n: null }, tail = head,
-		flushing = false,
+		running = false,
 
-		requestFlush =
-			isNodeJS && requestFlushForNodeJS ||
-			makeRequestCallFromMutationObserver( flush ) ||
-			makeRequestCallFromTimer( flush ),
+		channel, // MessageChannel
+		requestTick, // --> requestTick( onTick, 0 )
 
-		pendingErrors = [],
-		requestErrorThrow = makeRequestCallFromTimer( throwFristError ),
-
-		wrapTask,
-		asapSafeTask,
-
-		domain,
+		// window or worker
+		wow = ot(typeof window) && window || ot(typeof worker) && worker,
 
 		call = ot.call,
 		apply = ot.apply;
+
+	function onTick() {
+		while ( head.n ) {
+			head = head.n;
+			var f = head.f;
+			head.f = null;
+			f();
+		}
+		running = false;
+	}
+
+	var runLater = function( f ) {
+		tail = tail.n = { f: f, n: null };
+		if ( !running ) {
+			running = true;
+			requestTick( onTick, 0 );
+		}
+	};
 
 	function ot( type ) {
 		return type === "object" || type === "function";
 	}
 
-	function throwFristError() {
-		if ( pendingErrors.length ) {
-			throw pendingErrors.shift();
-		}
-	}
+	if ( ot(typeof process) && process && process.nextTick ) {
+		requestTick = process.nextTick;
 
-	function flush() {
-		while ( head.n ) {
-			head = head.n;
-			var f = head.f;
-			head.f = null;
-			f.call();
-		}
-		flushing = false;
-	}
-
-	var runLater = function( f ) {
-		tail = tail.n = { f: f, n: null };
-		if ( !flushing ) {
-			flushing = true;
-			requestFlush();
-		}
-	};
-
-	function requestFlushForNodeJS() {
-		var currentDomain = process.domain;
-
-		if ( currentDomain ) {
-			if ( !domain ) domain = (1,require)("domain");
-			domain.active = process.domain = null;
-		}
-
-		if ( flushing && hasSetImmediate ) {
-			setImmediate( flush );
-
-		} else {
-			process.nextTick( flush );
-		}
-
-		if ( currentDomain ) {
-			domain.active = process.domain = currentDomain;
-		}
-	}
-
-	function makeRequestCallFromMutationObserver( callback ) {
-		var observer =
-			ot(typeof MutationObserver) ? new MutationObserver( callback ) :
-			ot(typeof WebKitMutationObserver) ? new WebKitMutationObserver( callback ) :
-			null;
-
-		if ( !observer ) {
-			return null;
-		}
-
-		var toggle = 1;
-		var node = document.createTextNode("");
-		observer.observe( node, {characterData: true} );
-
-		return function() {
-			toggle = -toggle;
-			node.data = toggle;
-		};
-	}
-
-	function makeRequestCallFromTimer( callback ) {
-		return function() {
-			var timeoutHandle = setTimeout( handleTimer, 0 );
-			var intervalHandle = setInterval( handleTimer, 50 );
-
-			function handleTimer() {
-				clearTimeout( timeoutHandle );
-				clearInterval( intervalHandle );
-				callback();
-			}
-		};
-	}
-
-	if ( isNodeJS ) {
-		wrapTask = function( task ) {
-			var d = process.domain;
-
-			return function() {
-				if ( d ) {
-					if ( d._disposed ) return;
-					d.enter();
-				}
-
-				try {
-					task.call();
-
-				} catch ( e ) {
-					requestFlush();
-					throw e;
-				}
-
-				if ( d ) {
-					d.exit();
-				}
+	} else if ( ot(typeof setImmediate) ) {
+		requestTick = wow ?
+			function( cb ) {
+				wow.setImmediate( cb );
+			} :
+			function( cb ) {
+				setImmediate( cb );
 			};
-		};
 
-		asapSafeTask = function( task ) {
-			var d = process.domain;
-			runLater(!d ? task : function() {
-				if ( !d._disposed ) {
-					d.enter();
-					task.call();
-					d.exit();
-				}
-			});
-		}
+	} else if ( ot(typeof MessageChannel) ) {
+		channel = new MessageChannel();
+		channel.port1.onmessage = onTick;
+		requestTick = function() {
+			channel.port2.postMessage(0);
+		};
 
 	} else {
-		wrapTask = function( task ) {
-			return function() {
+		requestTick = setTimeout;
+
+		if ( wow && ot(typeof Image) && Image ) {
+			(function(){
+				var c = 0;
+
+				var requestTickViaImage = function( cb ) {
+					var img = new Image();
+					img.onerror = cb;
+					img.src = 'data:image/png,';
+				};
+
+				// Before using it, test if it works properly, with async dispatching.
 				try {
-					task.call();
+					requestTickViaImage(function() {
+						if ( --c === 0 ) {
+							requestTick = requestTickViaImage;
+						}
+					});
+					++c;
+				} catch (e) {}
 
-				} catch ( e ) {
-					pendingErrors.push( e );
-					requestErrorThrow();
-				}
-			};
+				// Also use it only if faster then setTimeout.
+				c && setTimeout(function() {
+					c = 0;
+				}, 0);
+			})();
 		}
-
-		asapSafeTask = runLater;
-	}
-
-
-	function asap( task ) {
-		runLater( wrapTask(task) );
 	}
 
 	//__________________________________________________________________________
@@ -1155,14 +1088,18 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 	}
 
 	function reportError( error ) {
-		asap(function() {
+		try {
 			if ( P.onerror ) {
-				P.onerror.call( null, error );
-
+				P.onerror( error );
 			} else {
 				throw error;
 			}
-		});
+
+		} catch ( e ) {
+			setTimeout(function() {
+				throw e;
+			}, 0);
+		}
 	}
 
 	var PENDING = 0;
@@ -1175,7 +1112,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 			Resolve( new Promise(), x );
 	}
 
-	function Settle( p, state, value, domain ) {
+	function Settle( p, state, value ) {
 		if ( p._state ) {
 			return p;
 		}
@@ -1183,14 +1120,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 		p._state = state;
 		p._value = value;
 
-		if ( domain ) {
-			p._domain = domain;
-
-		} else if ( isNodeJS && state === REJECTED ) {
-			p._domain = process.domain;
-		}
-
-		if ( p._pending.length ) {
+		if ( p._pending.length > 0 ) {
 			forEach( p._pending, runLater );
 		}
 		p._pending = null;
@@ -1200,10 +1130,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 
 	function OnSettled( p, f ) {
 		p._pending.push( f );
-	}
-
-	function Propagate( p, p2 ) {
-		Settle( p2, p._state, p._value, p._domain );
+		//p._tail = p._tail.n = { f: f, n: null };
 	}
 
 	function Resolve( p, x ) {
@@ -1216,11 +1143,11 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 				Settle( p, REJECTED, new TypeError("You can't resolve a promise with itself") );
 
 			} else if ( x._state ) {
-				Propagate( x, p );
+				Settle( p, x._state, x._value );
 
 			} else {
 				OnSettled(x, function() {
-					Propagate( x, p );
+					Settle( p, x._state, x._value );
 				});
 			}
 
@@ -1228,7 +1155,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 			Settle( p, FULFILLED, x );
 
 		} else {
-			asapSafeTask(function() {
+			runLater(function() {
 				var r = resolverFor( p );
 
 				try {
@@ -1285,7 +1212,6 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 	function Promise() {
 		this._state = 0;
 		this._value = void 0;
-		this._domain = null;
 		this._pending = [];
 	}
 
@@ -1296,37 +1222,22 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 		var p = this;
 		var p2 = new Promise();
 
-		var thenDomain = isNodeJS && process.domain;
-
 		function onSettled() {
-			var func = p._state === FULFILLED ? cb : eb;
-			if ( !func ) {
-				Propagate( p, p2 );
-				return;
-			}
+			var x, func = p._state === FULFILLED ? cb : eb;
 
-			var x, catched = false;
-			var d = p._domain || thenDomain;
+			if ( func !== null ) {
+				try {
+					x = func( p._value );
 
-			if ( d ) {
-				if ( d._disposed ) return;
-				d.enter();
-			}
+				} catch ( e ) {
+					Settle( p2, REJECTED, e );
+					return;
+				}
 
-			try {
-				x = func( p._value );
-
-			} catch ( e ) {
-				catched = true;
-				Settle( p2, REJECTED, e );
-			}
-
-			if ( !catched ) {
 				Resolve( p2, x );
-			}
 
-			if ( d ) {
-				d.exit();
+			} else {
+				Settle( p2, p._state, p._value );
 			}
 		}
 
@@ -1367,7 +1278,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 		var p2 = new Promise();
 
 		if ( p._state !== PENDING ) {
-			Propagate( p, p2 );
+			Settle( p2, p._state, p._value );
 
 		} else {
 			var timeoutId = setTimeout(function() {
@@ -1377,7 +1288,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 
 			OnSettled(p, function() {
 				clearTimeout( timeoutId );
-				Propagate( p, p2 );
+				Settle( p2, p._state, p._value );
 			});
 		}
 
@@ -1481,7 +1392,18 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 
 	P.onerror = null;
 
-	P.nextTick = asap;
+	P.nextTick = function( f ) {
+		runLater(function() {
+			try {
+				f();
+
+			} catch ( ex ) {
+				setTimeout(function() {
+					throw ex;
+				}, 0);
+			}
+		});
+	};
 
 	return P;
 });
@@ -1948,6 +1870,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
    *   set email to be verified if possible
    *   @param {String} [options.preVerifyToken]
    *   Opaque alphanumeric token that can be used to pre-verify a user.
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -1988,6 +1914,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
             if (options.preVerifyToken) {
               data.preVerifyToken = options.preVerifyToken;
+            }
+
+            if (options.resume) {
+              data.resume = options.resume;
             }
 
             if (options.keys) {
@@ -2101,6 +2031,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2119,6 +2053,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
@@ -2145,6 +2083,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2164,6 +2106,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
@@ -2188,6 +2134,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2209,6 +2159,10 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
@@ -2625,7 +2579,6 @@ define('client/FxAccountClient',['./lib/request', 'sjcl', 'p', './lib/credential
 
   return FxAccountClient;
 });
-
 
 
     //The modules for your project will be inlined above
