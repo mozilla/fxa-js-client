@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.24</em>
+            <em>API Docs for: 0.1.25</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -148,6 +148,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    *   set email to be verified if possible
    *   @param {String} [options.preVerifyToken]
    *   Opaque alphanumeric token that can be used to pre-verify a user.
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -188,6 +192,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
 
             if (options.preVerifyToken) {
               data.preVerifyToken = options.preVerifyToken;
+            }
+
+            if (options.resume) {
+              data.resume = options.resume;
             }
 
             if (options.keys) {
@@ -301,6 +309,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -319,6 +331,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
@@ -345,6 +361,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -364,6 +384,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
@@ -388,6 +412,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -409,6 +437,10 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
 
       if (options.redirectTo) {
         data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
       }
 
       if (options.lang) {
