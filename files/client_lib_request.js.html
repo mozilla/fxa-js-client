@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.25</em>
+            <em>API Docs for: 0.1.26</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -183,7 +183,7 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
           if (result.length === 0) {
             return deferred.reject({ error: &#x27;Timeout error&#x27;, errno: 999 });
           } else {
-            return deferred.reject(result);
+            return deferred.reject({ error: &#x27;Unknown error&#x27;, message: result, errno: 999, code: xhr.status });
           }
         }
 

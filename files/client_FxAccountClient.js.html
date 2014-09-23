@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.25</em>
+            <em>API Docs for: 0.1.26</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -99,8 +99,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/credentials&#x27;, &#x27;./lib/hawkCredentials&#x27;, &#x27;./lib/errors&#x27;],
-  function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
+define([
+  &#x27;./lib/request&#x27;,
+  &#x27;sjcl&#x27;,
+  &#x27;p&#x27;,
+  &#x27;./lib/credentials&#x27;,
+  &#x27;./lib/hawkCredentials&#x27;,
+  &#x27;./lib/errors&#x27;
+], function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
   &#x27;use strict&#x27;;
 
   var VERSION = &#x27;v1&#x27;;
@@ -256,9 +262,9 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
               },
               function(error) {
                 if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
-                    options.skipCaseError = true;
+                  options.skipCaseError = true;
 
-                    return self.signIn(error.email, password, options);
+                  return self.signIn(error.email, password, options);
                 } else {
                   throw error;
                 }
@@ -555,7 +561,7 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
             function(payload) {
 
               return credentials.unbundleKeyFetchResponse(bundleKey, payload.bundle);
-              });
+            });
       })
       .then(function(keys) {
         return {
@@ -734,7 +740,7 @@ define([&#x27;./lib/request&#x27;, &#x27;sjcl&#x27;, &#x27;p&#x27;, &#x27;./lib/
           .then(function (keys) {
 
             return self._passwordChangeFinish(email, newPassword, oldCreds, keys);
-        });
+          });
       });
 
   };
