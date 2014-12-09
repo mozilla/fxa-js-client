@@ -2015,7 +2015,15 @@ define('client/FxAccountClient',[
             }
           }
 
-          return self.request.send(endpoint, 'POST', null, data, requestOpts);
+          return self.request.send(endpoint, 'POST', null, data, requestOpts)
+            .then(
+              function(accountData) {
+                if (options && options.keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              }
+            );
         }
       );
   };
@@ -2495,7 +2503,7 @@ define('client/FxAccountClient',[
    * @method certificateSign
    * @param {String} sessionToken User session token
    * @param {Object} publicKey The key to sign
-   * @param {int} duration Time interval from now when the certificate will expire in seconds
+   * @param {int} duration Time interval from now when the certificate will expire in milliseconds
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
