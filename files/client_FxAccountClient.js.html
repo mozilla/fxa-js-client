@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.26</em>
+            <em>API Docs for: 0.1.27</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -215,7 +215,15 @@ define([
             }
           }
 
-          return self.request.send(endpoint, &#x27;POST&#x27;, null, data, requestOpts);
+          return self.request.send(endpoint, &#x27;POST&#x27;, null, data, requestOpts)
+            .then(
+              function(accountData) {
+                if (options &amp;&amp; options.keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              }
+            );
         }
       );
   };
@@ -695,7 +703,7 @@ define([
    * @method certificateSign
    * @param {String} sessionToken User session token
    * @param {Object} publicKey The key to sign
-   * @param {int} duration Time interval from now when the certificate will expire in seconds
+   * @param {int} duration Time interval from now when the certificate will expire in milliseconds
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
