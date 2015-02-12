@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.27"
+        "version": "0.1.28"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1121,6 +1121,68 @@
                 "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
                 "type": "Promise"
             },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 774,
+            "description": "Lock an account - only available in a testing environment.",
+            "itemtype": "method",
+            "name": "accountLock",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "password",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 799,
+            "description": "Send an account unlock code",
+            "itemtype": "method",
+            "name": "accountUnlockResendCode",
+            "params": [
+                {
+                    "name": "email",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 829,
+            "description": "Verify an account unlock code",
+            "itemtype": "method",
+            "name": "accountUnlockVerifyCode",
+            "params": [
+                {
+                    "name": "uid",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "code",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
             "class": "FxAccountClient"
         }
     ],
