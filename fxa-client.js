@@ -11,8 +11,9 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {/**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+}(this, function () {
+/**
+ * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -395,11 +396,6 @@ var requirejs, require, define;
         }
         return req;
     };
-
-    /**
-     * Expose module registry for debugging and tooling
-     */
-    requirejs._defined = defined;
 
     define = function (name, deps, callback) {
 
@@ -1946,6 +1942,8 @@ define('client/FxAccountClient',[
    * @param {String} email Email input
    * @param {String} password Password input
    * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If `true`, calls the API with `?keys=true` to get the keyFetchToken
    *   @param {String} [options.service]
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
@@ -2037,6 +2035,11 @@ define('client/FxAccountClient',[
    *   If `true`, calls the API with `?keys=true` to get the keyFetchToken
    *   @param {Boolean} [options.skipCaseError]
    *   If `true`, the request will skip the incorrect case error
+   *   @param {String} [options.service]
+   *   Service being signed into
+   *   @param {String} [options.reason]
+   *   Reason for sign in. Can be one of: `signin`, `password_check`,
+   *   `password_change`, `password_reset`, `account_unlock`.
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
@@ -2051,13 +2054,21 @@ define('client/FxAccountClient',[
         function (result) {
           var endpoint = '/account/login';
 
+          if (options.keys) {
+            endpoint += '?keys=true';
+          }
+
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (options.keys) {
-            endpoint += '?keys=true';
+          if (options.service) {
+            data.service = options.service;
+          }
+
+          if (options.reason) {
+            data.reason = options.reason;
           }
 
           return self.request.send(endpoint, 'POST', null, data)
@@ -2381,24 +2392,6 @@ define('client/FxAccountClient',[
           ),
           kA: keys.kA
         };
-      });
-  };
-
-  /**
-   * Gets the collection of devices currently authenticated and syncing for the user.
-   *
-   * @method accountDevices
-   * @param {String} sessionToken User session token
-   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
-   */
-  FxAccountClient.prototype.accountDevices = function(sessionToken) {
-    var self = this;
-
-    required(sessionToken, 'sessionToken');
-
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
-      .then(function(creds) {
-        return self.request.send('/account/devices', 'GET', creds);
       });
   };
 
@@ -2743,7 +2736,6 @@ define('client/FxAccountClient',[
 
   return FxAccountClient;
 });
-
 
 
     //The modules for your project will be inlined above
