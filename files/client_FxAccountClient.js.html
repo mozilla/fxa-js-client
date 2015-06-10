@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.28</em>
+            <em>API Docs for: 0.1.29</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -146,6 +146,8 @@ define([
    * @param {String} email Email input
    * @param {String} password Password input
    * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
    *   @param {String} [options.service]
    *   Opaque alphanumeric token to be included in verification links
    *   @param {String} [options.redirectTo]
@@ -237,6 +239,11 @@ define([
    *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
    *   @param {Boolean} [options.skipCaseError]
    *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   *   @param {String} [options.service]
+   *   Service being signed into
+   *   @param {String} [options.reason]
+   *   Reason for sign in. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
+   *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;, &#x60;account_unlock&#x60;.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
@@ -251,13 +258,21 @@ define([
         function (result) {
           var endpoint = &#x27;/account/login&#x27;;
 
+          if (options.keys) {
+            endpoint += &#x27;?keys=true&#x27;;
+          }
+
           var data = {
             email: result.emailUTF8,
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (options.keys) {
-            endpoint += &#x27;?keys=true&#x27;;
+          if (options.service) {
+            data.service = options.service;
+          }
+
+          if (options.reason) {
+            data.reason = options.reason;
           }
 
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
@@ -581,24 +596,6 @@ define([
           ),
           kA: keys.kA
         };
-      });
-  };
-
-  /**
-   * Gets the collection of devices currently authenticated and syncing for the user.
-   *
-   * @method accountDevices
-   * @param {String} sessionToken User session token
-   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
-   */
-  FxAccountClient.prototype.accountDevices = function(sessionToken) {
-    var self = this;
-
-    required(sessionToken, &#x27;sessionToken&#x27;);
-
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  2 * 32)
-      .then(function(creds) {
-        return self.request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 
