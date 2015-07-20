@@ -11,8 +11,7 @@
         //result to a property on the global.
         root.FxAccountClient = factory();
     }
-}(this, function () {
-/**
+}(this, function () {/**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
@@ -420,7 +419,7 @@ var requirejs, require, define;
 
 define("components/almond/almond", function(){});
 
-define('sjcl',[], function () {var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
+define('sjcl',[], function () {"use strict";var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
 "undefined"!==typeof module&&module.exports&&(module.exports=sjcl);
 sjcl.cipher.aes=function(a){this.b[0][0][0]||this.g();var b,c,d,e,g=this.b[0][4],f=this.b[1];b=a.length;var h=1;if(4!==b&&6!==b&&8!==b)throw new sjcl.exception.invalid("invalid aes key size");this.e=[d=a.slice(0),e=[]];for(a=b;a<4*b+28;a++){c=d[a-1];if(0===a%b||8===b&&4===a%b)c=g[c>>>24]<<24^g[c>>16&255]<<16^g[c>>8&255]<<8^g[c&255],0===a%b&&(c=c<<8^c>>>24^h<<24,h=h<<1^283*(h>>7));d[a]=d[a-b]^c}for(b=0;a;b++,a--)c=d[b&3?a:a-4],e[b]=4>=a||4>b?c:f[0][g[c>>>24]]^f[1][g[c>>16&255]]^f[2][g[c>>8&255]]^f[3][g[c&
 255]]};
@@ -446,7 +445,7 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/hawk',['sjcl'], function (sjcl) {
-  
+  'use strict';
 
   /*
    HTTP Hawk Authentication Scheme
@@ -491,7 +490,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
      */
 
     header: function (uri, method, options) {
-
+      /*eslint complexity: [2, 21] */
       var result = {
         field: '',
         artifacts: {}
@@ -975,7 +974,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 		P = factory();
 	}
 })(function() {
-	
+	"use strict";
 
 	var
 		isNodeJS = ot(typeof process) &&
@@ -1496,7 +1495,7 @@ define('client/lib/errors',[], function () {
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRORS) {
-  
+  'use strict';
   /* global XMLHttpRequest */
 
   /**
@@ -1532,6 +1531,7 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
+    /*eslint complexity: [2, 8] */
     var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
@@ -1620,7 +1620,7 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
-  
+  'use strict';
 
   /**
    * hkdf - The HMAC-based Key Derivation Function
@@ -1674,7 +1674,7 @@ define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
-  
+  'use strict';
 
   /**
    * @class pbkdf2
@@ -1701,7 +1701,7 @@ define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/credentials',['./request', 'sjcl', 'p', './hkdf', './pbkdf2'], function (Request, sjcl, P, hkdf, pbkdf2) {
-  
+  'use strict';
 
   // Key wrapping and stretching configuration.
   var NAMESPACE = 'identity.mozilla.com/picl/v1/';
@@ -1857,7 +1857,7 @@ define('client/lib/credentials',['./request', 'sjcl', 'p', './hkdf', './pbkdf2']
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/hawkCredentials',['sjcl', './hkdf'], function (sjcl, hkdf) {
-  
+  'use strict';
 
   var PREFIX_NAME = 'identity.mozilla.com/picl/v1/';
   var bitSlice = sjcl.bitArray.bitSlice;
@@ -1903,7 +1903,7 @@ define('client/FxAccountClient',[
   './lib/hawkCredentials',
   './lib/errors'
 ], function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
-  
+  'use strict';
 
   var VERSION = 'v1';
   var uriVersionRegExp = new RegExp('/' + VERSION + '$');
@@ -1921,13 +1921,23 @@ define('client/FxAccountClient',[
    * @param {Object} config Configuration
    */
   function FxAccountClient(uri, config) {
+    if (! uri && ! config) {
+      throw new Error('Firefox Accounts auth server endpoint or configuration object required.');
+    }
+
     if (typeof uri !== 'string') {
       config = uri || {};
       uri = config.uri;
     }
+
     if (typeof config === 'undefined') {
       config = {};
     }
+
+    if (! uri) {
+      throw new Error('FxA auth server uri not set.');
+    }
+
     if (!uriVersionRegExp.test(uri)) {
       uri = uri + '/' + VERSION;
     }
@@ -1969,6 +1979,7 @@ define('client/FxAccountClient',[
     return credentials.setup(email, password)
       .then(
         function (result) {
+          /*eslint complexity: [2, 9] */
           var endpoint = '/account/create';
           var data = {
             email: result.emailUTF8,
@@ -2736,6 +2747,7 @@ define('client/FxAccountClient',[
 
   return FxAccountClient;
 });
+
 
 
     //The modules for your project will be inlined above
