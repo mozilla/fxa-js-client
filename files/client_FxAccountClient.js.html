@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.29</em>
+            <em>API Docs for: 0.1.30</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -125,13 +125,23 @@ define([
    * @param {Object} config Configuration
    */
   function FxAccountClient(uri, config) {
+    if (! uri &amp;&amp; ! config) {
+      throw new Error(&#x27;Firefox Accounts auth server endpoint or configuration object required.&#x27;);
+    }
+
     if (typeof uri !== &#x27;string&#x27;) {
       config = uri || {};
       uri = config.uri;
     }
+
     if (typeof config === &#x27;undefined&#x27;) {
       config = {};
     }
+
+    if (! uri) {
+      throw new Error(&#x27;FxA auth server uri not set.&#x27;);
+    }
+
     if (!uriVersionRegExp.test(uri)) {
       uri = uri + &#x27;/&#x27; + VERSION;
     }
@@ -173,6 +183,7 @@ define([
     return credentials.setup(email, password)
       .then(
         function (result) {
+          /*eslint complexity: [2, 9] */
           var endpoint = &#x27;/account/create&#x27;;
           var data = {
             email: result.emailUTF8,

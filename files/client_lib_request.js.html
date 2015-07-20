@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.29</em>
+            <em>API Docs for: 0.1.30</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -136,6 +136,7 @@ define([&#x27;./hawk&#x27;, &#x27;p&#x27;, &#x27;./errors&#x27;], function (hawk
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
+    /*eslint complexity: [2, 8] */
     var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
