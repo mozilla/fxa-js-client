@@ -454,7 +454,7 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
    */
 
 
-// Declare namespace
+  // Declare namespace
 
   var hawk = {};
 
@@ -1546,7 +1546,7 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
     try {
       xhr.open(method, uri);
     } catch (e) {
-      deferred.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
+      return P.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
     }
 
     xhr.timeout = this.timeout;
@@ -1907,6 +1907,7 @@ define('client/FxAccountClient',[
 
   var VERSION = 'v1';
   var uriVersionRegExp = new RegExp('/' + VERSION + '$');
+  var HKDF_SIZE = 2 * 32;
 
   function required(val, name) {
     if (!val) {
@@ -1979,7 +1980,7 @@ define('client/FxAccountClient',[
     return credentials.setup(email, password)
       .then(
         function (result) {
-          /*eslint complexity: [2, 9] */
+          /*eslint complexity: [2, 12] */
           var endpoint = '/account/create';
           var data = {
             email: result.emailUTF8,
@@ -2129,7 +2130,7 @@ define('client/FxAccountClient',[
     var self = this;
     required(sessionToken, 'sessionToken');
 
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/recovery_email/status', 'GET', creds);
       });
@@ -2180,7 +2181,7 @@ define('client/FxAccountClient',[
       }
     }
 
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/recovery_email/resend_code', 'POST', creds, data, requestOpts);
       });
@@ -2286,7 +2287,7 @@ define('client/FxAccountClient',[
       }
     }
 
-    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
+    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/password/forgot/resend_code', 'POST', creds, data, requestOpts);
       });
@@ -2307,7 +2308,7 @@ define('client/FxAccountClient',[
     required(code, 'reset code');
     required(passwordForgotToken, 'passwordForgotToken');
 
-    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
+    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/password/forgot/verify_code', 'POST', creds, {
           code: code
@@ -2328,7 +2329,7 @@ define('client/FxAccountClient',[
 
     required(passwordForgotToken, 'passwordForgotToken');
 
-    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  2 * 32)
+    return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/password/forgot/status', 'GET', creds);
       });
@@ -2357,7 +2358,7 @@ define('client/FxAccountClient',[
         function (result) {
           authPW = sjcl.codec.hex.fromBits(result.authPW);
 
-          return hawkCredentials(accountResetToken, 'accountResetToken',  2 * 32);
+          return hawkCredentials(accountResetToken, 'accountResetToken',  HKDF_SIZE);
         }
       ).then(
         function (creds) {
@@ -2477,7 +2478,7 @@ define('client/FxAccountClient',[
 
     required(sessionToken, 'sessionToken');
 
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/session/destroy', 'POST', creds);
       });
@@ -2495,7 +2496,7 @@ define('client/FxAccountClient',[
 
     required(sessionToken, 'sessionToken');
 
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/session/status', 'GET', creds);
       });
@@ -2521,7 +2522,7 @@ define('client/FxAccountClient',[
     required(publicKey, 'publicKey');
     required(duration, 'duration');
 
-    return hawkCredentials(sessionToken, 'sessionToken',  2 * 32)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return self.request.send('/certificate/sign', 'POST', creds, data);
       });
@@ -2644,7 +2645,7 @@ define('client/FxAccountClient',[
     required(keys.kB, 'keys.kB');
 
     var p1 = credentials.setup(email, newPassword);
-    var p2 = hawkCredentials(oldCreds.passwordChangeToken, 'passwordChangeToken',  2 * 32);
+    var p2 = hawkCredentials(oldCreds.passwordChangeToken, 'passwordChangeToken',  HKDF_SIZE);
 
     return P.all([p1, p2])
       .spread(function(newCreds, hawkCreds) {
@@ -2744,6 +2745,119 @@ define('client/FxAccountClient',[
       code: code
     });
   };
+
+  /**
+   * Add a new device
+   *
+   * @method deviceRegister
+   * @param {String} sessionToken User session token
+   * @param {String} deviceName Name of device
+   * @param {String} deviceType Type of device (mobile|desktop)
+   * @param {Object} [options={}] Options
+   *   @param {string} [options.deviceCallback] Device's push endpoint.
+   *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.deviceRegister = function (sessionToken, deviceName, deviceType, options) {
+    options = options || {};
+
+    required(sessionToken, 'sessionToken');
+    required(deviceName, 'deviceName');
+    required(deviceType, 'deviceType');
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'deviceRegister',  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          name: deviceName,
+          type: deviceType
+        };
+
+        if (options.deviceCallback && options.devicePublicKey) {
+          data.pushCallback = options.deviceCallback;
+          data.pushPublicKey = options.devicePublicKey;
+        }
+
+        return request.send('/account/device', 'POST', creds, data);
+      });
+  };
+
+  /**
+   * Update the name of an existing device
+   *
+   * @method deviceRegister
+   * @param {String} sessionToken User session token
+   * @param {String} deviceId User-unique identifier of device
+   * @param {String} deviceName Name of device
+   * @param {Object} [options={}] Options
+   *   @param {string} [options.deviceCallback] Device's push endpoint.
+   *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.deviceUpdate = function (sessionToken, deviceId, deviceName, options) {
+    options = options || {};
+
+    required(sessionToken, 'sessionToken');
+    required(deviceId, 'deviceId');
+    required(deviceName, 'deviceName');
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'deviceUpdate',  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          id: deviceId,
+          name: deviceName
+        };
+
+        if (options.deviceCallback && options.devicePublicKey) {
+          data.pushCallback = options.deviceCallback;
+          data.pushPublicKey = options.devicePublicKey;
+        }
+
+        return request.send('/account/device', 'POST', creds, data);
+      });
+  };
+
+  /**
+   * Unregister an existing device
+   *
+   * @method deviceDestroy
+   * @param {String} sessionToken Session token obtained from signIn
+   * @param {String} deviceId User-unique identifier of device
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.deviceDestroy = function (sessionToken, deviceId) {
+    required(sessionToken, 'sessionToken');
+    required(deviceId, 'deviceId');
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'deviceDestroy',  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          id: deviceId
+        };
+
+        return request.send('/account/device/destroy', 'POST', creds, data);
+      });
+  };
+
+  /**
+   * Get a list of all devices for a user
+   *
+   * @method deviceList
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.deviceList = function (sessionToken) {
+    required(sessionToken, 'sessionToken');
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'devices',  HKDF_SIZE)
+      .then(function(creds) {
+        return request.send('/account/devices', 'GET', creds);
+      });
+  };
+
 
   return FxAccountClient;
 });
