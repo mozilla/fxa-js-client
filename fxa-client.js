@@ -2766,7 +2766,7 @@ define('client/FxAccountClient',[
     required(deviceType, 'deviceType');
 
     var request = this.request;
-    return hawkCredentials(sessionToken, 'deviceRegister',  HKDF_SIZE)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           name: deviceName,
@@ -2802,7 +2802,7 @@ define('client/FxAccountClient',[
     required(deviceName, 'deviceName');
 
     var request = this.request;
-    return hawkCredentials(sessionToken, 'deviceUpdate',  HKDF_SIZE)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           id: deviceId,
@@ -2831,7 +2831,7 @@ define('client/FxAccountClient',[
     required(deviceId, 'deviceId');
 
     var request = this.request;
-    return hawkCredentials(sessionToken, 'deviceDestroy',  HKDF_SIZE)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           id: deviceId
@@ -2852,7 +2852,7 @@ define('client/FxAccountClient',[
     required(sessionToken, 'sessionToken');
 
     var request = this.request;
-    return hawkCredentials(sessionToken, 'devices',  HKDF_SIZE)
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
         return request.send('/account/devices', 'GET', creds);
       });
