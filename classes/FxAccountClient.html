@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <link rel="icon" href="../assets/favicon.ico">
     <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-            
-                <h1><img src="../assets/css/logo.png" title="fxa-js-client"></h1>
-            
+                <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.30</em>
+            <em>API Docs for: 0.1.31</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,483 +25,321 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-    <h2 class="off-left">APIs</h2>
-    <div id="api-tabview" class="tabview">
-        <ul class="tabs">
-            <li><a href="#api-classes">Classes</a></li>
-            <li><a href="#api-modules">Modules</a></li>
-        </ul>
-
-        <div id="api-tabview-filter">
-            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-        </div>
-
-        <div id="api-tabview-panel">
-            <ul id="api-classes" class="apis classes">
-            
-                <li><a href="../classes/credentials.html">credentials</a></li>
-            
-                <li><a href="../classes/FxAccountClient.html">FxAccountClient</a></li>
-            
-                <li><a href="../classes/hawkCredentials.html">hawkCredentials</a></li>
-            
-                <li><a href="../classes/hkdf.html">hkdf</a></li>
-            
-                <li><a href="../classes/pbkdf2.html">pbkdf2</a></li>
-            
-                <li><a href="../classes/Request.html">Request</a></li>
-            
-            </ul>
-
-            <ul id="api-modules" class="apis modules">
-            
-            </ul>
-        </div>
-    </div>
-</div>
-
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/credentials.html">credentials</a></li>
+                                <li><a href="../classes/FxAccountClient.html">FxAccountClient</a></li>
+                                <li><a href="../classes/hawkCredentials.html">hawkCredentials</a></li>
+                                <li><a href="../classes/hkdf.html">hkdf</a></li>
+                                <li><a href="../classes/pbkdf2.html">pbkdf2</a></li>
+                                <li><a href="../classes/Request.html">Request</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="yui3-u-3-4">
                 <div id="api-options">
-        Show:
-        <label for="api-show-inherited">
-            <input type="checkbox" id="api-show-inherited" checked>
-            Inherited
-        </label>
-
-        <label for="api-show-protected">
-            <input type="checkbox" id="api-show-protected">
-            Protected
-        </label>
-
-        <label for="api-show-private">
-            <input type="checkbox" id="api-show-private">
-            Private
-        </label>
-        <label for="api-show-deprecated">
-            <input type="checkbox" id="api-show-deprecated">
-            Deprecated
-        </label>
-
-    </div>
-
-
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>FxAccountClient Class</h1>
+<h1>FxAccountClient Class</h1>
 <div class="box meta">
-    
 
-    
 
-    
         <div class="foundat">
-            Defined in: <a href="../files/client_FxAccountClient.js.html#l23"><code>client&#x2F;FxAccountClient.js:23</code></a>
+            Defined in: <a href="../files/client_FxAccountClient.js.html#l24"><code>client&#x2F;FxAccountClient.js:24</code></a>
         </div>
-    
 
-    
 
-    
 </div>
-
 
 
 <div class="box intro">
     
 </div>
 
-
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_FxAccountClient" class="method item">
+<div id="method_FxAccountClient" class="method item">
     <h3 class="name"><code>FxAccountClient</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>uri</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>config</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l23"><code>client&#x2F;FxAccountClient.js:23</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l24"><code>client&#x2F;FxAccountClient.js:24</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">uri</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Auth Server URI</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">config</code>
                         <span class="type">Object</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Configuration</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
     </div>
-
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-        
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-        
-        
     </ul>
 
     <div>
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Item Index</h2>
 
-            
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                        
                             <li class="index-item method private">
                                 <a href="#method__passwordChangeFinish">_passwordChangeFinish</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method private">
                                 <a href="#method__passwordChangeKeys">_passwordChangeKeys</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountDestroy">accountDestroy</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountKeys">accountKeys</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountLock">accountLock</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountReset">accountReset</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountStatus">accountStatus</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountUnlockResendCode">accountUnlockResendCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_accountUnlockVerifyCode">accountUnlockVerifyCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_certificateSign">certificateSign</a>
 
-                                
-                                
                             </li>
-                        
+                            <li class="index-item method">
+                                <a href="#method_deviceDestroy">deviceDestroy</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_deviceList">deviceList</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_deviceRegister">deviceRegister</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_deviceRegister">deviceRegister</a>
+
+                            </li>
                             <li class="index-item method">
                                 <a href="#method_getRandomBytes">getRandomBytes</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_passwordChange">passwordChange</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method private">
                                 <a href="#method_passwordChangeStart">passwordChangeStart</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_passwordForgotResendCode">passwordForgotResendCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_passwordForgotSendCode">passwordForgotSendCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_passwordForgotStatus">passwordForgotStatus</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_passwordForgotVerifyCode">passwordForgotVerifyCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_recoveryEmailResendCode">recoveryEmailResendCode</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_recoveryEmailStatus">recoveryEmailStatus</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_sessionDestroy">sessionDestroy</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_sessionStatus">sessionStatus</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_signIn">signIn</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_signUp">signUp</a>
 
-                                
-                                
                             </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_verifyCode">verifyCode</a>
 
-                                
-                                
                             </li>
-                        
                     </ul>
                 </div>
-            
 
-            
 
-            
 
-            
         </div>
 
-        
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-                
-                    <div id="method__passwordChangeFinish" class="method item private">
+<div id="method__passwordChangeFinish" class="method item private">
     <h3 class="name"><code>_passwordChangeFinish</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>newPassword</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>oldCreds</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
         <span class="flag private">private</span>
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l733"><code>client&#x2F;FxAccountClient.js:733</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l734"><code>client&#x2F;FxAccountClient.js:734</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -511,138 +347,86 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">newPassword</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">oldCreds</code>
                         <span class="type">Object</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>This object should consists of <code>oldUnwrapBKey</code>, <code>keyFetchToken</code> and <code>passwordChangeToken</code>.</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON of <code>xhr.responseText</code></p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method__passwordChangeKeys" class="method item private">
+<div id="method__passwordChangeKeys" class="method item private">
     <h3 class="name"><code>_passwordChangeKeys</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>oldCreds</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
         <span class="flag private">private</span>
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l719"><code>client&#x2F;FxAccountClient.js:719</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l720"><code>client&#x2F;FxAccountClient.js:720</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -650,118 +434,71 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">oldCreds</code>
                         <span class="type">Object</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>This object should consists of <code>oldUnwrapBKey</code>, <code>keyFetchToken</code> and <code>passwordChangeToken</code>.</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON of <code>xhr.responseText</code></p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountDestroy" class="method item">
+<div id="method_accountDestroy" class="method item">
     <h3 class="name"><code>accountDestroy</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>password</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l515"><code>client&#x2F;FxAccountClient.js:515</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l516"><code>client&#x2F;FxAccountClient.js:516</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -769,164 +506,104 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Email input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">password</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Password input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[skipCaseError]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>If <code>true</code>, the request will skip the incorrect case error</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountKeys" class="method item">
+<div id="method_accountKeys" class="method item">
     <h3 class="name"><code>accountKeys</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>keyFetchToken</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>oldUnwrapBKey</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l477"><code>client&#x2F;FxAccountClient.js:477</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l478"><code>client&#x2F;FxAccountClient.js:478</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -934,122 +611,74 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">keyFetchToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">oldUnwrapBKey</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON of {kA, kB}  of the key bundle</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountLock" class="method item">
+<div id="method_accountLock" class="method item">
     <h3 class="name"><code>accountLock</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>password</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l782"><code>client&#x2F;FxAccountClient.js:782</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l783"><code>client&#x2F;FxAccountClient.js:783</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1057,118 +686,71 @@
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">password</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountReset" class="method item">
+<div id="method_accountReset" class="method item">
     <h3 class="name"><code>accountReset</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>newPassword</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>accountResetToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l443"><code>client&#x2F;FxAccountClient.js:443</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l444"><code>client&#x2F;FxAccountClient.js:444</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1177,135 +759,84 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">newPassword</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">accountResetToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountStatus" class="method item">
+<div id="method_accountStatus" class="method item">
     <h3 class="name"><code>accountStatus</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>uid</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l561"><code>client&#x2F;FxAccountClient.js:561</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l562"><code>client&#x2F;FxAccountClient.js:562</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1313,108 +844,65 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">uid</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>User account id</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountUnlockResendCode" class="method item">
+<div id="method_accountUnlockResendCode" class="method item">
     <h3 class="name"><code>accountUnlockResendCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l807"><code>client&#x2F;FxAccountClient.js:807</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l808"><code>client&#x2F;FxAccountClient.js:808</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1422,110 +910,67 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_accountUnlockVerifyCode" class="method item">
+<div id="method_accountUnlockVerifyCode" class="method item">
     <h3 class="name"><code>accountUnlockVerifyCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>uid</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>code</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l837"><code>client&#x2F;FxAccountClient.js:837</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l838"><code>client&#x2F;FxAccountClient.js:838</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1533,118 +978,71 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">uid</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">code</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_certificateSign" class="method item">
+<div id="method_certificateSign" class="method item">
     <h3 class="name"><code>certificateSign</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>sessionToken</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>publicKey</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>duration</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l610"><code>client&#x2F;FxAccountClient.js:610</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l611"><code>client&#x2F;FxAccountClient.js:611</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1652,128 +1050,493 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">sessionToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>User session token</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">publicKey</code>
                         <span class="type">Object</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>The key to sign</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">duration</code>
                         <span class="type">Int</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Time interval from now when the certificate will expire in milliseconds</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
+<div id="method_deviceDestroy" class="method item">
+    <h3 class="name"><code>deviceDestroy</code></h3>
 
-                
-                    <div id="method_getRandomBytes" class="method item">
-    <h3 class="name"><code>getRandomBytes</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>deviceId</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
-    
-        <span class="paren">()</span>
-    
-
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l771"><code>client&#x2F;FxAccountClient.js:771</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l927"><code>client&#x2F;FxAccountClient.js:927</code></a>
         </p>
 
 
-        
 
-        
+    </div>
+
+    <div class="description">
+        <p>Unregister an existing device</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Session token obtained from signIn</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">deviceId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>User-unique identifier of device</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_deviceList" class="method item">
+    <h3 class="name"><code>deviceList</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l950"><code>client&#x2F;FxAccountClient.js:950</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get a list of all devices for a user</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>sessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_deviceRegister" class="method item">
+    <h3 class="name"><code>deviceRegister</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>deviceName</code>
+                </li>
+                <li class="arg">
+                        <code>deviceType</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options={}]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l855"><code>client&#x2F;FxAccountClient.js:855</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add a new device</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>User session token</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">deviceName</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Name of device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">deviceType</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Type of device (mobile|desktop)</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[deviceCallback]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Device's push endpoint.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[devicePublicKey]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Public key used to encrypt push messages.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_deviceRegister" class="method item">
+    <h3 class="name"><code>deviceRegister</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>deviceId</code>
+                </li>
+                <li class="arg">
+                        <code>deviceName</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options={}]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l891"><code>client&#x2F;FxAccountClient.js:891</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Update the name of an existing device</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>User session token</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">deviceId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>User-unique identifier of device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">deviceName</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Name of device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[deviceCallback]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Device's push endpoint.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[devicePublicKey]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Public key used to encrypt push messages.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getRandomBytes" class="method item">
+    <h3 class="name"><code>getRandomBytes</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l772"><code>client&#x2F;FxAccountClient.js:772</code></a>
+        </p>
+
+
+
     </div>
 
     <div class="description">
@@ -1781,94 +1544,54 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordChange" class="method item">
+<div id="method_passwordChange" class="method item">
     <h3 class="name"><code>passwordChange</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>oldPassword</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>newPassword</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l636"><code>client&#x2F;FxAccountClient.js:636</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l637"><code>client&#x2F;FxAccountClient.js:637</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -1876,149 +1599,91 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">oldPassword</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">newPassword</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordChangeStart" class="method item private">
+<div id="method_passwordChangeStart" class="method item private">
     <h3 class="name"><code>passwordChangeStart</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>oldPassword</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
         <span class="flag private">private</span>
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l666"><code>client&#x2F;FxAccountClient.js:666</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l667"><code>client&#x2F;FxAccountClient.js:667</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -2026,379 +1691,244 @@ HAWK-authenticated with accountResetToken</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">oldPassword</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[skipCaseError]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>If <code>true</code>, the request will skip the incorrect case error</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON of <code>xhr.responseText</code> and <code>oldUnwrapBKey</code></p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordForgotResendCode" class="method item">
+<div id="method_passwordForgotResendCode" class="method item">
     <h3 class="name"><code>passwordForgotResendCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>passwordForgotToken</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l345"><code>client&#x2F;FxAccountClient.js:345</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l346"><code>client&#x2F;FxAccountClient.js:346</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
-        <p>Re-sends a verification code to the account&#39;s recovery email address.
+        <p>Re-sends a verification code to the account's recovery email address.
 HAWK-authenticated with the passwordForgotToken.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">passwordForgotToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[service]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque alphanumeric token to be included in verification links</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[redirectTo]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>a URL that the client should be redirected to after handling the request</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[resume]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque url-encoded string that will be included in the verification link
-  as a querystring parameter, useful for continuing an OAuth flow for
-  example.</p>
+as a querystring parameter, useful for continuing an OAuth flow for
+example.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[lang]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
-                                    <p>set the language for the &#39;Accept-Language&#39; header</p>
+                                    <p>set the language for the 'Accept-Language' header</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordForgotSendCode" class="method item">
+<div id="method_passwordForgotSendCode" class="method item">
     <h3 class="name"><code>passwordForgotSendCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l295"><code>client&#x2F;FxAccountClient.js:295</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l296"><code>client&#x2F;FxAccountClient.js:296</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -2407,188 +1937,124 @@ The API returns passwordForgotToken to the client.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[service]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque alphanumeric token to be included in verification links</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[redirectTo]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>a URL that the client should be redirected to after handling the request</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[resume]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque url-encoded string that will be included in the verification link
-  as a querystring parameter, useful for continuing an OAuth flow for
-  example.</p>
+as a querystring parameter, useful for continuing an OAuth flow for
+example.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[lang]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
-                                    <p>set the language for the &#39;Accept-Language&#39; header</p>
+                                    <p>set the language for the 'Accept-Language' header</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordForgotStatus" class="method item">
+<div id="method_passwordForgotStatus" class="method item">
     <h3 class="name"><code>passwordForgotStatus</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>passwordForgotToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l424"><code>client&#x2F;FxAccountClient.js:424</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l425"><code>client&#x2F;FxAccountClient.js:425</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -2597,111 +2063,67 @@ If the request returns a success response, the token has not yet been consumed.<
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">passwordForgotToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_passwordForgotVerifyCode" class="method item">
+<div id="method_passwordForgotVerifyCode" class="method item">
     <h3 class="name"><code>passwordForgotVerifyCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>code</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>passwordForgotToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l401"><code>client&#x2F;FxAccountClient.js:401</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l402"><code>client&#x2F;FxAccountClient.js:402</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -2711,422 +2133,268 @@ HAWK-authenticated with the passwordForgotToken.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">code</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">passwordForgotToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                          
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_recoveryEmailResendCode" class="method item">
+<div id="method_recoveryEmailResendCode" class="method item">
     <h3 class="name"><code>recoveryEmailResendCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>sessionToken</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l244"><code>client&#x2F;FxAccountClient.js:244</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l245"><code>client&#x2F;FxAccountClient.js:245</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
-        <p>Re-sends a verification code to the account&#39;s recovery email address.</p>
+        <p>Re-sends a verification code to the account's recovery email address.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">sessionToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>sessionToken obtained from signIn</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[service]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque alphanumeric token to be included in verification links</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[redirectTo]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>a URL that the client should be redirected to after handling the request</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[resume]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque url-encoded string that will be included in the verification link
-  as a querystring parameter, useful for continuing an OAuth flow for
-  example.</p>
+as a querystring parameter, useful for continuing an OAuth flow for
+example.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[lang]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
-                                    <p>set the language for the &#39;Accept-Language&#39; header</p>
+                                    <p>set the language for the 'Accept-Language' header</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_recoveryEmailStatus" class="method item">
+<div id="method_recoveryEmailStatus" class="method item">
     <h3 class="name"><code>recoveryEmailStatus</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>sessionToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l229"><code>client&#x2F;FxAccountClient.js:229</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l230"><code>client&#x2F;FxAccountClient.js:230</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">sessionToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>sessionToken obtained from signIn</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_sessionDestroy" class="method item">
+<div id="method_sessionDestroy" class="method item">
     <h3 class="name"><code>sessionDestroy</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>sessionToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l574"><code>client&#x2F;FxAccountClient.js:574</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l575"><code>client&#x2F;FxAccountClient.js:575</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -3134,106 +2402,65 @@ HAWK-authenticated with the passwordForgotToken.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">sessionToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>User session token</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_sessionStatus" class="method item">
+<div id="method_sessionStatus" class="method item">
     <h3 class="name"><code>sessionStatus</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>sessionToken</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l592"><code>client&#x2F;FxAccountClient.js:592</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l593"><code>client&#x2F;FxAccountClient.js:593</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
@@ -3241,669 +2468,437 @@ HAWK-authenticated with the passwordForgotToken.</p>
 
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">sessionToken</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>User session token</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_signIn" class="method item">
+<div id="method_signIn" class="method item">
     <h3 class="name"><code>signIn</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>password</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l146"><code>client&#x2F;FxAccountClient.js:146</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l147"><code>client&#x2F;FxAccountClient.js:147</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Email input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">password</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Password input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[keys]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>If <code>true</code>, calls the API with <code>?keys=true</code> to get the keyFetchToken</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[skipCaseError]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>If <code>true</code>, the request will skip the incorrect case error</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[service]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Service being signed into</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[reason]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Reason for sign in. Can be one of: <code>signin</code>, <code>password_check</code>,
-  <code>password_change</code>, <code>password_reset</code>, <code>account_unlock</code>.</p>
+<code>password_change</code>, <code>password_reset</code>, <code>account_unlock</code>.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_signUp" class="method item">
+<div id="method_signUp" class="method item">
     <h3 class="name"><code>signUp</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>email</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>password</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code class="optional">[options={}]</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l56"><code>client&#x2F;FxAccountClient.js:56</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l57"><code>client&#x2F;FxAccountClient.js:57</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">email</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Email input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">password</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Password input</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name optional">[options={}]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Options</p>
 
                     </div>
 
-                    
                         <ul class="params-list">
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[keys]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>If <code>true</code>, calls the API with <code>?keys=true</code> to get the keyFetchToken</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[service]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque alphanumeric token to be included in verification links</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[redirectTo]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>a URL that the client should be redirected to after handling the request</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[preVerified]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>set email to be verified if possible</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[preVerifyToken]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque alphanumeric token that can be used to pre-verify a user.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[resume]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
                                     <p>Opaque url-encoded string that will be included in the verification link
-  as a querystring parameter, useful for continuing an OAuth flow for
-  example.</p>
+as a querystring parameter, useful for continuing an OAuth flow for
+example.</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                             <li class="param">
-                                
                                     <code class="param-name optional">[lang]</code>
                                     <span class="type">String</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
-                                
 
                                 <div class="param-description">
-                                    <p>set the language for the &#39;Accept-Language&#39; header</p>
+                                    <p>set the language for the 'Accept-Language' header</p>
 
                                 </div>
 
-                                
                             </li>
-                            
                         </ul>
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
-                    <div id="method_verifyCode" class="method item">
+<div id="method_verifyCode" class="method item">
     <h3 class="name"><code>verifyCode</code></h3>
 
-    
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-            
                 <li class="arg">
-                    
                         <code>uid</code>
-                    
                 </li>
-            
                 <li class="arg">
-                    
                         <code>code</code>
-                    
                 </li>
-            
             </ul><span class="paren">)</span>
         </div>
-    
 
-    
         <span class="returns-inline">
             <span class="type">Promise</span>
         </span>
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
     <div class="meta">
-        
-            
-                
                 <p>
-                
                 Defined in
-                
-            
-        
-        
-        <a href="../files/client_FxAccountClient.js.html#l213"><code>client&#x2F;FxAccountClient.js:213</code></a>
-        
+        <a href="../files/client_FxAccountClient.js.html#l214"><code>client&#x2F;FxAccountClient.js:214</code></a>
         </p>
 
 
-        
 
-        
     </div>
 
     <div class="description">
         
     </div>
 
-    
         <div class="params">
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-            
                 <li class="param">
-                    
                         <code class="param-name">uid</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Account ID</p>
 
                     </div>
 
-                    
                 </li>
-            
                 <li class="param">
-                    
                         <code class="param-name">code</code>
                         <span class="type">String</span>
-                    
 
-                    
 
                     <div class="param-description">
                         <p>Verification code</p>
 
                     </div>
 
-                    
                 </li>
-            
             </ul>
         </div>
-    
 
-    
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                
-                    
                         <span class="type">Promise</span>:
-                    
                     <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
 
-                
             </div>
         </div>
-    
 
-    
+
 </div>
-
-                
             </div>
-        
 
-        
 
-        
 
-        
     </div>
 </div>
-
                     </div>
                 </div>
             </div>

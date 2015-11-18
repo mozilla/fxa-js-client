@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.30"
+        "version": "0.1.31"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -187,7 +187,7 @@
                     "props": [
                         {
                             "name": "localtimeOffsetMsec",
-                            "description": "Local time offset with the remote auth server's clock",
+                            "description": "\n  Local time offset with the remote auth server's clock",
                             "type": "Number",
                             "optional": true
                         }
@@ -204,7 +204,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/FxAccountClient.js",
-            "line": 23,
+            "line": 24,
             "is_constructor": 1,
             "params": [
                 {
@@ -416,13 +416,13 @@
                     "props": [
                         {
                             "name": "retrying",
-                            "description": "Flag indicating if the request is a retry",
+                            "description": "\n  Flag indicating if the request is a retry",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "headers",
-                            "description": "A set of extra headers to add to the request",
+                            "description": "\n  A set of extra headers to add to the request",
                             "type": "Array",
                             "optional": true
                         }
@@ -437,7 +437,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 56,
+            "line": 57,
             "itemtype": "method",
             "name": "signUp",
             "params": [
@@ -460,43 +460,43 @@
                     "props": [
                         {
                             "name": "keys",
-                            "description": "If `true`, calls the API with `?keys=true` to get the keyFetchToken",
+                            "description": "\n  If `true`, calls the API with `?keys=true` to get the keyFetchToken",
                             "type": "Boolean",
                             "optional": true
                         },
                         {
                             "name": "service",
-                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "description": "\n  Opaque alphanumeric token to be included in verification links",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "redirectTo",
-                            "description": "a URL that the client should be redirected to after handling the request",
+                            "description": "\n  a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "preVerified",
-                            "description": "set email to be verified if possible",
+                            "description": "\n  set email to be verified if possible",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "preVerifyToken",
-                            "description": "Opaque alphanumeric token that can be used to pre-verify a user.",
+                            "description": "\n  Opaque alphanumeric token that can be used to pre-verify a user.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "resume",
-                            "description": "Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
+                            "description": "\n  Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "lang",
-                            "description": "set the language for the 'Accept-Language' header",
+                            "description": "\n  set the language for the 'Accept-Language' header",
                             "type": "String",
                             "optional": true
                         }
@@ -511,7 +511,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 146,
+            "line": 147,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -534,25 +534,25 @@
                     "props": [
                         {
                             "name": "keys",
-                            "description": "If `true`, calls the API with `?keys=true` to get the keyFetchToken",
+                            "description": "\n  If `true`, calls the API with `?keys=true` to get the keyFetchToken",
                             "type": "Boolean",
                             "optional": true
                         },
                         {
                             "name": "skipCaseError",
-                            "description": "If `true`, the request will skip the incorrect case error",
+                            "description": "\n  If `true`, the request will skip the incorrect case error",
                             "type": "Boolean",
                             "optional": true
                         },
                         {
                             "name": "service",
-                            "description": "Service being signed into",
+                            "description": "\n  Service being signed into",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "reason",
-                            "description": "Reason for sign in. Can be one of: `signin`, `password_check`,\n  `password_change`, `password_reset`, `account_unlock`.",
+                            "description": "\n  Reason for sign in. Can be one of: `signin`, `password_check`,\n  `password_change`, `password_reset`, `account_unlock`.",
                             "type": "String",
                             "optional": true
                         }
@@ -567,7 +567,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 213,
+            "line": 214,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -590,7 +590,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 229,
+            "line": 230,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -608,7 +608,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 244,
+            "line": 245,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -627,25 +627,25 @@
                     "props": [
                         {
                             "name": "service",
-                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "description": "\n  Opaque alphanumeric token to be included in verification links",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "redirectTo",
-                            "description": "a URL that the client should be redirected to after handling the request",
+                            "description": "\n  a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "resume",
-                            "description": "Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
+                            "description": "\n  Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "lang",
-                            "description": "set the language for the 'Accept-Language' header",
+                            "description": "\n  set the language for the 'Accept-Language' header",
                             "type": "String",
                             "optional": true
                         }
@@ -660,7 +660,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 295,
+            "line": 296,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -679,25 +679,25 @@
                     "props": [
                         {
                             "name": "service",
-                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "description": "\n  Opaque alphanumeric token to be included in verification links",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "redirectTo",
-                            "description": "a URL that the client should be redirected to after handling the request",
+                            "description": "\n  a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "resume",
-                            "description": "Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
+                            "description": "\n  Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "lang",
-                            "description": "set the language for the 'Accept-Language' header",
+                            "description": "\n  set the language for the 'Accept-Language' header",
                             "type": "String",
                             "optional": true
                         }
@@ -712,7 +712,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 345,
+            "line": 346,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -736,25 +736,25 @@
                     "props": [
                         {
                             "name": "service",
-                            "description": "Opaque alphanumeric token to be included in verification links",
+                            "description": "\n  Opaque alphanumeric token to be included in verification links",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "redirectTo",
-                            "description": "a URL that the client should be redirected to after handling the request",
+                            "description": "\n  a URL that the client should be redirected to after handling the request",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "resume",
-                            "description": "Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
+                            "description": "\n  Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "lang",
-                            "description": "set the language for the 'Accept-Language' header",
+                            "description": "\n  set the language for the 'Accept-Language' header",
                             "type": "String",
                             "optional": true
                         }
@@ -769,7 +769,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 401,
+            "line": 402,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -793,7 +793,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 424,
+            "line": 425,
             "description": "Returns the status for the passwordForgotToken.\nIf the request returns a success response, the token has not yet been consumed.",
             "itemtype": "method",
             "name": "passwordForgotStatus",
@@ -812,7 +812,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 443,
+            "line": 444,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -841,7 +841,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 477,
+            "line": 478,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -865,7 +865,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 515,
+            "line": 516,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -889,7 +889,7 @@
                     "props": [
                         {
                             "name": "skipCaseError",
-                            "description": "If `true`, the request will skip the incorrect case error",
+                            "description": "\n  If `true`, the request will skip the incorrect case error",
                             "type": "Boolean",
                             "optional": true
                         }
@@ -904,7 +904,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 561,
+            "line": 562,
             "description": "Gets the status of an account",
             "itemtype": "method",
             "name": "accountStatus",
@@ -923,7 +923,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 574,
+            "line": 575,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -942,7 +942,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 592,
+            "line": 593,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -961,7 +961,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 610,
+            "line": 611,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -990,7 +990,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 636,
+            "line": 637,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1019,7 +1019,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 666,
+            "line": 667,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1045,7 +1045,7 @@
                     "props": [
                         {
                             "name": "skipCaseError",
-                            "description": "If `true`, the request will skip the incorrect case error",
+                            "description": "\n  If `true`, the request will skip the incorrect case error",
                             "type": "Boolean",
                             "optional": true
                         }
@@ -1060,7 +1060,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 719,
+            "line": 720,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1081,7 +1081,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 733,
+            "line": 734,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1112,7 +1112,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 771,
+            "line": 772,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1124,7 +1124,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 782,
+            "line": 783,
             "description": "Lock an account - only available in a testing environment.",
             "itemtype": "method",
             "name": "accountLock",
@@ -1144,7 +1144,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 807,
+            "line": 808,
             "description": "Send an account unlock code",
             "itemtype": "method",
             "name": "accountUnlockResendCode",
@@ -1166,7 +1166,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 837,
+            "line": 838,
             "description": "Verify an account unlock code",
             "itemtype": "method",
             "name": "accountUnlockVerifyCode",
@@ -1182,6 +1182,149 @@
                     "type": "String"
                 }
             ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 855,
+            "description": "Add a new device",
+            "itemtype": "method",
+            "name": "deviceRegister",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "User session token",
+                    "type": "String"
+                },
+                {
+                    "name": "deviceName",
+                    "description": "Name of device",
+                    "type": "String"
+                },
+                {
+                    "name": "deviceType",
+                    "description": "Type of device (mobile|desktop)",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "deviceCallback",
+                            "description": "Device's push endpoint.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "devicePublicKey",
+                            "description": "Public key used to encrypt push messages.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 891,
+            "description": "Update the name of an existing device",
+            "itemtype": "method",
+            "name": "deviceRegister",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "User session token",
+                    "type": "String"
+                },
+                {
+                    "name": "deviceId",
+                    "description": "User-unique identifier of device",
+                    "type": "String"
+                },
+                {
+                    "name": "deviceName",
+                    "description": "Name of device",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "deviceCallback",
+                            "description": "Device's push endpoint.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "devicePublicKey",
+                            "description": "Public key used to encrypt push messages.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 927,
+            "description": "Unregister an existing device",
+            "itemtype": "method",
+            "name": "deviceDestroy",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "Session token obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "deviceId",
+                    "description": "User-unique identifier of device",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 950,
+            "description": "Get a list of all devices for a user",
+            "itemtype": "method",
+            "name": "deviceList",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
             "class": "FxAccountClient"
         }
     ],
