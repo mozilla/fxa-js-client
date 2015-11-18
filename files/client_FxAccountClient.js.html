@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.31</em>
+            <em>API Docs for: 0.1.32</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -958,7 +958,7 @@ define([
     required(deviceType, &#x27;deviceType&#x27;);
 
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;deviceRegister&#x27;,  HKDF_SIZE)
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           name: deviceName,
@@ -994,7 +994,7 @@ define([
     required(deviceName, &#x27;deviceName&#x27;);
 
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;deviceUpdate&#x27;,  HKDF_SIZE)
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           id: deviceId,
@@ -1023,7 +1023,7 @@ define([
     required(deviceId, &#x27;deviceId&#x27;);
 
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;deviceDestroy&#x27;,  HKDF_SIZE)
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
         var data = {
           id: deviceId
@@ -1044,7 +1044,7 @@ define([
     required(sessionToken, &#x27;sessionToken&#x27;);
 
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;devices&#x27;,  HKDF_SIZE)
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
         return request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
       });
