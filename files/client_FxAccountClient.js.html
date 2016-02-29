@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.33</em>
+            <em>API Docs for: 0.1.34</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -102,7 +102,7 @@ define([
   var HKDF_SIZE = 2 * 32;
 
   function required(val, name) {
-    if (!val) {
+    if (!val || val === {}) {
       throw new Error(&#x27;Missing &#x27; + name);
     }
   }
@@ -696,7 +696,7 @@ define([
   };
 
   /**
-   * Gets the status of an account
+   * Gets the status of an account by uid.
    *
    * @method accountStatus
    * @param {String} uid User account id
@@ -706,6 +706,19 @@ define([
     required(uid, &#x27;uid&#x27;);
 
     return this.request.send(&#x27;/account/status?uid=&#x27; + uid, &#x27;GET&#x27;);
+  };
+
+  /**
+   * Gets the status of an account by email.
+   *
+   * @method accountStatusByEmail
+   * @param {String} email User account email
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountStatusByEmail = function(email) {
+    required(email, &#x27;email&#x27;);
+
+    return this.request.send(&#x27;/account/status&#x27;, &#x27;POST&#x27;, null, {email: email});
   };
 
   /**
@@ -1027,7 +1040,7 @@ define([
   /**
    * Update the name of an existing device
    *
-   * @method deviceRegister
+   * @method deviceUpdate
    * @param {String} sessionToken User session token
    * @param {String} deviceId User-unique identifier of device
    * @param {String} deviceName Name of device
