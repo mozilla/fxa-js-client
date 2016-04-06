@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>client/FxAccountClient.js - fxa-js-client</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.35</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/credentials.html">credentials</a></li>
+                                <li><a href="../classes/FxAccountClient.html">FxAccountClient</a></li>
+                                <li><a href="../classes/hawkCredentials.html">hawkCredentials</a></li>
+                                <li><a href="../classes/hkdf.html">hkdf</a></li>
+                                <li><a href="../classes/pbkdf2.html">pbkdf2</a></li>
+                                <li><a href="../classes/Request.html">Request</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: client/FxAccountClient.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+define([
+  &#x27;./lib/request&#x27;,
+  &#x27;sjcl&#x27;,
+  &#x27;p&#x27;,
+  &#x27;./lib/credentials&#x27;,
+  &#x27;./lib/hawkCredentials&#x27;,
+  &#x27;./lib/errors&#x27;
+], function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
+  &#x27;use strict&#x27;;
+
+  var VERSION = &#x27;v1&#x27;;
+  var uriVersionRegExp = new RegExp(&#x27;/&#x27; + VERSION + &#x27;$&#x27;);
+  var HKDF_SIZE = 2 * 32;
+
+  function required(val, name) {
+    if (!val || val === {}) {
+      throw new Error(&#x27;Missing &#x27; + name);
+    }
+  }
+
+  /**
+   * @class FxAccountClient
+   * @constructor
+   * @param {String} uri Auth Server URI
+   * @param {Object} config Configuration
+   */
+  function FxAccountClient(uri, config) {
+    if (! uri &amp;&amp; ! config) {
+      throw new Error(&#x27;Firefox Accounts auth server endpoint or configuration object required.&#x27;);
+    }
+
+    if (typeof uri !== &#x27;string&#x27;) {
+      config = uri || {};
+      uri = config.uri;
+    }
+
+    if (typeof config === &#x27;undefined&#x27;) {
+      config = {};
+    }
+
+    if (! uri) {
+      throw new Error(&#x27;FxA auth server uri not set.&#x27;);
+    }
+
+    if (!uriVersionRegExp.test(uri)) {
+      uri = uri + &#x27;/&#x27; + VERSION;
+    }
+
+    this.request = new Request(uri, config.xhr, { localtimeOffsetMsec: config.localtimeOffsetMsec });
+  }
+
+  FxAccountClient.VERSION = VERSION;
+
+  /**
+   * @method signUp
+   * @param {String} email Email input
+   * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.preVerified]
+   *   set email to be verified if possible
+   *   @param {String} [options.preVerifyToken]
+   *   Opaque alphanumeric token that can be used to pre-verify a user.
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
+   *   @param {String} [options.lang]
+   *   set the language for the &#x27;Accept-Language&#x27; header
+   *   @param {Object} [options.device={}] Device registration information
+   *     @param {String} name Name of device
+   *     @param {String} type Type of device (mobile|desktop)
+   *     @param {string} [callback] Device&#x27;s push endpoint.
+   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.signUp = function (email, password, options) {
+    var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
+
+    return credentials.setup(email, password)
+      .then(
+        function (result) {
+          /*eslint complexity: [2, 12] */
+          var endpoint = &#x27;/account/create&#x27;;
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
+          var requestOpts = {};
+
+          if (options) {
+            if (options.device) {
+              data.device = {
+                name: options.device.name,
+                type: options.device.type
+              };
+
+              if (options.device.callback) {
+                data.device.pushCallback = options.device.callback;
+              }
+
+              if (options.device.publicKey) {
+                data.device.pushPublicKey = options.device.publicKey;
+              }
+            }
+
+            if (options.service) {
+              data.service = options.service;
+            }
+
+            if (options.redirectTo) {
+              data.redirectTo = options.redirectTo;
+            }
+
+            // preVerified and preVerifyToken exist for two different use
+            // cases. preVerified is used for unit/functional testing, while
+            // preVerifyToken is used by trusted RPs to indicate a user is
+            // already verified. The plan is to eventually drop preVerified and
+            // use preVerifyToken universally.
+            if (options.preVerified) {
+              data.preVerified = options.preVerified;
+            }
+
+            if (options.preVerifyToken) {
+              data.preVerifyToken = options.preVerifyToken;
+            }
+
+            if (options.resume) {
+              data.resume = options.resume;
+            }
+
+            if (options.keys) {
+              endpoint += &#x27;?keys=true&#x27;;
+            }
+
+            if (options.lang) {
+              requestOpts.headers = {
+                &#x27;Accept-Language&#x27;: options.lang
+              };
+            }
+          }
+
+          return self.request.send(endpoint, &#x27;POST&#x27;, null, data, requestOpts)
+            .then(
+              function(accountData) {
+                if (options &amp;&amp; options.keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              }
+            );
+        }
+      );
+  };
+
+  /**
+   * @method signIn
+   * @param {String} email Email input
+   * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.contentToken]
+   *   The content token from the content server
+   *   @param {Boolean} [options.keys]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   *   @param {String} [options.service]
+   *   Service being signed into
+   *   @param {String} [options.reason]
+   *   Reason for sign in. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
+   *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;, &#x60;account_unlock&#x60;.
+   *   @param {Object} [options.device={}] Device registration information
+   *     @param {String} [id] User-unique identifier of device
+   *     @param {String} [name] Name of device
+   *     @param {String} [type] Type of device (mobile|desktop)
+   *     @param {string} [callback] Device&#x27;s push endpoint.
+   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.signIn = function (email, password, options) {
+    var self = this;
+    options = options || {};
+
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
+
+    return credentials.setup(email, password)
+      .then(
+        function (result) {
+          var endpoint = &#x27;/account/login&#x27;;
+
+          if (options.keys) {
+            endpoint += &#x27;?keys=true&#x27;;
+          }
+
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
+
+          if (options.device) {
+            data.device = {};
+
+            if (options.device.id) {
+              data.device.id = options.device.id;
+            }
+
+            if (options.device.name) {
+              data.device.name = options.device.name;
+            }
+
+            if (options.device.type) {
+              data.device.type = options.device.type;
+            }
+
+            if (options.device.callback) {
+              data.device.pushCallback = options.device.callback;
+            }
+
+            if (options.device.publicKey) {
+              data.device.pushPublicKey = options.device.publicKey;
+            }
+          }
+
+          if (options.service) {
+            data.service = options.service;
+          }
+
+          if (options.reason) {
+            data.reason = options.reason;
+          }
+
+          if (options.contentToken) {
+            data.contentToken = options.contentToken;
+          }
+
+          return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
+            .then(
+              function(accountData) {
+                if (options.keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              },
+              function(error) {
+                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                  options.skipCaseError = true;
+
+                  return self.signIn(error.email, password, options);
+                } else {
+                  throw error;
+                }
+              }
+            );
+        }
+      );
+  };
+
+  /**
+   * @method verifyCode
+   * @param {String} uid Account ID
+   * @param {String} code Verification code
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.verifyCode = function(uid, code) {
+    required(uid, &#x27;uid&#x27;);
+    required(code, &#x27;verify code&#x27;);
+
+    return this.request.send(&#x27;/recovery_email/verify_code&#x27;, &#x27;POST&#x27;, null, {
+      uid: uid,
+      code: code
+    });
+  };
+
+  /**
+   * @method recoveryEmailStatus
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
+    var self = this;
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/recovery_email/status&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * Re-sends a verification code to the account&#x27;s recovery email address.
+   *
+   * @method recoveryEmailResendCode
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
+   *   @param {String} [options.lang]
+   *   set the language for the &#x27;Accept-Language&#x27; header
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.recoveryEmailResendCode = function(sessionToken, options) {
+    var self = this;
+    var data = {};
+    var requestOpts = {};
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
+      }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          &#x27;Accept-Language&#x27;: options.lang
+        };
+      }
+    }
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/recovery_email/resend_code&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
+      });
+  };
+
+  /**
+   * Used to ask the server to send a recovery code.
+   * The API returns passwordForgotToken to the client.
+   *
+   * @method passwordForgotSendCode
+   * @param {String} email
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
+   *   @param {String} [options.lang]
+   *   set the language for the &#x27;Accept-Language&#x27; header
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
+    var data = {
+      email: email
+    };
+    var requestOpts = {};
+
+    required(email, &#x27;email&#x27;);
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
+      }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          &#x27;Accept-Language&#x27;: options.lang
+        };
+      }
+    }
+
+    return this.request.send(&#x27;/password/forgot/send_code&#x27;, &#x27;POST&#x27;, null, data, requestOpts);
+  };
+
+  /**
+   * Re-sends a verification code to the account&#x27;s recovery email address.
+   * HAWK-authenticated with the passwordForgotToken.
+   *
+   * @method passwordForgotResendCode
+   * @param {String} email
+   * @param {String} passwordForgotToken
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.service]
+   *   Opaque alphanumeric token to be included in verification links
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
+   *   @param {String} [options.lang]
+   *   set the language for the &#x27;Accept-Language&#x27; header
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
+    var self = this;
+    var data = {
+      email: email
+    };
+    var requestOpts = {};
+
+    required(email, &#x27;email&#x27;);
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
+      }
+
+      if (options.lang) {
+        requestOpts.headers = {
+          &#x27;Accept-Language&#x27;: options.lang
+        };
+      }
+    }
+
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/resend_code&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
+      });
+  };
+
+  /**
+   * Submits the verification token to the server.
+   * The API returns accountResetToken to the client.
+   * HAWK-authenticated with the passwordForgotToken.
+   *
+   * @method passwordForgotVerifyCode
+   * @param {String} code
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
+    var self = this;
+    required(code, &#x27;reset code&#x27;);
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, {
+          code: code
+        });
+      });
+  };
+
+  /**
+   * Returns the status for the passwordForgotToken.
+   * If the request returns a success response, the token has not yet been consumed.
+
+   * @method passwordForgotStatus
+   * @param {String} passwordForgotToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
+    var self = this;
+
+    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+
+    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/password/forgot/status&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * The API returns reset result to the client.
+   * HAWK-authenticated with accountResetToken
+   *
+   * @method accountReset
+   * @param {String} email
+   * @param {String} newPassword
+   * @param {String} accountResetToken
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken) {
+    var self = this;
+    var authPW;
+
+    required(email, &#x27;email&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
+    required(accountResetToken, &#x27;accountResetToken&#x27;);
+
+    return credentials.setup(email, newPassword)
+      .then(
+        function (result) {
+          authPW = sjcl.codec.hex.fromBits(result.authPW);
+
+          return hawkCredentials(accountResetToken, &#x27;accountResetToken&#x27;,  HKDF_SIZE);
+        }
+      ).then(
+        function (creds) {
+          return self.request.send(&#x27;/account/reset&#x27;, &#x27;POST&#x27;, creds, {
+            authPW: authPW
+          });
+        }
+      );
+  };
+
+  /**
+   * Get the base16 bundle of encrypted kA|wrapKb.
+   *
+   * @method accountKeys
+   * @param {String} keyFetchToken
+   * @param {String} oldUnwrapBKey
+   * @return {Promise} A promise that will be fulfilled with JSON of {kA, kB}  of the key bundle
+   */
+  FxAccountClient.prototype.accountKeys = function(keyFetchToken, oldUnwrapBKey) {
+    var self = this;
+
+    required(keyFetchToken, &#x27;keyFetchToken&#x27;);
+    required(oldUnwrapBKey, &#x27;oldUnwrapBKey&#x27;);
+
+    return hawkCredentials(keyFetchToken, &#x27;keyFetchToken&#x27;,  3 * 32)
+      .then(function(creds) {
+        var bundleKey = sjcl.codec.hex.fromBits(creds.bundleKey);
+
+        return self.request.send(&#x27;/account/keys&#x27;, &#x27;GET&#x27;, creds)
+          .then(
+            function(payload) {
+
+              return credentials.unbundleKeyFetchResponse(bundleKey, payload.bundle);
+            });
+      })
+      .then(function(keys) {
+        return {
+          kB: sjcl.codec.hex.fromBits(
+            credentials.xor(
+              sjcl.codec.hex.toBits(keys.wrapKB),
+              sjcl.codec.hex.toBits(oldUnwrapBKey)
+            )
+          ),
+          kA: keys.kA
+        };
+      });
+  };
+
+  /**
+   * This deletes the account completely. All stored data is erased.
+   *
+   * @method accountDestroy
+   * @param {String} email Email input
+   * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountDestroy = function(email, password, options) {
+    var self = this;
+    options = options || {};
+
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
+
+    return credentials.setup(email, password)
+      .then(
+        function (result) {
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
+
+          return self.request.send(&#x27;/account/destroy&#x27;, &#x27;POST&#x27;, null, data)
+            .then(
+              function(response) {
+                return response;
+              },
+              function(error) {
+                // if incorrect email case error
+                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                  options.skipCaseError = true;
+
+                  return self.accountDestroy(error.email, password, options);
+                } else {
+                  throw error;
+                }
+              }
+            );
+        }
+      );
+  };
+
+  /**
+   * Gets the status of an account by uid.
+   *
+   * @method accountStatus
+   * @param {String} uid User account id
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountStatus = function(uid) {
+    required(uid, &#x27;uid&#x27;);
+
+    return this.request.send(&#x27;/account/status?uid=&#x27; + uid, &#x27;GET&#x27;);
+  };
+
+  /**
+   * Gets the status of an account by email.
+   *
+   * @method accountStatusByEmail
+   * @param {String} email User account email
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.accountStatusByEmail = function(email) {
+    required(email, &#x27;email&#x27;);
+
+    return this.request.send(&#x27;/account/status&#x27;, &#x27;POST&#x27;, null, {email: email});
+  };
+
+  /**
+   * Destroys this session, by invalidating the sessionToken.
+   *
+   * @method sessionDestroy
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.sessionDestroy = function(sessionToken) {
+    var self = this;
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds);
+      });
+  };
+
+  /**
+   * Responds successfully if the session status is valid, requires the sessionToken.
+   *
+   * @method sessionStatus
+   * @param {String} sessionToken User session token
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.sessionStatus = function(sessionToken) {
+    var self = this;
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/session/status&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * Sign a BrowserID public key
+   *
+   * @method certificateSign
+   * @param {String} sessionToken User session token
+   * @param {Object} publicKey The key to sign
+   * @param {int} duration Time interval from now when the certificate will expire in milliseconds
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
+    var self = this;
+    var data = {
+      publicKey: publicKey,
+      duration: duration
+    };
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(publicKey, &#x27;publicKey&#x27;);
+    required(duration, &#x27;duration&#x27;);
+
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return self.request.send(&#x27;/certificate/sign&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Change the password from one known value to another.
+   *
+   * @method passwordChange
+   * @param {String} email
+   * @param {String} oldPassword
+   * @param {String} newPassword
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.passwordChange = function(email, oldPassword, newPassword) {
+    var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(oldPassword, &#x27;old password&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
+
+    return self._passwordChangeStart(email, oldPassword)
+      .then(function (credentials) {
+
+        var oldCreds = credentials;
+
+        return self._passwordChangeKeys(oldCreds)
+          .then(function (keys) {
+
+            return self._passwordChangeFinish(email, newPassword, oldCreds, keys);
+          });
+      });
+
+  };
+
+  /**
+   * First step to change the password.
+   *
+   * @method passwordChangeStart
+   * @private
+   * @param {String} email
+   * @param {String} oldPassword
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60; and &#x60;oldUnwrapBKey&#x60;
+   */
+  FxAccountClient.prototype._passwordChangeStart = function(email, oldPassword, options) {
+    var self = this;
+    options = options || {};
+
+    required(email, &#x27;email&#x27;);
+    required(oldPassword, &#x27;old password&#x27;);
+
+    return credentials.setup(email, oldPassword)
+      .then(function (oldCreds) {
+        var data = {
+          email: oldCreds.emailUTF8,
+          oldAuthPW: sjcl.codec.hex.fromBits(oldCreds.authPW)
+        };
+
+        return self.request.send(&#x27;/password/change/start&#x27;, &#x27;POST&#x27;, null, data)
+          .then(
+            function(passwordData) {
+              passwordData.oldUnwrapBKey = sjcl.codec.hex.fromBits(oldCreds.unwrapBKey);
+              return passwordData;
+            },
+            function(error) {
+              // if incorrect email case error
+              if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                options.skipCaseError = true;
+
+                return self._passwordChangeStart(error.email, oldPassword, options);
+              } else {
+                throw error;
+              }
+            }
+          );
+      });
+  };
+
+  function checkCreds(creds) {
+    required(creds, &#x27;credentials&#x27;);
+    required(creds.oldUnwrapBKey, &#x27;credentials.oldUnwrapBKey&#x27;);
+    required(creds.keyFetchToken, &#x27;credentials.keyFetchToken&#x27;);
+    required(creds.passwordChangeToken, &#x27;credentials.passwordChangeToken&#x27;);
+  }
+
+  /**
+   * Second step to change the password.
+   *
+   * @method _passwordChangeKeys
+   * @private
+   * @param {Object} oldCreds This object should consists of &#x60;oldUnwrapBKey&#x60;, &#x60;keyFetchToken&#x60; and &#x60;passwordChangeToken&#x60;.
+   * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
+   */
+  FxAccountClient.prototype._passwordChangeKeys = function(oldCreds) {
+    checkCreds(oldCreds);
+
+    return this.accountKeys(oldCreds.keyFetchToken, oldCreds.oldUnwrapBKey);
+  };
+
+  /**
+   * Third step to change the password.
+   *
+   * @method _passwordChangeFinish
+   * @private
+   * @param {String} email
+   * @param {String} newPassword
+   * @param {Object} oldCreds This object should consists of &#x60;oldUnwrapBKey&#x60;, &#x60;keyFetchToken&#x60; and &#x60;passwordChangeToken&#x60;.
+   * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
+   */
+  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
+    var self = this;
+
+    required(email, &#x27;email&#x27;);
+    required(newPassword, &#x27;new password&#x27;);
+    checkCreds(oldCreds);
+    required(keys, &#x27;keys&#x27;);
+    required(keys.kB, &#x27;keys.kB&#x27;);
+
+    var p1 = credentials.setup(email, newPassword);
+    var p2 = hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  HKDF_SIZE);
+
+    return P.all([p1, p2])
+      .spread(function(newCreds, hawkCreds) {
+        var newWrapKb = sjcl.codec.hex.fromBits(
+          credentials.xor(
+            sjcl.codec.hex.toBits(keys.kB),
+            newCreds.unwrapBKey
+          )
+        );
+
+        return self.request.send(&#x27;/password/change/finish&#x27;, &#x27;POST&#x27;, hawkCreds, {
+          wrapKb: newWrapKb,
+          authPW: sjcl.codec.hex.fromBits(newCreds.authPW)
+        });
+      });
+  };
+
+  /**
+   * Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.
+   *
+   * @method getRandomBytes
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.getRandomBytes = function() {
+
+    return this.request.send(&#x27;/get_random_bytes&#x27;, &#x27;POST&#x27;);
+  };
+
+  /**
+   * Lock an account - only available in a testing environment.
+   *
+   * @method accountLock
+   * @param {String} email
+   * @param {String} password
+   */
+  FxAccountClient.prototype.accountLock = function (email, password) {
+    required(email, &#x27;email&#x27;);
+    required(password, &#x27;password&#x27;);
+
+    var self = this;
+    return credentials.setup(email, password)
+      .then(
+        function (result) {
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
+
+          return self.request.send(&#x27;/account/lock&#x27;, &#x27;POST&#x27;, null, data);
+        });
+  };
+
+
+  /**
+   * Send an account unlock code
+   *
+   * @method accountUnlockResendCode
+   * @param {String} email
+   * @param {Object} [options={}] Options
+   */
+  FxAccountClient.prototype.accountUnlockResendCode = function (email, options) {
+    required(email, &#x27;email&#x27;);
+
+    var data = {
+      email: email
+    };
+    if (options) {
+      if (options.service) {
+        data.service = options.service;
+      }
+
+      if (options.redirectTo) {
+        data.redirectTo = options.redirectTo;
+      }
+
+      if (options.resume) {
+        data.resume = options.resume;
+      }
+    }
+
+    return this.request.send(&#x27;/account/unlock/resend_code&#x27;, &#x27;POST&#x27;, null, data);
+  };
+
+  /**
+   * Verify an account unlock code
+   *
+   * @method accountUnlockVerifyCode
+   * @param {String} uid
+   * @param {String} code
+   */
+  FxAccountClient.prototype.accountUnlockVerifyCode = function (uid, code) {
+    required(uid, &#x27;uid&#x27;);
+    required(code, &#x27;code&#x27;);
+
+    return this.request.send(&#x27;/account/unlock/verify_code&#x27;, &#x27;POST&#x27;, null, {
+      uid: uid,
+      code: code
+    });
+  };
+
+  /**
+   * Add a new device
+   *
+   * @method deviceRegister
+   * @param {String} sessionToken User session token
+   * @param {String} deviceName Name of device
+   * @param {String} deviceType Type of device (mobile|desktop)
+   * @param {Object} [options={}] Options
+   *   @param {string} [options.deviceCallback] Device&#x27;s push endpoint.
+   *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.deviceRegister = function (sessionToken, deviceName, deviceType, options) {
+    options = options || {};
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(deviceName, &#x27;deviceName&#x27;);
+    required(deviceType, &#x27;deviceType&#x27;);
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          name: deviceName,
+          type: deviceType
+        };
+
+        if (options.deviceCallback &amp;&amp; options.devicePublicKey) {
+          data.pushCallback = options.deviceCallback;
+          data.pushPublicKey = options.devicePublicKey;
+        }
+
+        return request.send(&#x27;/account/device&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Update the name of an existing device
+   *
+   * @method deviceUpdate
+   * @param {String} sessionToken User session token
+   * @param {String} deviceId User-unique identifier of device
+   * @param {String} deviceName Name of device
+   * @param {Object} [options={}] Options
+   *   @param {string} [options.deviceCallback] Device&#x27;s push endpoint.
+   *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.deviceUpdate = function (sessionToken, deviceId, deviceName, options) {
+    options = options || {};
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(deviceId, &#x27;deviceId&#x27;);
+    required(deviceName, &#x27;deviceName&#x27;);
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          id: deviceId,
+          name: deviceName
+        };
+
+        if (options.deviceCallback &amp;&amp; options.devicePublicKey) {
+          data.pushCallback = options.deviceCallback;
+          data.pushPublicKey = options.devicePublicKey;
+        }
+
+        return request.send(&#x27;/account/device&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Unregister an existing device
+   *
+   * @method deviceDestroy
+   * @param {String} sessionToken Session token obtained from signIn
+   * @param {String} deviceId User-unique identifier of device
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.deviceDestroy = function (sessionToken, deviceId) {
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(deviceId, &#x27;deviceId&#x27;);
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        var data = {
+          id: deviceId
+        };
+
+        return request.send(&#x27;/account/device/destroy&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Get a list of all devices for a user
+   *
+   * @method deviceList
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.deviceList = function (sessionToken) {
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+
+  return FxAccountClient;
+});
+
+
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
