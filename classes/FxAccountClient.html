@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.34</em>
+            <em>API Docs for: 0.1.35</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -85,7 +85,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/client_FxAccountClient.js.html#l24"><code>client&#x2F;FxAccountClient.js:24</code></a>
+            Defined in: <a href="../files/client_FxAccountClient.js.html#l25"><code>client&#x2F;FxAccountClient.js:25</code></a>
         </div>
 
 
@@ -122,7 +122,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l24"><code>client&#x2F;FxAccountClient.js:24</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l25"><code>client&#x2F;FxAccountClient.js:25</code></a>
         </p>
 
 
@@ -322,6 +322,9 @@
                 <li class="arg">
                         <code>oldCreds</code>
                 </li>
+                <li class="arg">
+                        <code>keys</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -339,7 +342,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l797"><code>client&#x2F;FxAccountClient.js:797</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l870"><code>client&#x2F;FxAccountClient.js:870</code></a>
         </p>
 
 
@@ -386,6 +389,17 @@
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name">keys</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>This object should contain the unbundled keys</p>
+
+                    </div>
+
+                </li>
             </ul>
         </div>
 
@@ -426,7 +440,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l783"><code>client&#x2F;FxAccountClient.js:783</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l856"><code>client&#x2F;FxAccountClient.js:856</code></a>
         </p>
 
 
@@ -498,7 +512,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l566"><code>client&#x2F;FxAccountClient.js:566</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l620"><code>client&#x2F;FxAccountClient.js:620</code></a>
         </p>
 
 
@@ -603,7 +617,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l528"><code>client&#x2F;FxAccountClient.js:528</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l582"><code>client&#x2F;FxAccountClient.js:582</code></a>
         </p>
 
 
@@ -678,7 +692,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l846"><code>client&#x2F;FxAccountClient.js:846</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l920"><code>client&#x2F;FxAccountClient.js:920</code></a>
         </p>
 
 
@@ -734,6 +748,9 @@
                 <li class="arg">
                         <code>accountResetToken</code>
                 </li>
+                <li class="arg">
+                        <code class="optional">[options={}]</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -750,7 +767,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l494"><code>client&#x2F;FxAccountClient.js:494</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l531"><code>client&#x2F;FxAccountClient.js:531</code></a>
         </p>
 
 
@@ -797,6 +814,130 @@ HAWK-authenticated with accountResetToken</p>
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[metricsContext={}]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Metrics context metadata</p>
+
+                                </div>
+
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">flowId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current event flow
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowBeginTime</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                flow.begin event time
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[context]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                context identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[entrypoint]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                entrypoint identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[migration]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                migration identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[service]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                service identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmCampaign]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmContent]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign content identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmMedium]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign medium
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmSource]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign source
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmTerm]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign search term
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </li>
+                        </ul>
+                </li>
             </ul>
         </div>
 
@@ -836,7 +977,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l612"><code>client&#x2F;FxAccountClient.js:612</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l666"><code>client&#x2F;FxAccountClient.js:666</code></a>
         </p>
 
 
@@ -902,7 +1043,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l625"><code>client&#x2F;FxAccountClient.js:625</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l679"><code>client&#x2F;FxAccountClient.js:679</code></a>
         </p>
 
 
@@ -968,7 +1109,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l871"><code>client&#x2F;FxAccountClient.js:871</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l945"><code>client&#x2F;FxAccountClient.js:945</code></a>
         </p>
 
 
@@ -1036,7 +1177,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l901"><code>client&#x2F;FxAccountClient.js:901</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l975"><code>client&#x2F;FxAccountClient.js:975</code></a>
         </p>
 
 
@@ -1092,6 +1233,9 @@ HAWK-authenticated with accountResetToken</p>
                 <li class="arg">
                         <code>duration</code>
                 </li>
+                <li class="arg">
+                        <code class="optional">[options={}]</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -1108,7 +1252,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l674"><code>client&#x2F;FxAccountClient.js:674</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l728"><code>client&#x2F;FxAccountClient.js:728</code></a>
         </p>
 
 
@@ -1157,6 +1301,130 @@ HAWK-authenticated with accountResetToken</p>
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[metricsContext={}]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Metrics context metadata</p>
+
+                                </div>
+
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">flowId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current event flow
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowBeginTime</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                flow.begin event time
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[context]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                context identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[entrypoint]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                entrypoint identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[migration]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                migration identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[service]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                service identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmCampaign]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmContent]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign content identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmMedium]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign medium
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmSource]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign source
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmTerm]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign search term
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </li>
+                        </ul>
+                </li>
             </ul>
         </div>
 
@@ -1199,7 +1467,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l990"><code>client&#x2F;FxAccountClient.js:990</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1074"><code>client&#x2F;FxAccountClient.js:1074</code></a>
         </p>
 
 
@@ -1276,7 +1544,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1013"><code>client&#x2F;FxAccountClient.js:1013</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1097"><code>client&#x2F;FxAccountClient.js:1097</code></a>
         </p>
 
 
@@ -1351,7 +1619,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l918"><code>client&#x2F;FxAccountClient.js:918</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l992"><code>client&#x2F;FxAccountClient.js:992</code></a>
         </p>
 
 
@@ -1434,6 +1702,17 @@ HAWK-authenticated with accountResetToken</p>
                                 </div>
 
                             </li>
+                            <li class="param">
+                                    <code class="param-name optional">[deviceAuthKey]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Authentication secret used to encrypt push messages.</p>
+
+                                </div>
+
+                            </li>
                         </ul>
                 </li>
             </ul>
@@ -1484,7 +1763,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l954"><code>client&#x2F;FxAccountClient.js:954</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1033"><code>client&#x2F;FxAccountClient.js:1033</code></a>
         </p>
 
 
@@ -1567,6 +1846,17 @@ HAWK-authenticated with accountResetToken</p>
                                 </div>
 
                             </li>
+                            <li class="param">
+                                    <code class="param-name optional">[deviceAuthKey]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Authentication secret used to encrypt push messages.</p>
+
+                                </div>
+
+                            </li>
                         </ul>
                 </li>
             </ul>
@@ -1602,7 +1892,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l835"><code>client&#x2F;FxAccountClient.js:835</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l909"><code>client&#x2F;FxAccountClient.js:909</code></a>
         </p>
 
 
@@ -1657,7 +1947,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l700"><code>client&#x2F;FxAccountClient.js:700</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l773"><code>client&#x2F;FxAccountClient.js:773</code></a>
         </p>
 
 
@@ -1749,7 +2039,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l730"><code>client&#x2F;FxAccountClient.js:730</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l803"><code>client&#x2F;FxAccountClient.js:803</code></a>
         </p>
 
 
@@ -1855,7 +2145,7 @@ HAWK-authenticated with accountResetToken</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l396"><code>client&#x2F;FxAccountClient.js:396</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l433"><code>client&#x2F;FxAccountClient.js:433</code></a>
         </p>
 
 
@@ -1994,7 +2284,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l346"><code>client&#x2F;FxAccountClient.js:346</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l383"><code>client&#x2F;FxAccountClient.js:383</code></a>
         </p>
 
 
@@ -2120,7 +2410,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l475"><code>client&#x2F;FxAccountClient.js:475</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l512"><code>client&#x2F;FxAccountClient.js:512</code></a>
         </p>
 
 
@@ -2189,7 +2479,7 @@ If the request returns a success response, the token has not yet been consumed.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l452"><code>client&#x2F;FxAccountClient.js:452</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l489"><code>client&#x2F;FxAccountClient.js:489</code></a>
         </p>
 
 
@@ -2269,7 +2559,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l295"><code>client&#x2F;FxAccountClient.js:295</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l332"><code>client&#x2F;FxAccountClient.js:332</code></a>
         </p>
 
 
@@ -2395,7 +2685,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l280"><code>client&#x2F;FxAccountClient.js:280</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l317"><code>client&#x2F;FxAccountClient.js:317</code></a>
         </p>
 
 
@@ -2460,7 +2750,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l638"><code>client&#x2F;FxAccountClient.js:638</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l692"><code>client&#x2F;FxAccountClient.js:692</code></a>
         </p>
 
 
@@ -2526,7 +2816,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l656"><code>client&#x2F;FxAccountClient.js:656</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l710"><code>client&#x2F;FxAccountClient.js:710</code></a>
         </p>
 
 
@@ -2582,21 +2872,6 @@ example.</p>
                 <li class="arg">
                         <code class="optional">[options={}]</code>
                 </li>
-                <li class="arg">
-                        <code class="optional">[id]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[name]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[type]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[callback]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[publicKey]</code>
-                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -2613,7 +2888,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l167"><code>client&#x2F;FxAccountClient.js:167</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l186"><code>client&#x2F;FxAccountClient.js:186</code></a>
         </p>
 
 
@@ -2717,68 +2992,174 @@ example.</p>
 
                                 </div>
 
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name optional">[id]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                User-unique identifier of device
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[name]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Name of device
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[type]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Type of device (mobile|desktop)
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[callback]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Device's push endpoint
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[publicKey]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Public key used to encrypt push messages
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[authKey]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Authentication secret used to encrypt push messages
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[metricsContext={}]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Metrics context metadata</p>
+
+                                </div>
+
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">flowId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current event flow
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowBeginTime</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                flow.begin event time
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[context]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                context identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[entrypoint]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                entrypoint identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[migration]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                migration identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[service]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                service identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmCampaign]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmContent]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign content identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmMedium]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign medium
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmSource]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign source
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmTerm]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign search term
+                                            </div>
+                                        </li>
+                                    </ul>
                             </li>
                         </ul>
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[id]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>User-unique identifier of device</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[name]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Name of device</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[type]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Type of device (mobile|desktop)</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[callback]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Device's push endpoint.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[publicKey]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Public key used to encrypt push messages.</p>
-
-                    </div>
-
                 </li>
             </ul>
         </div>
@@ -2809,18 +3190,6 @@ example.</p>
                 <li class="arg">
                         <code class="optional">[options={}]</code>
                 </li>
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[callback]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[publicKey]</code>
-                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -2837,7 +3206,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l57"><code>client&#x2F;FxAccountClient.js:57</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l58"><code>client&#x2F;FxAccountClient.js:58</code></a>
         </p>
 
 
@@ -2975,54 +3344,163 @@ example.</p>
 
                                 </div>
 
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">name</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                Name of device
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">type</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                Type of device (mobile|desktop)
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[callback]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Device's push endpoint
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[publicKey]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Public key used to encrypt push messages
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[authKey]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                Authentication secret used to encrypt push messages
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[metricsContext={}]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Metrics context metadata</p>
+
+                                </div>
+
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">flowId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current event flow
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowBeginTime</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                flow.begin event time
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[context]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                context identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[entrypoint]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                entrypoint identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[migration]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                migration identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[service]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                service identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmCampaign]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmContent]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign content identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmMedium]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign medium
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmSource]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign source
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name optional">[utmTerm]</code>
+                                                <span class="type">String</span>
+                                                <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                            <div class="param-description">
+                                                marketing campaign search term
+                                            </div>
+                                        </li>
+                                    </ul>
                             </li>
                         </ul>
-                </li>
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Name of device</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Type of device (mobile|desktop)</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[callback]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Device's push endpoint.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[publicKey]</code>
-                        <span class="type">String</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Public key used to encrypt push messages.</p>
-
-                    </div>
-
                 </li>
             </ul>
         </div>
@@ -3066,7 +3544,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l264"><code>client&#x2F;FxAccountClient.js:264</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l301"><code>client&#x2F;FxAccountClient.js:301</code></a>
         </p>
 
 

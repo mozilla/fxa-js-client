@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.34</em>
+            <em>API Docs for: 0.1.35</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -88,13 +88,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define([
-  &#x27;./lib/request&#x27;,
   &#x27;sjcl&#x27;,
   &#x27;p&#x27;,
   &#x27;./lib/credentials&#x27;,
+  &#x27;./lib/errors&#x27;,
   &#x27;./lib/hawkCredentials&#x27;,
-  &#x27;./lib/errors&#x27;
-], function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
+  &#x27;./lib/metricsContext&#x27;,
+  &#x27;./lib/request&#x27;,
+], function (sjcl, P, credentials, ERRORS, hawkCredentials, metricsContext, Request) {
   &#x27;use strict&#x27;;
 
   var VERSION = &#x27;v1&#x27;;
@@ -162,10 +163,23 @@ define([
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} name Name of device
-   *     @param {String} type Type of device (mobile|desktop)
-   *     @param {string} [callback] Device&#x27;s push endpoint.
-   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   *     @param {String} options.device.name Name of device
+   *     @param {String} options.device.type Type of device (mobile|desktop)
+   *     @param {string} [options.device.callback] Device&#x27;s push endpoint
+   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
+   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -177,7 +191,7 @@ define([
     return credentials.setup(email, password)
       .then(
         function (result) {
-          /*eslint complexity: [2, 12] */
+          /*eslint complexity: [2, 13] */
           var endpoint = &#x27;/account/create&#x27;;
           var data = {
             email: result.emailUTF8,
@@ -196,8 +210,9 @@ define([
                 data.device.pushCallback = options.device.callback;
               }
 
-              if (options.device.publicKey) {
+              if (options.device.publicKey &amp;&amp; options.device.authKey) {
                 data.device.pushPublicKey = options.device.publicKey;
+                data.device.pushAuthKey = options.device.authKey;
               }
             }
 
@@ -235,6 +250,10 @@ define([
                 &#x27;Accept-Language&#x27;: options.lang
               };
             }
+
+            if (options.metricsContext) {
+              data.metricsContext = metricsContext.marshall(options.metricsContext);
+            }
           }
 
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data, requestOpts)
@@ -265,11 +284,24 @@ define([
    *   Reason for sign in. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
    *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;, &#x60;account_unlock&#x60;.
    *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} [id] User-unique identifier of device
-   *     @param {String} [name] Name of device
-   *     @param {String} [type] Type of device (mobile|desktop)
-   *     @param {string} [callback] Device&#x27;s push endpoint.
-   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   *     @param {String} [options.device.id] User-unique identifier of device
+   *     @param {String} [options.device.name] Name of device
+   *     @param {String} [options.device.type] Type of device (mobile|desktop)
+   *     @param {string} [options.device.callback] Device&#x27;s push endpoint
+   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
+   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
@@ -312,8 +344,9 @@ define([
               data.device.pushCallback = options.device.callback;
             }
 
-            if (options.device.publicKey) {
+            if (options.device.publicKey &amp;&amp; options.device.authKey) {
               data.device.pushPublicKey = options.device.publicKey;
+              data.device.pushAuthKey = options.device.authKey;
             }
           }
 
@@ -323,6 +356,10 @@ define([
 
           if (options.reason) {
             data.reason = options.reason;
+          }
+
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
           }
 
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
@@ -585,11 +622,30 @@ define([
    * @param {String} email
    * @param {String} newPassword
    * @param {String} accountResetToken
+   * @param {Object} [options={}] Options
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken) {
+  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
     var self = this;
-    var authPW;
+    var data = {};
+
+    options = options || {};
+
+    if (options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
 
     required(email, &#x27;email&#x27;);
     required(newPassword, &#x27;new password&#x27;);
@@ -598,15 +654,13 @@ define([
     return credentials.setup(email, newPassword)
       .then(
         function (result) {
-          authPW = sjcl.codec.hex.fromBits(result.authPW);
+          data.authPW = sjcl.codec.hex.fromBits(result.authPW);
 
           return hawkCredentials(accountResetToken, &#x27;accountResetToken&#x27;,  HKDF_SIZE);
         }
       ).then(
         function (creds) {
-          return self.request.send(&#x27;/account/reset&#x27;, &#x27;POST&#x27;, creds, {
-            authPW: authPW
-          });
+          return self.request.send(&#x27;/account/reset&#x27;, &#x27;POST&#x27;, creds, data);
         }
       );
   };
@@ -764,9 +818,22 @@ define([
    * @param {String} sessionToken User session token
    * @param {Object} publicKey The key to sign
    * @param {int} duration Time interval from now when the certificate will expire in milliseconds
+   * @param {Object} [options={}] Options
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
+  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration, options) {
     var self = this;
     var data = {
       publicKey: publicKey,
@@ -776,6 +843,12 @@ define([
     required(sessionToken, &#x27;sessionToken&#x27;);
     required(publicKey, &#x27;publicKey&#x27;);
     required(duration, &#x27;duration&#x27;);
+
+    options = options || {};
+
+    if (options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
 
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
@@ -888,6 +961,7 @@ define([
    * @param {String} email
    * @param {String} newPassword
    * @param {Object} oldCreds This object should consists of &#x60;oldUnwrapBKey&#x60;, &#x60;keyFetchToken&#x60; and &#x60;passwordChangeToken&#x60;.
+   * @param {Object} keys This object should contain the unbundled keys
    * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
    */
   FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
@@ -1011,6 +1085,7 @@ define([
    * @param {Object} [options={}] Options
    *   @param {string} [options.deviceCallback] Device&#x27;s push endpoint.
    *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   *   @param {string} [options.deviceAuthKey] Authentication secret used to encrypt push messages.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceRegister = function (sessionToken, deviceName, deviceType, options) {
@@ -1028,9 +1103,13 @@ define([
           type: deviceType
         };
 
-        if (options.deviceCallback &amp;&amp; options.devicePublicKey) {
+        if (options.deviceCallback) {
           data.pushCallback = options.deviceCallback;
+        }
+
+        if (options.devicePublicKey &amp;&amp; options.deviceAuthKey) {
           data.pushPublicKey = options.devicePublicKey;
+          data.pushAuthKey = options.deviceAuthKey;
         }
 
         return request.send(&#x27;/account/device&#x27;, &#x27;POST&#x27;, creds, data);
@@ -1047,6 +1126,7 @@ define([
    * @param {Object} [options={}] Options
    *   @param {string} [options.deviceCallback] Device&#x27;s push endpoint.
    *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   *   @param {string} [options.deviceAuthKey] Authentication secret used to encrypt push messages.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceUpdate = function (sessionToken, deviceId, deviceName, options) {
@@ -1064,9 +1144,13 @@ define([
           name: deviceName
         };
 
-        if (options.deviceCallback &amp;&amp; options.devicePublicKey) {
+        if (options.deviceCallback) {
           data.pushCallback = options.deviceCallback;
+        }
+
+        if (options.devicePublicKey &amp;&amp; options.deviceAuthKey) {
           data.pushPublicKey = options.devicePublicKey;
+          data.pushAuthKey = options.deviceAuthKey;
         }
 
         return request.send(&#x27;/account/device&#x27;, &#x27;POST&#x27;, creds, data);
@@ -1116,8 +1200,6 @@ define([
 
   return FxAccountClient;
 });
-
-
 
     </pre>
 </div>
