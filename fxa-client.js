@@ -441,518 +441,6 @@ f[6]+q|0;f[7]=f[7]+r|0}sjcl.misc.hmac=function(a,b){this.j=b=b||sjcl.hash.sha256
 sjcl.misc.hmac.prototype.reset=function(){this.h=new this.j(this.c[0]);this.m=!1};sjcl.misc.hmac.prototype.update=function(a){this.m=!0;this.h.update(a)};sjcl.misc.hmac.prototype.digest=function(){var a=this.h.finalize(),a=(new this.j(this.c[1])).update(a).finalize();this.reset();return a};
 sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.invalid("invalid params to pbkdf2");"string"===typeof a&&(a=sjcl.codec.utf8String.toBits(a));"string"===typeof b&&(b=sjcl.codec.utf8String.toBits(b));e=e||sjcl.misc.hmac;a=new e(a);var g,f,h,p,k=[],n=sjcl.bitArray;for(p=1;32*k.length<(d||1);p++){e=g=a.encrypt(n.concat(b,[p]));for(f=1;f<c;f++){g=a.encrypt(g);for(h=0;h<g.length;h++)e[h]^=g[h]}k=k.concat(e)}d&&(k=n.clamp(k,d));return k};
   return sjcl; });
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/hawk',['sjcl'], function (sjcl) {
-  'use strict';
-
-  /*
-   HTTP Hawk Authentication Scheme
-   Copyright (c) 2012-2013, Eran Hammer <eran@hueniverse.com>
-   MIT Licensed
-   */
-
-
-  // Declare namespace
-
-  var hawk = {};
-
-  hawk.client = {
-
-    // Generate an Authorization header for a given request
-
-    /*
-     uri: 'http://example.com/resource?a=b'
-     method: HTTP verb (e.g. 'GET', 'POST')
-     options: {
-
-     // Required
-
-     credentials: {
-     id: 'dh37fgj492je',
-     key: 'aoijedoaijsdlaksjdl',
-     algorithm: 'sha256'                                 // 'sha1', 'sha256'
-     },
-
-     // Optional
-
-     ext: 'application-specific',                        // Application specific data sent via the ext attribute
-     timestamp: Date.now() / 1000,                       // A pre-calculated timestamp in seconds
-     nonce: '2334f34f',                                  // A pre-generated nonce
-     localtimeOffsetMsec: 400,                           // Time offset to sync with server time (ignored if timestamp provided)
-     payload: '{"some":"payload"}',                      // UTF-8 encoded string for body hash generation (ignored if hash provided)
-     contentType: 'application/json',                    // Payload content-type (ignored if hash provided)
-     hash: 'U4MKKSmiVxk37JCCrAVIjV=',                    // Pre-calculated payload hash
-     app: '24s23423f34dx',                               // Oz application id
-     dlg: '234sz34tww3sd'                                // Oz delegated-by application id
-     }
-     */
-
-    header: function (uri, method, options) {
-      /*eslint complexity: [2, 21] */
-      var result = {
-        field: '',
-        artifacts: {}
-      };
-
-      // Validate inputs
-
-      if (!uri || (typeof uri !== 'string' && typeof uri !== 'object') ||
-        !method || typeof method !== 'string' ||
-        !options || typeof options !== 'object') {
-
-        result.err = 'Invalid argument type';
-        return result;
-      }
-
-      // Application time
-
-      var timestamp = options.timestamp || Math.floor((hawk.utils.now() + (options.localtimeOffsetMsec || 0)) / 1000);
-
-      // Validate credentials
-
-      var credentials = options.credentials;
-      if (!credentials ||
-        !credentials.id ||
-        !credentials.key ||
-        !credentials.algorithm) {
-
-        result.err = 'Invalid credential object';
-        return result;
-      }
-
-      if (hawk.utils.baseIndexOf(hawk.crypto.algorithms, credentials.algorithm) === -1) {
-        result.err = 'Unknown algorithm';
-        return result;
-      }
-
-      // Parse URI
-
-      if (typeof uri === 'string') {
-        uri = hawk.utils.parseUri(uri);
-      }
-
-      // Calculate signature
-
-      var artifacts = {
-        ts: timestamp,
-        nonce: options.nonce || hawk.utils.randomString(6),
-        method: method,
-        resource: uri.relative,
-        host: uri.hostname,
-        port: uri.port,
-        hash: options.hash,
-        ext: options.ext,
-        app: options.app,
-        dlg: options.dlg
-      };
-
-      result.artifacts = artifacts;
-
-      // Calculate payload hash
-
-      if (!artifacts.hash &&
-        options.hasOwnProperty('payload')) {
-
-        artifacts.hash = hawk.crypto.calculatePayloadHash(options.payload, credentials.algorithm, options.contentType);
-      }
-
-      var mac = hawk.crypto.calculateMac('header', credentials, artifacts);
-
-      // Construct header
-
-      var hasExt = artifacts.ext !== null && artifacts.ext !== undefined && artifacts.ext !== '';       // Other falsey values allowed
-      var header = 'Hawk id="' + credentials.id +
-        '", ts="' + artifacts.ts +
-        '", nonce="' + artifacts.nonce +
-        (artifacts.hash ? '", hash="' + artifacts.hash : '') +
-        (hasExt ? '", ext="' + hawk.utils.escapeHeaderAttribute(artifacts.ext) : '') +
-        '", mac="' + mac + '"';
-
-      if (artifacts.app) {
-        header += ', app="' + artifacts.app +
-          (artifacts.dlg ? '", dlg="' + artifacts.dlg : '') + '"';
-      }
-
-      result.field = header;
-
-      return result;
-    },
-
-
-    // Validate server response
-
-    /*
-     request:    object created via 'new XMLHttpRequest()' after response received
-     artifacts:  object recieved from header().artifacts
-     options: {
-     payload:    optional payload received
-     required:   specifies if a Server-Authorization header is required. Defaults to 'false'
-     }
-     */
-
-    authenticate: function (request, credentials, artifacts, options) {
-
-      options = options || {};
-
-      if (request.getResponseHeader('www-authenticate')) {
-
-        // Parse HTTP WWW-Authenticate header
-
-        var attrsAuth = hawk.utils.parseAuthorizationHeader(request.getResponseHeader('www-authenticate'), ['ts', 'tsm', 'error']);
-        if (!attrsAuth) {
-          return false;
-        }
-
-        if (attrsAuth.ts) {
-          var tsm = hawk.crypto.calculateTsMac(attrsAuth.ts, credentials);
-          if (tsm !== attrsAuth.tsm) {
-            return false;
-          }
-
-          hawk.utils.setNtpOffset(attrsAuth.ts - Math.floor((new Date()).getTime() / 1000));     // Keep offset at 1 second precision
-        }
-      }
-
-      // Parse HTTP Server-Authorization header
-
-      if (!request.getResponseHeader('server-authorization') &&
-        !options.required) {
-
-        return true;
-      }
-
-      var attributes = hawk.utils.parseAuthorizationHeader(request.getResponseHeader('server-authorization'), ['mac', 'ext', 'hash']);
-      if (!attributes) {
-        return false;
-      }
-
-      var modArtifacts = {
-        ts: artifacts.ts,
-        nonce: artifacts.nonce,
-        method: artifacts.method,
-        resource: artifacts.resource,
-        host: artifacts.host,
-        port: artifacts.port,
-        hash: attributes.hash,
-        ext: attributes.ext,
-        app: artifacts.app,
-        dlg: artifacts.dlg
-      };
-
-      var mac = hawk.crypto.calculateMac('response', credentials, modArtifacts);
-      if (mac !== attributes.mac) {
-        return false;
-      }
-
-      if (!options.hasOwnProperty('payload')) {
-        return true;
-      }
-
-      if (!attributes.hash) {
-        return false;
-      }
-
-      var calculatedHash = hawk.crypto.calculatePayloadHash(options.payload, credentials.algorithm, request.getResponseHeader('content-type'));
-      return (calculatedHash === attributes.hash);
-    },
-
-    message: function (host, port, message, options) {
-
-      // Validate inputs
-
-      if (!host || typeof host !== 'string' ||
-        !port || typeof port !== 'number' ||
-        message === null || message === undefined || typeof message !== 'string' ||
-        !options || typeof options !== 'object') {
-
-        return null;
-      }
-
-      // Application time
-
-      var timestamp = options.timestamp || Math.floor((hawk.utils.now() + (options.localtimeOffsetMsec || 0)) / 1000);
-
-      // Validate credentials
-
-      var credentials = options.credentials;
-      if (!credentials ||
-        !credentials.id ||
-        !credentials.key ||
-        !credentials.algorithm) {
-
-        // Invalid credential object
-        return null;
-      }
-
-      if (hawk.crypto.algorithms.indexOf(credentials.algorithm) === -1) {
-        return null;
-      }
-
-      // Calculate signature
-
-      var artifacts = {
-        ts: timestamp,
-        nonce: options.nonce || hawk.utils.randomString(6),
-        host: host,
-        port: port,
-        hash: hawk.crypto.calculatePayloadHash(message, credentials.algorithm)
-      };
-
-      // Construct authorization
-
-      var result = {
-        id: credentials.id,
-        ts: artifacts.ts,
-        nonce: artifacts.nonce,
-        hash: artifacts.hash,
-        mac: hawk.crypto.calculateMac('message', credentials, artifacts)
-      };
-
-      return result;
-    },
-
-    authenticateTimestamp: function (message, credentials, updateClock) {           // updateClock defaults to true
-
-      var tsm = hawk.crypto.calculateTsMac(message.ts, credentials);
-      if (tsm !== message.tsm) {
-        return false;
-      }
-
-      if (updateClock !== false) {
-        hawk.utils.setNtpOffset(message.ts - Math.floor((new Date()).getTime() / 1000));    // Keep offset at 1 second precision
-      }
-
-      return true;
-    }
-  };
-
-
-  hawk.crypto = {
-
-    headerVersion: '1',
-
-    algorithms: ['sha1', 'sha256'],
-
-    calculateMac: function (type, credentials, options) {
-      var normalized = hawk.crypto.generateNormalizedString(type, options);
-      var hmac = new sjcl.misc.hmac(credentials.key, sjcl.hash.sha256);
-      hmac.update(normalized);
-
-      return sjcl.codec.base64.fromBits(hmac.digest());
-    },
-
-    generateNormalizedString: function (type, options) {
-
-      var normalized = 'hawk.' + hawk.crypto.headerVersion + '.' + type + '\n' +
-        options.ts + '\n' +
-        options.nonce + '\n' +
-        (options.method || '').toUpperCase() + '\n' +
-        (options.resource || '') + '\n' +
-        options.host.toLowerCase() + '\n' +
-        options.port + '\n' +
-        (options.hash || '') + '\n';
-
-      if (options.ext) {
-        normalized += options.ext.replace('\\', '\\\\').replace('\n', '\\n');
-      }
-
-      normalized += '\n';
-
-      if (options.app) {
-        normalized += options.app + '\n' +
-          (options.dlg || '') + '\n';
-      }
-
-      return normalized;
-    },
-
-    calculatePayloadHash: function (payload, algorithm, contentType) {
-      var hash = new sjcl.hash.sha256();
-      hash.update('hawk.' + hawk.crypto.headerVersion + '.payload\n')
-        .update(hawk.utils.parseContentType(contentType) + '\n')
-        .update(payload || '')
-        .update('\n');
-
-      return sjcl.codec.base64.fromBits(hash.finalize());
-    },
-
-    calculateTsMac: function (ts, credentials) {
-      var hmac = new sjcl.misc.hmac(credentials.key, sjcl.hash.sha256);
-      hmac.update('hawk.' + hawk.crypto.headerVersion + '.ts\n' + ts + '\n');
-
-      return sjcl.codec.base64.fromBits(hmac.digest());
-    }
-  };
-
-
-  hawk.utils = {
-
-    storage: {                                      // localStorage compatible interface
-      _cache: {},
-      setItem: function (key, value) {
-
-        hawk.utils.storage._cache[key] = value;
-      },
-      getItem: function (key) {
-
-        return hawk.utils.storage._cache[key];
-      }
-    },
-
-    setStorage: function (storage) {
-
-      var ntpOffset = hawk.utils.getNtpOffset() || 0;
-      hawk.utils.storage = storage;
-      hawk.utils.setNtpOffset(ntpOffset);
-    },
-
-    setNtpOffset: function (offset) {
-
-      try {
-        hawk.utils.storage.setItem('hawk_ntp_offset', offset);
-      }
-      catch (err) {
-        console.error('[hawk] could not write to storage.');
-        console.error(err);
-      }
-    },
-
-    getNtpOffset: function () {
-
-      return parseInt(hawk.utils.storage.getItem('hawk_ntp_offset') || '0', 10);
-    },
-
-    now: function () {
-
-      return (new Date()).getTime() + hawk.utils.getNtpOffset();
-    },
-
-    escapeHeaderAttribute: function (attribute) {
-
-      return attribute.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
-    },
-
-    parseContentType: function (header) {
-
-      if (!header) {
-        return '';
-      }
-
-      return header.split(';')[0].replace(/^\s+|\s+$/g, '').toLowerCase();
-    },
-
-    parseAuthorizationHeader: function (header, keys) {
-
-      if (!header) {
-        return null;
-      }
-
-      var headerParts = header.match(/^(\w+)(?:\s+(.*))?$/);       // Header: scheme[ something]
-      if (!headerParts) {
-        return null;
-      }
-
-      var scheme = headerParts[1];
-      if (scheme.toLowerCase() !== 'hawk') {
-        return null;
-      }
-
-      var attributesString = headerParts[2];
-      if (!attributesString) {
-        return null;
-      }
-
-      var attributes = {};
-      var verify = attributesString.replace(/(\w+)="([^"\\]*)"\s*(?:,\s*|$)/g, function ($0, $1, $2) {
-
-        // Check valid attribute names
-
-        if (keys.indexOf($1) === -1) {
-          return;
-        }
-
-        // Allowed attribute value characters: !#$%&'()*+,-./:;<=>?@[]^_`{|}~ and space, a-z, A-Z, 0-9
-
-        if ($2.match(/^[ \w\!#\$%&'\(\)\*\+,\-\.\/\:;<\=>\?@\[\]\^`\{\|\}~]+$/) === null) {
-          return;
-        }
-
-        // Check for duplicates
-
-        if (attributes.hasOwnProperty($1)) {
-          return;
-        }
-
-        attributes[$1] = $2;
-        return '';
-      });
-
-      if (verify !== '') {
-        return null;
-      }
-
-      return attributes;
-    },
-
-    randomString: function (size) {
-
-      var randomSource = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      var len = randomSource.length;
-
-      var result = [];
-      for (var i = 0; i < size; ++i) {
-        result[i] = randomSource[Math.floor(Math.random() * len)];
-      }
-
-      return result.join('');
-    },
-
-    baseIndexOf: function(array, value, fromIndex) {
-      var index = (fromIndex || 0) - 1,
-        length = array ? array.length : 0;
-
-      while (++index < length) {
-        if (array[index] === value) {
-          return index;
-        }
-      }
-      return -1;
-    },
-
-    parseUri: function (input) {
-
-      // Based on: parseURI 1.2.2
-      // http://blog.stevenlevithan.com/archives/parseuri
-      // (c) Steven Levithan <stevenlevithan.com>
-      // MIT License
-
-      var keys = ['source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'hostname', 'port', 'resource', 'relative', 'pathname', 'directory', 'file', 'query', 'fragment'];
-
-      var uriRegex = /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?(((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?)(?:#(.*))?)/;
-      var uriByNumber = uriRegex.exec(input);
-      var uri = {};
-
-      var i = 15;
-      while (i--) {
-        uri[keys[i]] = uriByNumber[i] || '';
-      }
-
-      if (uri.port === null ||
-        uri.port === '') {
-
-        uri.port = (uri.protocol.toLowerCase() === 'http' ? '80' : (uri.protocol.toLowerCase() === 'https' ? '443' : ''));
-      }
-
-      return uri;
-    }
-  };
-
-
-  return hawk;
-});
-
 /*!
  * Copyright 2013 Robert Katić
  * Released under the MIT license
@@ -1484,6 +972,518 @@ define('client/lib/hawk',['sjcl'], function (sjcl) {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+define('client/lib/hawk',['sjcl'], function (sjcl) {
+  'use strict';
+
+  /*
+   HTTP Hawk Authentication Scheme
+   Copyright (c) 2012-2013, Eran Hammer <eran@hueniverse.com>
+   MIT Licensed
+   */
+
+
+  // Declare namespace
+
+  var hawk = {};
+
+  hawk.client = {
+
+    // Generate an Authorization header for a given request
+
+    /*
+     uri: 'http://example.com/resource?a=b'
+     method: HTTP verb (e.g. 'GET', 'POST')
+     options: {
+
+     // Required
+
+     credentials: {
+     id: 'dh37fgj492je',
+     key: 'aoijedoaijsdlaksjdl',
+     algorithm: 'sha256'                                 // 'sha1', 'sha256'
+     },
+
+     // Optional
+
+     ext: 'application-specific',                        // Application specific data sent via the ext attribute
+     timestamp: Date.now() / 1000,                       // A pre-calculated timestamp in seconds
+     nonce: '2334f34f',                                  // A pre-generated nonce
+     localtimeOffsetMsec: 400,                           // Time offset to sync with server time (ignored if timestamp provided)
+     payload: '{"some":"payload"}',                      // UTF-8 encoded string for body hash generation (ignored if hash provided)
+     contentType: 'application/json',                    // Payload content-type (ignored if hash provided)
+     hash: 'U4MKKSmiVxk37JCCrAVIjV=',                    // Pre-calculated payload hash
+     app: '24s23423f34dx',                               // Oz application id
+     dlg: '234sz34tww3sd'                                // Oz delegated-by application id
+     }
+     */
+
+    header: function (uri, method, options) {
+      /*eslint complexity: [2, 21] */
+      var result = {
+        field: '',
+        artifacts: {}
+      };
+
+      // Validate inputs
+
+      if (!uri || (typeof uri !== 'string' && typeof uri !== 'object') ||
+        !method || typeof method !== 'string' ||
+        !options || typeof options !== 'object') {
+
+        result.err = 'Invalid argument type';
+        return result;
+      }
+
+      // Application time
+
+      var timestamp = options.timestamp || Math.floor((hawk.utils.now() + (options.localtimeOffsetMsec || 0)) / 1000);
+
+      // Validate credentials
+
+      var credentials = options.credentials;
+      if (!credentials ||
+        !credentials.id ||
+        !credentials.key ||
+        !credentials.algorithm) {
+
+        result.err = 'Invalid credential object';
+        return result;
+      }
+
+      if (hawk.utils.baseIndexOf(hawk.crypto.algorithms, credentials.algorithm) === -1) {
+        result.err = 'Unknown algorithm';
+        return result;
+      }
+
+      // Parse URI
+
+      if (typeof uri === 'string') {
+        uri = hawk.utils.parseUri(uri);
+      }
+
+      // Calculate signature
+
+      var artifacts = {
+        ts: timestamp,
+        nonce: options.nonce || hawk.utils.randomString(6),
+        method: method,
+        resource: uri.relative,
+        host: uri.hostname,
+        port: uri.port,
+        hash: options.hash,
+        ext: options.ext,
+        app: options.app,
+        dlg: options.dlg
+      };
+
+      result.artifacts = artifacts;
+
+      // Calculate payload hash
+
+      if (!artifacts.hash &&
+        options.hasOwnProperty('payload')) {
+
+        artifacts.hash = hawk.crypto.calculatePayloadHash(options.payload, credentials.algorithm, options.contentType);
+      }
+
+      var mac = hawk.crypto.calculateMac('header', credentials, artifacts);
+
+      // Construct header
+
+      var hasExt = artifacts.ext !== null && artifacts.ext !== undefined && artifacts.ext !== '';       // Other falsey values allowed
+      var header = 'Hawk id="' + credentials.id +
+        '", ts="' + artifacts.ts +
+        '", nonce="' + artifacts.nonce +
+        (artifacts.hash ? '", hash="' + artifacts.hash : '') +
+        (hasExt ? '", ext="' + hawk.utils.escapeHeaderAttribute(artifacts.ext) : '') +
+        '", mac="' + mac + '"';
+
+      if (artifacts.app) {
+        header += ', app="' + artifacts.app +
+          (artifacts.dlg ? '", dlg="' + artifacts.dlg : '') + '"';
+      }
+
+      result.field = header;
+
+      return result;
+    },
+
+
+    // Validate server response
+
+    /*
+     request:    object created via 'new XMLHttpRequest()' after response received
+     artifacts:  object recieved from header().artifacts
+     options: {
+     payload:    optional payload received
+     required:   specifies if a Server-Authorization header is required. Defaults to 'false'
+     }
+     */
+
+    authenticate: function (request, credentials, artifacts, options) {
+
+      options = options || {};
+
+      if (request.getResponseHeader('www-authenticate')) {
+
+        // Parse HTTP WWW-Authenticate header
+
+        var attrsAuth = hawk.utils.parseAuthorizationHeader(request.getResponseHeader('www-authenticate'), ['ts', 'tsm', 'error']);
+        if (!attrsAuth) {
+          return false;
+        }
+
+        if (attrsAuth.ts) {
+          var tsm = hawk.crypto.calculateTsMac(attrsAuth.ts, credentials);
+          if (tsm !== attrsAuth.tsm) {
+            return false;
+          }
+
+          hawk.utils.setNtpOffset(attrsAuth.ts - Math.floor((new Date()).getTime() / 1000));     // Keep offset at 1 second precision
+        }
+      }
+
+      // Parse HTTP Server-Authorization header
+
+      if (!request.getResponseHeader('server-authorization') &&
+        !options.required) {
+
+        return true;
+      }
+
+      var attributes = hawk.utils.parseAuthorizationHeader(request.getResponseHeader('server-authorization'), ['mac', 'ext', 'hash']);
+      if (!attributes) {
+        return false;
+      }
+
+      var modArtifacts = {
+        ts: artifacts.ts,
+        nonce: artifacts.nonce,
+        method: artifacts.method,
+        resource: artifacts.resource,
+        host: artifacts.host,
+        port: artifacts.port,
+        hash: attributes.hash,
+        ext: attributes.ext,
+        app: artifacts.app,
+        dlg: artifacts.dlg
+      };
+
+      var mac = hawk.crypto.calculateMac('response', credentials, modArtifacts);
+      if (mac !== attributes.mac) {
+        return false;
+      }
+
+      if (!options.hasOwnProperty('payload')) {
+        return true;
+      }
+
+      if (!attributes.hash) {
+        return false;
+      }
+
+      var calculatedHash = hawk.crypto.calculatePayloadHash(options.payload, credentials.algorithm, request.getResponseHeader('content-type'));
+      return (calculatedHash === attributes.hash);
+    },
+
+    message: function (host, port, message, options) {
+
+      // Validate inputs
+
+      if (!host || typeof host !== 'string' ||
+        !port || typeof port !== 'number' ||
+        message === null || message === undefined || typeof message !== 'string' ||
+        !options || typeof options !== 'object') {
+
+        return null;
+      }
+
+      // Application time
+
+      var timestamp = options.timestamp || Math.floor((hawk.utils.now() + (options.localtimeOffsetMsec || 0)) / 1000);
+
+      // Validate credentials
+
+      var credentials = options.credentials;
+      if (!credentials ||
+        !credentials.id ||
+        !credentials.key ||
+        !credentials.algorithm) {
+
+        // Invalid credential object
+        return null;
+      }
+
+      if (hawk.crypto.algorithms.indexOf(credentials.algorithm) === -1) {
+        return null;
+      }
+
+      // Calculate signature
+
+      var artifacts = {
+        ts: timestamp,
+        nonce: options.nonce || hawk.utils.randomString(6),
+        host: host,
+        port: port,
+        hash: hawk.crypto.calculatePayloadHash(message, credentials.algorithm)
+      };
+
+      // Construct authorization
+
+      var result = {
+        id: credentials.id,
+        ts: artifacts.ts,
+        nonce: artifacts.nonce,
+        hash: artifacts.hash,
+        mac: hawk.crypto.calculateMac('message', credentials, artifacts)
+      };
+
+      return result;
+    },
+
+    authenticateTimestamp: function (message, credentials, updateClock) {           // updateClock defaults to true
+
+      var tsm = hawk.crypto.calculateTsMac(message.ts, credentials);
+      if (tsm !== message.tsm) {
+        return false;
+      }
+
+      if (updateClock !== false) {
+        hawk.utils.setNtpOffset(message.ts - Math.floor((new Date()).getTime() / 1000));    // Keep offset at 1 second precision
+      }
+
+      return true;
+    }
+  };
+
+
+  hawk.crypto = {
+
+    headerVersion: '1',
+
+    algorithms: ['sha1', 'sha256'],
+
+    calculateMac: function (type, credentials, options) {
+      var normalized = hawk.crypto.generateNormalizedString(type, options);
+      var hmac = new sjcl.misc.hmac(credentials.key, sjcl.hash.sha256);
+      hmac.update(normalized);
+
+      return sjcl.codec.base64.fromBits(hmac.digest());
+    },
+
+    generateNormalizedString: function (type, options) {
+
+      var normalized = 'hawk.' + hawk.crypto.headerVersion + '.' + type + '\n' +
+        options.ts + '\n' +
+        options.nonce + '\n' +
+        (options.method || '').toUpperCase() + '\n' +
+        (options.resource || '') + '\n' +
+        options.host.toLowerCase() + '\n' +
+        options.port + '\n' +
+        (options.hash || '') + '\n';
+
+      if (options.ext) {
+        normalized += options.ext.replace('\\', '\\\\').replace('\n', '\\n');
+      }
+
+      normalized += '\n';
+
+      if (options.app) {
+        normalized += options.app + '\n' +
+          (options.dlg || '') + '\n';
+      }
+
+      return normalized;
+    },
+
+    calculatePayloadHash: function (payload, algorithm, contentType) {
+      var hash = new sjcl.hash.sha256();
+      hash.update('hawk.' + hawk.crypto.headerVersion + '.payload\n')
+        .update(hawk.utils.parseContentType(contentType) + '\n')
+        .update(payload || '')
+        .update('\n');
+
+      return sjcl.codec.base64.fromBits(hash.finalize());
+    },
+
+    calculateTsMac: function (ts, credentials) {
+      var hmac = new sjcl.misc.hmac(credentials.key, sjcl.hash.sha256);
+      hmac.update('hawk.' + hawk.crypto.headerVersion + '.ts\n' + ts + '\n');
+
+      return sjcl.codec.base64.fromBits(hmac.digest());
+    }
+  };
+
+
+  hawk.utils = {
+
+    storage: {                                      // localStorage compatible interface
+      _cache: {},
+      setItem: function (key, value) {
+
+        hawk.utils.storage._cache[key] = value;
+      },
+      getItem: function (key) {
+
+        return hawk.utils.storage._cache[key];
+      }
+    },
+
+    setStorage: function (storage) {
+
+      var ntpOffset = hawk.utils.getNtpOffset() || 0;
+      hawk.utils.storage = storage;
+      hawk.utils.setNtpOffset(ntpOffset);
+    },
+
+    setNtpOffset: function (offset) {
+
+      try {
+        hawk.utils.storage.setItem('hawk_ntp_offset', offset);
+      }
+      catch (err) {
+        console.error('[hawk] could not write to storage.');
+        console.error(err);
+      }
+    },
+
+    getNtpOffset: function () {
+
+      return parseInt(hawk.utils.storage.getItem('hawk_ntp_offset') || '0', 10);
+    },
+
+    now: function () {
+
+      return (new Date()).getTime() + hawk.utils.getNtpOffset();
+    },
+
+    escapeHeaderAttribute: function (attribute) {
+
+      return attribute.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    },
+
+    parseContentType: function (header) {
+
+      if (!header) {
+        return '';
+      }
+
+      return header.split(';')[0].replace(/^\s+|\s+$/g, '').toLowerCase();
+    },
+
+    parseAuthorizationHeader: function (header, keys) {
+
+      if (!header) {
+        return null;
+      }
+
+      var headerParts = header.match(/^(\w+)(?:\s+(.*))?$/);       // Header: scheme[ something]
+      if (!headerParts) {
+        return null;
+      }
+
+      var scheme = headerParts[1];
+      if (scheme.toLowerCase() !== 'hawk') {
+        return null;
+      }
+
+      var attributesString = headerParts[2];
+      if (!attributesString) {
+        return null;
+      }
+
+      var attributes = {};
+      var verify = attributesString.replace(/(\w+)="([^"\\]*)"\s*(?:,\s*|$)/g, function ($0, $1, $2) {
+
+        // Check valid attribute names
+
+        if (keys.indexOf($1) === -1) {
+          return;
+        }
+
+        // Allowed attribute value characters: !#$%&'()*+,-./:;<=>?@[]^_`{|}~ and space, a-z, A-Z, 0-9
+
+        if ($2.match(/^[ \w\!#\$%&'\(\)\*\+,\-\.\/\:;<\=>\?@\[\]\^`\{\|\}~]+$/) === null) {
+          return;
+        }
+
+        // Check for duplicates
+
+        if (attributes.hasOwnProperty($1)) {
+          return;
+        }
+
+        attributes[$1] = $2;
+        return '';
+      });
+
+      if (verify !== '') {
+        return null;
+      }
+
+      return attributes;
+    },
+
+    randomString: function (size) {
+
+      var randomSource = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      var len = randomSource.length;
+
+      var result = [];
+      for (var i = 0; i < size; ++i) {
+        result[i] = randomSource[Math.floor(Math.random() * len)];
+      }
+
+      return result.join('');
+    },
+
+    baseIndexOf: function(array, value, fromIndex) {
+      var index = (fromIndex || 0) - 1,
+        length = array ? array.length : 0;
+
+      while (++index < length) {
+        if (array[index] === value) {
+          return index;
+        }
+      }
+      return -1;
+    },
+
+    parseUri: function (input) {
+
+      // Based on: parseURI 1.2.2
+      // http://blog.stevenlevithan.com/archives/parseuri
+      // (c) Steven Levithan <stevenlevithan.com>
+      // MIT License
+
+      var keys = ['source', 'protocol', 'authority', 'userInfo', 'user', 'password', 'hostname', 'port', 'resource', 'relative', 'pathname', 'directory', 'file', 'query', 'fragment'];
+
+      var uriRegex = /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?(((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?)(?:#(.*))?)/;
+      var uriByNumber = uriRegex.exec(input);
+      var uri = {};
+
+      var i = 15;
+      while (i--) {
+        uri[keys[i]] = uriByNumber[i] || '';
+      }
+
+      if (uri.port === null ||
+        uri.port === '') {
+
+        uri.port = (uri.protocol.toLowerCase() === 'http' ? '80' : (uri.protocol.toLowerCase() === 'https' ? '443' : ''));
+      }
+
+      return uri;
+    }
+  };
+
+
+  return hawk;
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/lib/errors',[], function () {
   return {
     INVALID_TIMESTAMP: 111,
@@ -1895,14 +1895,55 @@ define('client/lib/hawkCredentials',['sjcl', './hkdf'], function (sjcl, hkdf) {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+// This module does the handling for the metrics context
+// activity event metadata.
+
+define('client/lib/metricsContext',[], function () {
+  'use strict';
+
+  var OPTIONS = {
+    context: true,
+    entrypoint: true,
+    migration: true,
+    service: true,
+    utmCampaign: true,
+    utmContent: true,
+    utmMedium: true,
+    utmSource: true,
+    utmTerm: true
+  };
+
+  return {
+    marshall: function (data) {
+      var metricsContext = {
+        flowId: data.flowId,
+        flowBeginTime: data.flowBeginTime
+      };
+
+      for (var key in data) {
+        if (data.hasOwnProperty(key) && data[key] && OPTIONS[key]) {
+          metricsContext[key] = data[key];
+        }
+      }
+
+      return metricsContext;
+    }
+  };
+});
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/FxAccountClient',[
-  './lib/request',
   'sjcl',
   'p',
   './lib/credentials',
+  './lib/errors',
   './lib/hawkCredentials',
-  './lib/errors'
-], function (Request, sjcl, P, credentials, hawkCredentials, ERRORS) {
+  './lib/metricsContext',
+  './lib/request',
+], function (sjcl, P, credentials, ERRORS, hawkCredentials, metricsContext, Request) {
   'use strict';
 
   var VERSION = 'v1';
@@ -1970,10 +2011,23 @@ define('client/FxAccountClient',[
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} name Name of device
-   *     @param {String} type Type of device (mobile|desktop)
-   *     @param {string} [callback] Device's push endpoint.
-   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   *     @param {String} options.device.name Name of device
+   *     @param {String} options.device.type Type of device (mobile|desktop)
+   *     @param {string} [options.device.callback] Device's push endpoint
+   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
+   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -1985,7 +2039,7 @@ define('client/FxAccountClient',[
     return credentials.setup(email, password)
       .then(
         function (result) {
-          /*eslint complexity: [2, 12] */
+          /*eslint complexity: [2, 13] */
           var endpoint = '/account/create';
           var data = {
             email: result.emailUTF8,
@@ -2004,8 +2058,9 @@ define('client/FxAccountClient',[
                 data.device.pushCallback = options.device.callback;
               }
 
-              if (options.device.publicKey) {
+              if (options.device.publicKey && options.device.authKey) {
                 data.device.pushPublicKey = options.device.publicKey;
+                data.device.pushAuthKey = options.device.authKey;
               }
             }
 
@@ -2043,6 +2098,10 @@ define('client/FxAccountClient',[
                 'Accept-Language': options.lang
               };
             }
+
+            if (options.metricsContext) {
+              data.metricsContext = metricsContext.marshall(options.metricsContext);
+            }
           }
 
           return self.request.send(endpoint, 'POST', null, data, requestOpts)
@@ -2073,11 +2132,24 @@ define('client/FxAccountClient',[
    *   Reason for sign in. Can be one of: `signin`, `password_check`,
    *   `password_change`, `password_reset`, `account_unlock`.
    *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} [id] User-unique identifier of device
-   *     @param {String} [name] Name of device
-   *     @param {String} [type] Type of device (mobile|desktop)
-   *     @param {string} [callback] Device's push endpoint.
-   *     @param {string} [publicKey] Public key used to encrypt push messages.
+   *     @param {String} [options.device.id] User-unique identifier of device
+   *     @param {String} [options.device.name] Name of device
+   *     @param {String} [options.device.type] Type of device (mobile|desktop)
+   *     @param {string} [options.device.callback] Device's push endpoint
+   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
+   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signIn = function (email, password, options) {
@@ -2120,8 +2192,9 @@ define('client/FxAccountClient',[
               data.device.pushCallback = options.device.callback;
             }
 
-            if (options.device.publicKey) {
+            if (options.device.publicKey && options.device.authKey) {
               data.device.pushPublicKey = options.device.publicKey;
+              data.device.pushAuthKey = options.device.authKey;
             }
           }
 
@@ -2131,6 +2204,10 @@ define('client/FxAccountClient',[
 
           if (options.reason) {
             data.reason = options.reason;
+          }
+
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
           }
 
           return self.request.send(endpoint, 'POST', null, data)
@@ -2393,11 +2470,30 @@ define('client/FxAccountClient',[
    * @param {String} email
    * @param {String} newPassword
    * @param {String} accountResetToken
+   * @param {Object} [options={}] Options
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken) {
+  FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
     var self = this;
-    var authPW;
+    var data = {};
+
+    options = options || {};
+
+    if (options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
 
     required(email, 'email');
     required(newPassword, 'new password');
@@ -2406,15 +2502,13 @@ define('client/FxAccountClient',[
     return credentials.setup(email, newPassword)
       .then(
         function (result) {
-          authPW = sjcl.codec.hex.fromBits(result.authPW);
+          data.authPW = sjcl.codec.hex.fromBits(result.authPW);
 
           return hawkCredentials(accountResetToken, 'accountResetToken',  HKDF_SIZE);
         }
       ).then(
         function (creds) {
-          return self.request.send('/account/reset', 'POST', creds, {
-            authPW: authPW
-          });
+          return self.request.send('/account/reset', 'POST', creds, data);
         }
       );
   };
@@ -2572,9 +2666,22 @@ define('client/FxAccountClient',[
    * @param {String} sessionToken User session token
    * @param {Object} publicKey The key to sign
    * @param {int} duration Time interval from now when the certificate will expire in milliseconds
+   * @param {Object} [options={}] Options
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration) {
+  FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration, options) {
     var self = this;
     var data = {
       publicKey: publicKey,
@@ -2584,6 +2691,12 @@ define('client/FxAccountClient',[
     required(sessionToken, 'sessionToken');
     required(publicKey, 'publicKey');
     required(duration, 'duration');
+
+    options = options || {};
+
+    if (options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
 
     return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
@@ -2696,6 +2809,7 @@ define('client/FxAccountClient',[
    * @param {String} email
    * @param {String} newPassword
    * @param {Object} oldCreds This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.
+   * @param {Object} keys This object should contain the unbundled keys
    * @return {Promise} A promise that will be fulfilled with JSON of `xhr.responseText`
    */
   FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
@@ -2819,6 +2933,7 @@ define('client/FxAccountClient',[
    * @param {Object} [options={}] Options
    *   @param {string} [options.deviceCallback] Device's push endpoint.
    *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   *   @param {string} [options.deviceAuthKey] Authentication secret used to encrypt push messages.
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.deviceRegister = function (sessionToken, deviceName, deviceType, options) {
@@ -2836,9 +2951,13 @@ define('client/FxAccountClient',[
           type: deviceType
         };
 
-        if (options.deviceCallback && options.devicePublicKey) {
+        if (options.deviceCallback) {
           data.pushCallback = options.deviceCallback;
+        }
+
+        if (options.devicePublicKey && options.deviceAuthKey) {
           data.pushPublicKey = options.devicePublicKey;
+          data.pushAuthKey = options.deviceAuthKey;
         }
 
         return request.send('/account/device', 'POST', creds, data);
@@ -2855,6 +2974,7 @@ define('client/FxAccountClient',[
    * @param {Object} [options={}] Options
    *   @param {string} [options.deviceCallback] Device's push endpoint.
    *   @param {string} [options.devicePublicKey] Public key used to encrypt push messages.
+   *   @param {string} [options.deviceAuthKey] Authentication secret used to encrypt push messages.
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.deviceUpdate = function (sessionToken, deviceId, deviceName, options) {
@@ -2872,9 +2992,13 @@ define('client/FxAccountClient',[
           name: deviceName
         };
 
-        if (options.deviceCallback && options.devicePublicKey) {
+        if (options.deviceCallback) {
           data.pushCallback = options.deviceCallback;
+        }
+
+        if (options.devicePublicKey && options.deviceAuthKey) {
           data.pushPublicKey = options.devicePublicKey;
+          data.pushAuthKey = options.deviceAuthKey;
         }
 
         return request.send('/account/device', 'POST', creds, data);
@@ -2924,8 +3048,6 @@ define('client/FxAccountClient',[
 
   return FxAccountClient;
 });
-
-
 
     //The modules for your project will be inlined above
     //this snippet. Ask almond to synchronously require the
