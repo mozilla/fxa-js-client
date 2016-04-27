@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.37</em>
+            <em>API Docs for: 0.1.38</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -283,6 +283,12 @@ define([
    *   @param {String} [options.reason]
    *   Reason for sign in. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
    *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;, &#x60;account_unlock&#x60;.
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
    *   @param {Object} [options.device={}] Device registration information
    *     @param {String} [options.device.id] User-unique identifier of device
    *     @param {String} [options.device.name] Name of device
@@ -350,16 +356,24 @@ define([
             }
           }
 
-          if (options.service) {
-            data.service = options.service;
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
           }
 
           if (options.reason) {
             data.reason = options.reason;
           }
 
-          if (options.metricsContext) {
-            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          if (options.redirectTo) {
+            data.redirectTo = options.redirectTo;
+          }
+
+          if (options.resume) {
+            data.resume = options.resume;
+          }
+
+          if (options.service) {
+            data.service = options.service;
           }
 
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
