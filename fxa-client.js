@@ -2010,12 +2010,6 @@ define('client/FxAccountClient',[
    *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
-   *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} options.device.name Name of device
-   *     @param {String} options.device.type Type of device (mobile|desktop)
-   *     @param {string} [options.device.callback] Device's push endpoint
-   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
-   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
@@ -2048,22 +2042,6 @@ define('client/FxAccountClient',[
           var requestOpts = {};
 
           if (options) {
-            if (options.device) {
-              data.device = {
-                name: options.device.name,
-                type: options.device.type
-              };
-
-              if (options.device.callback) {
-                data.device.pushCallback = options.device.callback;
-              }
-
-              if (options.device.publicKey && options.device.authKey) {
-                data.device.pushPublicKey = options.device.publicKey;
-                data.device.pushAuthKey = options.device.authKey;
-              }
-            }
-
             if (options.service) {
               data.service = options.service;
             }
@@ -2131,19 +2109,6 @@ define('client/FxAccountClient',[
    *   @param {String} [options.reason]
    *   Reason for sign in. Can be one of: `signin`, `password_check`,
    *   `password_change`, `password_reset`, `account_unlock`.
-   *   @param {String} [options.redirectTo]
-   *   a URL that the client should be redirected to after handling the request
-   *   @param {String} [options.resume]
-   *   Opaque url-encoded string that will be included in the verification link
-   *   as a querystring parameter, useful for continuing an OAuth flow for
-   *   example.
-   *   @param {Object} [options.device={}] Device registration information
-   *     @param {String} [options.device.id] User-unique identifier of device
-   *     @param {String} [options.device.name] Name of device
-   *     @param {String} [options.device.type] Type of device (mobile|desktop)
-   *     @param {string} [options.device.callback] Device's push endpoint
-   *     @param {string} [options.device.publicKey] Public key used to encrypt push messages
-   *     @param {string} [options.device.authKey] Authentication secret used to encrypt push messages
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
@@ -2179,49 +2144,16 @@ define('client/FxAccountClient',[
             authPW: sjcl.codec.hex.fromBits(result.authPW)
           };
 
-          if (options.device) {
-            data.device = {};
-
-            if (options.device.id) {
-              data.device.id = options.device.id;
-            }
-
-            if (options.device.name) {
-              data.device.name = options.device.name;
-            }
-
-            if (options.device.type) {
-              data.device.type = options.device.type;
-            }
-
-            if (options.device.callback) {
-              data.device.pushCallback = options.device.callback;
-            }
-
-            if (options.device.publicKey && options.device.authKey) {
-              data.device.pushPublicKey = options.device.publicKey;
-              data.device.pushAuthKey = options.device.authKey;
-            }
-          }
-
-          if (options.metricsContext) {
-            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          if (options.service) {
+            data.service = options.service;
           }
 
           if (options.reason) {
             data.reason = options.reason;
           }
 
-          if (options.redirectTo) {
-            data.redirectTo = options.redirectTo;
-          }
-
-          if (options.resume) {
-            data.resume = options.resume;
-          }
-
-          if (options.service) {
-            data.service = options.service;
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
           }
 
           return self.request.send(endpoint, 'POST', null, data)
@@ -2485,6 +2417,11 @@ define('client/FxAccountClient',[
    * @param {String} newPassword
    * @param {String} accountResetToken
    * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If `true`, a new `keyFetchToken` is provisioned. `options.sessionToken`
+   *   is required if `options.keys` is true.
+   *   @param {Boolean} [options.sessionToken]
+   *   If `true`, a new `sessionToken` is provisioned.
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
@@ -2502,6 +2439,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
     var self = this;
     var data = {};
+    var unwrapBKey;
 
     options = options || {};
 
@@ -2509,20 +2447,47 @@ define('client/FxAccountClient',[
       data.metricsContext = metricsContext.marshall(options.metricsContext);
     }
 
+    if (options.sessionToken) {
+      data.sessionToken = options.sessionToken;
+    }
+
     required(email, 'email');
     required(newPassword, 'new password');
     required(accountResetToken, 'accountResetToken');
 
+    if (options.keys) {
+      required(options.sessionToken, 'sessionToken');
+    }
+
     return credentials.setup(email, newPassword)
       .then(
         function (result) {
+          if (options.keys) {
+            unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+          }
+
           data.authPW = sjcl.codec.hex.fromBits(result.authPW);
 
           return hawkCredentials(accountResetToken, 'accountResetToken',  HKDF_SIZE);
         }
       ).then(
         function (creds) {
-          return self.request.send('/account/reset', 'POST', creds, data);
+          var queryParams = '';
+          if (options.keys) {
+            queryParams = '?keys=true';
+          }
+
+          var endpoint = '/account/reset' + queryParams;
+          return self.request.send(endpoint, 'POST', creds, data)
+            .then(
+              function(accountData) {
+                if (options.keys && accountData.keyFetchToken) {
+                  accountData.unwrapBKey = unwrapBKey;
+                }
+
+                return accountData;
+              }
+            );
         }
       );
   };
@@ -2725,10 +2690,17 @@ define('client/FxAccountClient',[
    * @param {String} email
    * @param {String} oldPassword
    * @param {String} newPassword
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If `true`, calls the API with `?keys=true` to get a new keyFetchToken
+   *   @param {String} [options.sessionToken]
+   *   If a `sessionToken` is passed, a new sessionToken will be returned
+   *   with the same `verified` status as the existing sessionToken.
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.passwordChange = function(email, oldPassword, newPassword) {
+  FxAccountClient.prototype.passwordChange = function(email, oldPassword, newPassword, options) {
     var self = this;
+    options = options || {};
 
     required(email, 'email');
     required(oldPassword, 'old password');
@@ -2742,7 +2714,7 @@ define('client/FxAccountClient',[
         return self._passwordChangeKeys(oldCreds)
           .then(function (keys) {
 
-            return self._passwordChangeFinish(email, newPassword, oldCreds, keys);
+            return self._passwordChangeFinish(email, newPassword, oldCreds, keys, options);
           });
       });
 
@@ -2824,9 +2796,16 @@ define('client/FxAccountClient',[
    * @param {String} newPassword
    * @param {Object} oldCreds This object should consists of `oldUnwrapBKey`, `keyFetchToken` and `passwordChangeToken`.
    * @param {Object} keys This object should contain the unbundled keys
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If `true`, calls the API with `?keys=true` to get the keyFetchToken
+   *   @param {String} [options.sessionToken]
+   *   If a `sessionToken` is passed, a new sessionToken will be returned
+   *   with the same `verified` status as the existing sessionToken.
    * @return {Promise} A promise that will be fulfilled with JSON of `xhr.responseText`
    */
-  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys) {
+  FxAccountClient.prototype._passwordChangeFinish = function(email, newPassword, oldCreds, keys, options) {
+    options = options || {};
     var self = this;
 
     required(email, 'email');
@@ -2847,9 +2826,21 @@ define('client/FxAccountClient',[
           )
         );
 
-        return self.request.send('/password/change/finish', 'POST', hawkCreds, {
+        var queryParams = '';
+        if (options.keys) {
+          queryParams = '?keys=true';
+        }
+
+        return self.request.send('/password/change/finish' + queryParams, 'POST', hawkCreds, {
           wrapKb: newWrapKb,
-          authPW: sjcl.codec.hex.fromBits(newCreds.authPW)
+          authPW: sjcl.codec.hex.fromBits(newCreds.authPW),
+          sessionToken: options.sessionToken
+        })
+        .then(function (accountData) {
+          if (options.keys && accountData.keyFetchToken) {
+            accountData.unwrapBKey = sjcl.codec.hex.fromBits(newCreds.unwrapBKey);
+          }
+          return accountData;
         });
       });
   };
