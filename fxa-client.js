@@ -2453,18 +2453,6 @@ define('client/FxAccountClient',[
    *   is required if `options.keys` is true.
    *   @param {Boolean} [options.sessionToken]
    *   If `true`, a new `sessionToken` is provisioned.
-   *   @param {Object} [options.metricsContext={}] Metrics context metadata
-   *     @param {String} options.metricsContext.flowId identifier for the current event flow
-   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
@@ -2473,10 +2461,6 @@ define('client/FxAccountClient',[
     var unwrapBKey;
 
     options = options || {};
-
-    if (options.metricsContext) {
-      data.metricsContext = metricsContext.marshall(options.metricsContext);
-    }
 
     if (options.sessionToken) {
       data.sessionToken = options.sessionToken;
@@ -2677,18 +2661,7 @@ define('client/FxAccountClient',[
    * @param {Object} publicKey The key to sign
    * @param {int} duration Time interval from now when the certificate will expire in milliseconds
    * @param {Object} [options={}] Options
-   *   @param {Object} [options.metricsContext={}] Metrics context metadata
-   *     @param {String} options.metricsContext.flowId identifier for the current event flow
-   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
+   *   @param {String} [service=''] The requesting service, sent via the query string
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.certificateSign = function(sessionToken, publicKey, duration, options) {
@@ -2704,13 +2677,14 @@ define('client/FxAccountClient',[
 
     options = options || {};
 
-    if (options.metricsContext) {
-      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    var queryString = '';
+    if (options.service) {
+      queryString = '?service=' + encodeURIComponent(options.service);
     }
 
     return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
       .then(function(creds) {
-        return self.request.send('/certificate/sign', 'POST', creds, data);
+        return self.request.send('/certificate/sign' + queryString, 'POST', creds, data);
       });
   };
 
