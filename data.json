@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.43"
+        "version": "0.1.44"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1029,79 +1029,6 @@
                             "description": "\n  If `true`, a new `sessionToken` is provisioned.",
                             "type": "Boolean",
                             "optional": true
-                        },
-                        {
-                            "name": "metricsContext",
-                            "description": "Metrics context metadata",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "{}",
-                            "props": [
-                                {
-                                    "name": "flowId",
-                                    "description": "identifier for the current event flow",
-                                    "type": "String"
-                                },
-                                {
-                                    "name": "flowBeginTime",
-                                    "description": "flow.begin event time",
-                                    "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
-                                }
-                            ]
                         }
                     ]
                 }
@@ -1114,7 +1041,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 592,
+            "line": 576,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -1138,7 +1065,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 630,
+            "line": 614,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -1177,7 +1104,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 676,
+            "line": 660,
             "description": "Gets the status of an account by uid.",
             "itemtype": "method",
             "name": "accountStatus",
@@ -1196,7 +1123,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 689,
+            "line": 673,
             "description": "Gets the status of an account by email.",
             "itemtype": "method",
             "name": "accountStatusByEmail",
@@ -1215,7 +1142,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 702,
+            "line": 686,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -1234,7 +1161,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 720,
+            "line": 704,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -1253,7 +1180,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 738,
+            "line": 722,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -1278,82 +1205,14 @@
                     "description": "Options",
                     "type": "Object",
                     "optional": true,
-                    "optdefault": "{}",
-                    "props": [
-                        {
-                            "name": "metricsContext",
-                            "description": "Metrics context metadata",
-                            "type": "Object",
-                            "optional": true,
-                            "optdefault": "{}",
-                            "props": [
-                                {
-                                    "name": "flowId",
-                                    "description": "identifier for the current event flow",
-                                    "type": "String"
-                                },
-                                {
-                                    "name": "flowBeginTime",
-                                    "description": "flow.begin event time",
-                                    "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
-                                }
-                            ]
-                        }
-                    ]
+                    "optdefault": "{}"
+                },
+                {
+                    "name": "service",
+                    "description": "The requesting service, sent via the query string",
+                    "type": "String",
+                    "optional": true,
+                    "optdefault": "''"
                 }
             ],
             "return": {
@@ -1364,7 +1223,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 783,
+            "line": 757,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1414,7 +1273,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 820,
+            "line": 794,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1455,7 +1314,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 873,
+            "line": 847,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1476,7 +1335,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 887,
+            "line": 861,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1533,7 +1392,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 945,
+            "line": 919,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1545,7 +1404,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 956,
+            "line": 930,
             "description": "Lock an account - only available in a testing environment.",
             "itemtype": "method",
             "name": "accountLock",
@@ -1565,7 +1424,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 981,
+            "line": 955,
             "description": "Send an account unlock code",
             "itemtype": "method",
             "name": "accountUnlockResendCode",
@@ -1587,7 +1446,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1011,
+            "line": 985,
             "description": "Verify an account unlock code",
             "itemtype": "method",
             "name": "accountUnlockVerifyCode",
@@ -1607,7 +1466,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1028,
+            "line": 1002,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1663,7 +1522,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1069,
+            "line": 1043,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1719,7 +1578,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1110,
+            "line": 1084,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1743,7 +1602,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1133,
+            "line": 1107,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",
