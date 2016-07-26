@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.44"
+        "version": "0.1.45"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -625,7 +625,7 @@
                         },
                         {
                             "name": "reason",
-                            "description": "\n  Reason for sign in. Can be one of: `signin`, `password_check`,\n  `password_change`, `password_reset`, `account_unlock`.",
+                            "description": "\n  Reason for sign in. Can be one of: `signin`, `password_check`,\n  `password_change`, `password_reset`",
                             "type": "String",
                             "optional": true
                         },
@@ -1405,68 +1405,6 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 930,
-            "description": "Lock an account - only available in a testing environment.",
-            "itemtype": "method",
-            "name": "accountLock",
-            "params": [
-                {
-                    "name": "email",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "password",
-                    "description": "",
-                    "type": "String"
-                }
-            ],
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 955,
-            "description": "Send an account unlock code",
-            "itemtype": "method",
-            "name": "accountUnlockResendCode",
-            "params": [
-                {
-                    "name": "email",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "options",
-                    "description": "Options",
-                    "type": "Object",
-                    "optional": true,
-                    "optdefault": "{}"
-                }
-            ],
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 985,
-            "description": "Verify an account unlock code",
-            "itemtype": "method",
-            "name": "accountUnlockVerifyCode",
-            "params": [
-                {
-                    "name": "uid",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "code",
-                    "description": "",
-                    "type": "String"
-                }
-            ],
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 1002,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1522,7 +1460,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1043,
+            "line": 971,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1578,7 +1516,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1084,
+            "line": 1012,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1602,7 +1540,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1107,
+            "line": 1035,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",

@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.44</em>
+            <em>API Docs for: 0.1.45</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -199,10 +199,6 @@
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_accountLock">accountLock</a>
-
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_accountReset">accountReset</a>
 
                             </li>
@@ -212,14 +208,6 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_accountStatusByEmail">accountStatusByEmail</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_accountUnlockResendCode">accountUnlockResendCode</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_accountUnlockVerifyCode">accountUnlockVerifyCode</a>
 
                             </li>
                             <li class="index-item method">
@@ -708,72 +696,6 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
 
 
 </div>
-<div id="method_accountLock" class="method item">
-    <h3 class="name"><code>accountLock</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>email</code>
-                </li>
-                <li class="arg">
-                        <code>password</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/client_FxAccountClient.js.html#l930"><code>client&#x2F;FxAccountClient.js:930</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Lock an account - only available in a testing environment.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">email</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">password</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_accountReset" class="method item">
     <h3 class="name"><code>accountReset</code></h3>
 
@@ -1038,140 +960,6 @@ is required if <code>options.keys</code> is true.</p>
 
 
 </div>
-<div id="method_accountUnlockResendCode" class="method item">
-    <h3 class="name"><code>accountUnlockResendCode</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>email</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[options={}]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/client_FxAccountClient.js.html#l955"><code>client&#x2F;FxAccountClient.js:955</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Send an account unlock code</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">email</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[options={}]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Options</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_accountUnlockVerifyCode" class="method item">
-    <h3 class="name"><code>accountUnlockVerifyCode</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>uid</code>
-                </li>
-                <li class="arg">
-                        <code>code</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/client_FxAccountClient.js.html#l985"><code>client&#x2F;FxAccountClient.js:985</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Verify an account unlock code</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">uid</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">code</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_certificateSign" class="method item">
     <h3 class="name"><code>certificateSign</code></h3>
 
@@ -1323,7 +1111,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1084"><code>client&#x2F;FxAccountClient.js:1084</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1012"><code>client&#x2F;FxAccountClient.js:1012</code></a>
         </p>
 
 
@@ -1400,7 +1188,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1107"><code>client&#x2F;FxAccountClient.js:1107</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1035"><code>client&#x2F;FxAccountClient.js:1035</code></a>
         </p>
 
 
@@ -1475,7 +1263,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1002"><code>client&#x2F;FxAccountClient.js:1002</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l930"><code>client&#x2F;FxAccountClient.js:930</code></a>
         </p>
 
 
@@ -1619,7 +1407,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1043"><code>client&#x2F;FxAccountClient.js:1043</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l971"><code>client&#x2F;FxAccountClient.js:971</code></a>
         </p>
 
 
@@ -2873,7 +2661,7 @@ example.</p>
 
                                 <div class="param-description">
                                     <p>Reason for sign in. Can be one of: <code>signin</code>, <code>password_check</code>,
-<code>password_change</code>, <code>password_reset</code>, <code>account_unlock</code>.</p>
+<code>password_change</code>, <code>password_reset</code></p>
 
                                 </div>
 

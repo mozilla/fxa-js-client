@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.44</em>
+            <em>API Docs for: 0.1.45</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -260,7 +260,7 @@ define([
    *   Service being signed into
    *   @param {String} [options.reason]
    *   Reason for sign in. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
-   *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;, &#x60;account_unlock&#x60;.
+   *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;
    *   @param {String} [options.redirectTo]
    *   a URL that the client should be redirected to after handling the request
    *   @param {String} [options.resume]
@@ -1011,78 +1011,6 @@ define([
   FxAccountClient.prototype.getRandomBytes = function() {
 
     return this.request.send(&#x27;/get_random_bytes&#x27;, &#x27;POST&#x27;);
-  };
-
-  /**
-   * Lock an account - only available in a testing environment.
-   *
-   * @method accountLock
-   * @param {String} email
-   * @param {String} password
-   */
-  FxAccountClient.prototype.accountLock = function (email, password) {
-    required(email, &#x27;email&#x27;);
-    required(password, &#x27;password&#x27;);
-
-    var self = this;
-    return credentials.setup(email, password)
-      .then(
-        function (result) {
-          var data = {
-            email: result.emailUTF8,
-            authPW: sjcl.codec.hex.fromBits(result.authPW)
-          };
-
-          return self.request.send(&#x27;/account/lock&#x27;, &#x27;POST&#x27;, null, data);
-        });
-  };
-
-
-  /**
-   * Send an account unlock code
-   *
-   * @method accountUnlockResendCode
-   * @param {String} email
-   * @param {Object} [options={}] Options
-   */
-  FxAccountClient.prototype.accountUnlockResendCode = function (email, options) {
-    required(email, &#x27;email&#x27;);
-
-    var data = {
-      email: email
-    };
-    if (options) {
-      if (options.service) {
-        data.service = options.service;
-      }
-
-      if (options.redirectTo) {
-        data.redirectTo = options.redirectTo;
-      }
-
-      if (options.resume) {
-        data.resume = options.resume;
-      }
-    }
-
-    return this.request.send(&#x27;/account/unlock/resend_code&#x27;, &#x27;POST&#x27;, null, data);
-  };
-
-  /**
-   * Verify an account unlock code
-   *
-   * @method accountUnlockVerifyCode
-   * @param {String} uid
-   * @param {String} code
-   */
-  FxAccountClient.prototype.accountUnlockVerifyCode = function (uid, code) {
-    required(uid, &#x27;uid&#x27;);
-    required(code, &#x27;code&#x27;);
-
-    return this.request.send(&#x27;/account/unlock/verify_code&#x27;, &#x27;POST&#x27;, null, {
-      uid: uid,
-      code: code
-    });
   };
 
   /**
