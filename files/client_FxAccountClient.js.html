@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.45</em>
+            <em>API Docs for: 0.1.46</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -971,11 +971,17 @@ define([
     required(keys, &#x27;keys&#x27;);
     required(keys.kB, &#x27;keys.kB&#x27;);
 
-    var p1 = credentials.setup(email, newPassword);
-    var p2 = hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  HKDF_SIZE);
+    var defers = [];
+    defers.push(credentials.setup(email, newPassword));
+    defers.push(hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  HKDF_SIZE));
 
-    return P.all([p1, p2])
-      .spread(function(newCreds, hawkCreds) {
+    if (options.sessionToken) {
+      // Unbundle session data to get session id
+      defers.push(hawkCredentials(options.sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE));
+    }
+
+    return P.all(defers)
+      .spread(function (newCreds, hawkCreds, sessionData) {
         var newWrapKb = sjcl.codec.hex.fromBits(
           credentials.xor(
             sjcl.codec.hex.toBits(keys.kB),
@@ -988,10 +994,15 @@ define([
           queryParams = &#x27;?keys=true&#x27;;
         }
 
+        var sessionTokenId;
+        if (sessionData &amp;&amp; sessionData.id) {
+          sessionTokenId = sessionData.id;
+        }
+
         return self.request.send(&#x27;/password/change/finish&#x27; + queryParams, &#x27;POST&#x27;, hawkCreds, {
           wrapKb: newWrapKb,
           authPW: sjcl.codec.hex.fromBits(newCreds.authPW),
-          sessionToken: options.sessionToken
+          sessionToken: sessionTokenId
         })
         .then(function (accountData) {
           if (options.keys &amp;&amp; accountData.keyFetchToken) {
