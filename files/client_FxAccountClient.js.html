@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.46</em>
+            <em>API Docs for: 0.1.47</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -254,6 +254,9 @@ define([
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.keys]
    *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   *   @param {Boolean} [options.sendEmailIfUnverified]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?sendEmailIfUnverified=true&#x60; and delegates sending emails
+   *   to the auth-server.
    *   @param {Boolean} [options.skipCaseError]
    *   If &#x60;true&#x60;, the request will skip the incorrect case error
    *   @param {String} [options.service]
@@ -293,8 +296,16 @@ define([
         function (result) {
           var endpoint = &#x27;/account/login&#x27;;
 
+          // If not specified, always default &#x60;sendEmailIfUnverified&#x60; to false.
+          // This is what the legacy auth-server expects. Can remove once
+          // https://github.com/mozilla/fxa-auth-server/issues/1451 lands.
+          if (!options.sendEmailIfUnverified) {
+            options.sendEmailIfUnverified = false;
+          }
+          endpoint = endpoint + &#x27;?sendEmailIfUnverified=&#x27; + options.sendEmailIfUnverified;
+
           if (options.keys) {
-            endpoint += &#x27;?keys=true&#x27;;
+            endpoint += &#x27;&amp;keys=true&#x27;;
           }
 
           var data = {
