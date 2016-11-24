@@ -1902,32 +1902,12 @@ define('client/lib/hawkCredentials',['sjcl', './hkdf'], function (sjcl, hkdf) {
 define('client/lib/metricsContext',[], function () {
   'use strict';
 
-  var OPTIONS = {
-    context: true,
-    entrypoint: true,
-    migration: true,
-    service: true,
-    utmCampaign: true,
-    utmContent: true,
-    utmMedium: true,
-    utmSource: true,
-    utmTerm: true
-  };
-
   return {
     marshall: function (data) {
-      var metricsContext = {
+      return {
         flowId: data.flowId,
         flowBeginTime: data.flowBeginTime
       };
-
-      for (var key in data) {
-        if (data.hasOwnProperty(key) && data[key] && OPTIONS[key]) {
-          metricsContext[key] = data[key];
-        }
-      }
-
-      return metricsContext;
     }
   };
 });
@@ -2102,9 +2082,6 @@ define('client/FxAccountClient',[
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.keys]
    *   If `true`, calls the API with `?keys=true` to get the keyFetchToken
-   *   @param {Boolean} [options.sendEmailIfUnverified]
-   *   If `true`, calls the API with `?sendEmailIfUnverified=true` and delegates sending emails
-   *   to the auth-server.
    *   @param {Boolean} [options.skipCaseError]
    *   If `true`, the request will skip the incorrect case error
    *   @param {String} [options.service]
@@ -2146,16 +2123,8 @@ define('client/FxAccountClient',[
         function (result) {
           var endpoint = '/account/login';
 
-          // If not specified, always default `sendEmailIfUnverified` to false.
-          // This is what the legacy auth-server expects. Can remove once
-          // https://github.com/mozilla/fxa-auth-server/issues/1451 lands.
-          if (!options.sendEmailIfUnverified) {
-            options.sendEmailIfUnverified = false;
-          }
-          endpoint = endpoint + '?sendEmailIfUnverified=' + options.sendEmailIfUnverified;
-
           if (options.keys) {
-            endpoint += '&keys=true';
+            endpoint += '?keys=true';
           }
 
           var data = {
@@ -2325,6 +2294,18 @@ define('client/FxAccountClient',[
    *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
@@ -2353,6 +2334,10 @@ define('client/FxAccountClient',[
           'Accept-Language': options.lang
         };
       }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
     }
 
     return this.request.send('/password/forgot/send_code', 'POST', null, data, requestOpts);
@@ -2376,6 +2361,18 @@ define('client/FxAccountClient',[
    *   example.
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
@@ -2406,6 +2403,10 @@ define('client/FxAccountClient',[
           'Accept-Language': options.lang
         };
       }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
     }
 
     return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  HKDF_SIZE)
@@ -2422,18 +2423,36 @@ define('client/FxAccountClient',[
    * @method passwordForgotVerifyCode
    * @param {String} code
    * @param {String} passwordForgotToken
+   * @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
-  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
+  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
     var self = this;
     required(code, 'reset code');
     required(passwordForgotToken, 'passwordForgotToken');
 
+    var data = {
+      code: code
+    };
+
+    if (options && options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
+
     return hawkCredentials(passwordForgotToken, 'passwordForgotToken',  HKDF_SIZE)
       .then(function(creds) {
-        return self.request.send('/password/forgot/verify_code', 'POST', creds, {
-          code: code
-        });
+        return self.request.send('/password/forgot/verify_code', 'POST', creds, data);
       });
   };
 
