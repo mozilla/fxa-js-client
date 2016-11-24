@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.48</em>
+            <em>API Docs for: 0.1.49</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -254,9 +254,6 @@ define([
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.keys]
    *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
-   *   @param {Boolean} [options.sendEmailIfUnverified]
-   *   If &#x60;true&#x60;, calls the API with &#x60;?sendEmailIfUnverified=true&#x60; and delegates sending emails
-   *   to the auth-server.
    *   @param {Boolean} [options.skipCaseError]
    *   If &#x60;true&#x60;, the request will skip the incorrect case error
    *   @param {String} [options.service]
@@ -298,16 +295,8 @@ define([
         function (result) {
           var endpoint = &#x27;/account/login&#x27;;
 
-          // If not specified, always default &#x60;sendEmailIfUnverified&#x60; to false.
-          // This is what the legacy auth-server expects. Can remove once
-          // https://github.com/mozilla/fxa-auth-server/issues/1451 lands.
-          if (!options.sendEmailIfUnverified) {
-            options.sendEmailIfUnverified = false;
-          }
-          endpoint = endpoint + &#x27;?sendEmailIfUnverified=&#x27; + options.sendEmailIfUnverified;
-
           if (options.keys) {
-            endpoint += &#x27;&amp;keys=true&#x27;;
+            endpoint += &#x27;?keys=true&#x27;;
           }
 
           var data = {
@@ -477,6 +466,18 @@ define([
    *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
@@ -505,6 +506,10 @@ define([
           &#x27;Accept-Language&#x27;: options.lang
         };
       }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
     }
 
     return this.request.send(&#x27;/password/forgot/send_code&#x27;, &#x27;POST&#x27;, null, data, requestOpts);
@@ -528,6 +533,18 @@ define([
    *   example.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
@@ -558,6 +575,10 @@ define([
           &#x27;Accept-Language&#x27;: options.lang
         };
       }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
     }
 
     return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
@@ -574,18 +595,36 @@ define([
    * @method passwordForgotVerifyCode
    * @param {String} code
    * @param {String} passwordForgotToken
+   * @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {String} [options.metricsContext.context] context identifier
+   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
+   *     @param {String} [options.metricsContext.migration] migration identifier
+   *     @param {String} [options.metricsContext.service] service identifier
+   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
+   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
+   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
+   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
+   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken) {
+  FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
     var self = this;
     required(code, &#x27;reset code&#x27;);
     required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
+    var data = {
+      code: code
+    };
+
+    if (options &amp;&amp; options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
+    }
+
     return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
-        return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, {
-          code: code
-        });
+        return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
 
