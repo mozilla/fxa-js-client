@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.49</em>
+            <em>API Docs for: 0.1.50</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -165,15 +165,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -270,15 +261,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    *   @param {String} [options.unblockCode]
    *   Login unblock code.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -469,15 +451,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
@@ -536,15 +509,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
@@ -598,15 +562,6 @@ define([
    * @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
@@ -661,6 +616,9 @@ define([
    *   is required if &#x60;options.keys&#x60; is true.
    *   @param {Boolean} [options.sessionToken]
    *   If &#x60;true&#x60;, a new &#x60;sessionToken&#x60; is provisioned.
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
@@ -672,6 +630,10 @@ define([
 
     if (options.sessionToken) {
       data.sessionToken = options.sessionToken;
+    }
+
+    if (options.metricsContext) {
+      data.metricsContext = metricsContext.marshall(options.metricsContext);
     }
 
     required(email, &#x27;email&#x27;);
@@ -1211,15 +1173,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {String} [options.metricsContext.context] context identifier
-   *     @param {String} [options.metricsContext.entrypoint] entrypoint identifier
-   *     @param {String} [options.metricsContext.migration] migration identifier
-   *     @param {String} [options.metricsContext.service] service identifier
-   *     @param {String} [options.metricsContext.utmCampaign] marketing campaign identifier
-   *     @param {String} [options.metricsContext.utmContent] marketing campaign content identifier
-   *     @param {String} [options.metricsContext.utmMedium] marketing campaign medium
-   *     @param {String} [options.metricsContext.utmSource] marketing campaign source
-   *     @param {String} [options.metricsContext.utmTerm] marketing campaign search term
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.sendUnblockCode = function (email, options) {

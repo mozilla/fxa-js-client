@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.49"
+        "version": "0.1.50"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -516,60 +516,6 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
                                 }
                             ]
                         }
@@ -584,7 +530,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 164,
+            "line": 155,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -657,60 +603,6 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
                                 }
                             ]
                         },
@@ -731,7 +623,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 267,
+            "line": 249,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -775,7 +667,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 300,
+            "line": 282,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -793,7 +685,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 315,
+            "line": 297,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -845,7 +737,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 366,
+            "line": 348,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -902,60 +794,6 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
                                 }
                             ]
                         }
@@ -970,7 +808,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 432,
+            "line": 405,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -1032,60 +870,6 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
                                 }
                             ]
                         }
@@ -1100,7 +884,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 504,
+            "line": 468,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -1131,60 +915,6 @@
                     "name": "options.metricsContext.flowBeginTime",
                     "description": "flow.begin event time",
                     "type": "Number"
-                },
-                {
-                    "name": "options.metricsContext.context",
-                    "description": "context identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.entrypoint",
-                    "description": "entrypoint identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.migration",
-                    "description": "migration identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.service",
-                    "description": "service identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.utmCampaign",
-                    "description": "marketing campaign identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.utmContent",
-                    "description": "marketing campaign content identifier",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.utmMedium",
-                    "description": "marketing campaign medium",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.utmSource",
-                    "description": "marketing campaign source",
-                    "type": "String",
-                    "optional": true
-                },
-                {
-                    "name": "options.metricsContext.utmTerm",
-                    "description": "marketing campaign search term",
-                    "type": "String",
-                    "optional": true
                 }
             ],
             "return": {
@@ -1195,7 +925,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 545,
+            "line": 500,
             "description": "Returns the status for the passwordForgotToken.\nIf the request returns a success response, the token has not yet been consumed.",
             "itemtype": "method",
             "name": "passwordForgotStatus",
@@ -1214,7 +944,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 564,
+            "line": 519,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -1252,6 +982,25 @@
                             "description": "\n  If `true`, a new `sessionToken` is provisioned.",
                             "type": "Boolean",
                             "optional": true
+                        },
+                        {
+                            "name": "metricsContext",
+                            "description": "Metrics context metadata",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "{}",
+                            "props": [
+                                {
+                                    "name": "flowId",
+                                    "description": "identifier for the current event flow",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "flowBeginTime",
+                                    "description": "flow.begin event time",
+                                    "type": "Number"
+                                }
+                            ]
                         }
                     ]
                 }
@@ -1264,7 +1013,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 632,
+            "line": 594,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -1288,7 +1037,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 670,
+            "line": 632,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -1327,7 +1076,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 716,
+            "line": 678,
             "description": "Gets the status of an account by uid.",
             "itemtype": "method",
             "name": "accountStatus",
@@ -1346,7 +1095,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 729,
+            "line": 691,
             "description": "Gets the status of an account by email.",
             "itemtype": "method",
             "name": "accountStatusByEmail",
@@ -1365,7 +1114,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 742,
+            "line": 704,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -1384,7 +1133,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 760,
+            "line": 722,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -1403,7 +1152,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 778,
+            "line": 740,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -1446,7 +1195,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 813,
+            "line": 775,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1496,7 +1245,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 850,
+            "line": 812,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1537,7 +1286,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 903,
+            "line": 865,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1558,7 +1307,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 917,
+            "line": 879,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1615,7 +1364,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 986,
+            "line": 948,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1627,7 +1376,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 997,
+            "line": 959,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1683,7 +1432,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1038,
+            "line": 1000,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1739,7 +1488,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1079,
+            "line": 1041,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1763,7 +1512,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1102,
+            "line": 1064,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",
@@ -1782,7 +1531,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1119,
+            "line": 1081,
             "description": "Send an unblock code",
             "itemtype": "method",
             "name": "sendUnblockCode",
@@ -1815,60 +1564,6 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
-                                },
-                                {
-                                    "name": "context",
-                                    "description": "context identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "entrypoint",
-                                    "description": "entrypoint identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "migration",
-                                    "description": "migration identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "service",
-                                    "description": "service identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmCampaign",
-                                    "description": "marketing campaign identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmContent",
-                                    "description": "marketing campaign content identifier",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmMedium",
-                                    "description": "marketing campaign medium",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmSource",
-                                    "description": "marketing campaign source",
-                                    "type": "String",
-                                    "optional": true
-                                },
-                                {
-                                    "name": "utmTerm",
-                                    "description": "marketing campaign search term",
-                                    "type": "String",
-                                    "optional": true
                                 }
                             ]
                         }
@@ -1883,7 +1578,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1153,
+            "line": 1106,
             "description": "Reject a login unblock code. Code will be deleted from the server\nand will not be able to be used again.",
             "itemtype": "method",
             "name": "rejectLoginAuthorizationCode",
