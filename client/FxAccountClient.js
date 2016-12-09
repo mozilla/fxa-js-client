@@ -1079,6 +1079,23 @@ define([
   };
 
   /**
+   * Get a list of all security events for a user
+   *
+   * @method securityHistory
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
+   */
+  FxAccountClient.prototype.securityHistory = function (sessionToken) {
+    required(sessionToken, 'sessionToken');
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
+      .then(function(creds) {
+        return request.send('/account/security/events', 'GET', creds);
+      });
+  };
+
+  /**
    * Send an unblock code
    *
    * @method sendUnblockCode
