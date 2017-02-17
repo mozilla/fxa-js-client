@@ -2234,8 +2234,27 @@ define('client/FxAccountClient',[
   var uriVersionRegExp = new RegExp('/' + VERSION + '$');
   var HKDF_SIZE = 2 * 32;
 
+  function isUndefined(val) {
+    return typeof val === 'undefined';
+  }
+
+  function isNull(val) {
+    return val === null;
+  }
+
+  function isEmptyObject(val) {
+    return Object.prototype.toString.call(val) === '[object Object]' && ! Object.keys(val).length;
+  }
+
+  function isEmptyString(val) {
+    return val === '';
+  }
+
   function required(val, name) {
-    if (!val || val === {}) {
+    if (isUndefined(val) ||
+        isNull(val) ||
+        isEmptyObject(val) ||
+        isEmptyString(val)) {
       throw new Error('Missing ' + name);
     }
   }
@@ -3331,6 +3350,59 @@ define('client/FxAccountClient',[
 
     return this.request.send('/account/login/reject_unblock_code', 'POST', null, data);
   };
+
+  /**
+   * Send an sms.
+   *
+   * @method sendSms
+   * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {String} phoneNumber Phone number sms will be sent to
+   * @param {String} messageId Corresponding message id that will be sent
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.lang] lang Language that sms will be sent in
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   */
+  FxAccountClient.prototype.sendSms = function (sessionToken, phoneNumber, messageId, options) {
+
+    required(sessionToken, 'sessionToken');
+    required(phoneNumber, 'phoneNumber');
+    required(messageId, 'messageId');
+
+    var data = {
+      phoneNumber: phoneNumber,
+      messageId: messageId
+    };
+    var requestOpts = {};
+
+    if (options) {
+      if (options.lang) {
+        requestOpts.headers = {
+          'Accept-Language': options.lang
+        };
+      }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
+    }
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE)
+      .then(function(creds) {
+        return request.send('/sms', 'POST', creds, data, requestOpts);
+      });
+  };
+
+  /**
+   * Check for a required argument. Exposed for unit testing.
+   *
+   * @param {Value} val - value to check
+   * @param {String} name - name of value
+   * @throws {Error} if argument is falsey, or an empty object
+   */
+  FxAccountClient.prototype._required = required;
 
   return FxAccountClient;
 });
