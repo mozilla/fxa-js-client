@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.51</em>
+            <em>API Docs for: 0.1.52</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -102,8 +102,27 @@ define([
   var uriVersionRegExp = new RegExp(&#x27;/&#x27; + VERSION + &#x27;$&#x27;);
   var HKDF_SIZE = 2 * 32;
 
+  function isUndefined(val) {
+    return typeof val === &#x27;undefined&#x27;;
+  }
+
+  function isNull(val) {
+    return val === null;
+  }
+
+  function isEmptyObject(val) {
+    return Object.prototype.toString.call(val) === &#x27;[object Object]&#x27; &amp;&amp; ! Object.keys(val).length;
+  }
+
+  function isEmptyString(val) {
+    return val === &#x27;&#x27;;
+  }
+
   function required(val, name) {
-    if (!val || val === {}) {
+    if (isUndefined(val) ||
+        isNull(val) ||
+        isEmptyObject(val) ||
+        isEmptyString(val)) {
       throw new Error(&#x27;Missing &#x27; + name);
     }
   }
@@ -1199,6 +1218,59 @@ define([
 
     return this.request.send(&#x27;/account/login/reject_unblock_code&#x27;, &#x27;POST&#x27;, null, data);
   };
+
+  /**
+   * Send an sms.
+   *
+   * @method sendSms
+   * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {String} phoneNumber Phone number sms will be sent to
+   * @param {String} messageId Corresponding message id that will be sent
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.lang] lang Language that sms will be sent in
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   */
+  FxAccountClient.prototype.sendSms = function (sessionToken, phoneNumber, messageId, options) {
+
+    required(sessionToken, &#x27;sessionToken&#x27;);
+    required(phoneNumber, &#x27;phoneNumber&#x27;);
+    required(messageId, &#x27;messageId&#x27;);
+
+    var data = {
+      phoneNumber: phoneNumber,
+      messageId: messageId
+    };
+    var requestOpts = {};
+
+    if (options) {
+      if (options.lang) {
+        requestOpts.headers = {
+          &#x27;Accept-Language&#x27;: options.lang
+        };
+      }
+
+      if (options.metricsContext) {
+        data.metricsContext = metricsContext.marshall(options.metricsContext);
+      }
+    }
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function(creds) {
+        return request.send(&#x27;/sms&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
+      });
+  };
+
+  /**
+   * Check for a required argument. Exposed for unit testing.
+   *
+   * @param {Value} val - value to check
+   * @param {String} name - name of value
+   * @throws {Error} if argument is falsey, or an empty object
+   */
+  FxAccountClient.prototype._required = required;
 
   return FxAccountClient;
 });
