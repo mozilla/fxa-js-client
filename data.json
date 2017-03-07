@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.52"
+        "version": "0.1.53"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1117,6 +1117,21 @@
                     "name": "sessionToken",
                     "description": "User session token",
                     "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "customSessionToken",
+                            "description": "Override which session token to destroy for this same user",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "return": {
@@ -1127,7 +1142,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 731,
+            "line": 739,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -1146,7 +1161,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 749,
+            "line": 757,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -1189,7 +1204,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 784,
+            "line": 792,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1239,7 +1254,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 821,
+            "line": 829,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1280,7 +1295,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 874,
+            "line": 882,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1301,7 +1316,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 888,
+            "line": 896,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1358,7 +1373,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 957,
+            "line": 965,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1370,7 +1385,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 968,
+            "line": 976,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1426,7 +1441,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1009,
+            "line": 1017,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1482,7 +1497,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1050,
+            "line": 1058,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1506,7 +1521,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1073,
+            "line": 1081,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",
@@ -1525,7 +1540,26 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1090,
+            "line": 1098,
+            "description": "Get a list of user's sessions",
+            "itemtype": "method",
+            "name": "sessions",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1115,
             "description": "Send an unblock code",
             "itemtype": "method",
             "name": "sendUnblockCode",
@@ -1572,7 +1606,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1115,
+            "line": 1140,
             "description": "Reject a login unblock code. Code will be deleted from the server\nand will not be able to be used again.",
             "itemtype": "method",
             "name": "rejectLoginAuthorizationCode",
@@ -1596,7 +1630,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1136,
+            "line": 1161,
             "description": "Send an sms.",
             "itemtype": "method",
             "name": "sendSms",
@@ -1655,7 +1689,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1180,
+            "line": 1205,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -1699,7 +1733,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1180"
+            "line": " client/FxAccountClient.js:1205"
         }
     ]
 }
