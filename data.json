@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.53"
+        "version": "0.1.54"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1690,6 +1690,21 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 1205,
+            "description": "Get SMS status for the current user.",
+            "itemtype": "method",
+            "name": "smsStatus",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1221,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -1733,7 +1748,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1205"
+            "line": " client/FxAccountClient.js:1221"
         }
     ]
 }

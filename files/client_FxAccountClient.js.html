@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.53</em>
+            <em>API Docs for: 0.1.54</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -1285,6 +1285,22 @@ define([
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function(creds) {
         return request.send(&#x27;/sms&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
+      });
+  };
+
+  /**
+   * Get SMS status for the current user.
+   *
+   * @method smsStatus
+   * @param {String} sessionToken SessionToken obtained from signIn
+   */
+  FxAccountClient.prototype.smsStatus = function (sessionToken) {
+    required(sessionToken, &#x27;sessionToken&#x27;);
+
+    var request = this.request;
+    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+      .then(function (creds) {
+        return request.send(&#x27;/sms/status&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 
