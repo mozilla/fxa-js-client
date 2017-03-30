@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.54"
+        "version": "0.1.55"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1698,13 +1698,28 @@
                     "name": "sessionToken",
                     "description": "SessionToken obtained from signIn",
                     "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "country",
+                            "description": "country Country to force for testing.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
                 }
             ],
             "class": "FxAccountClient"
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1221,
+            "line": 1229,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -1748,7 +1763,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1221"
+            "line": " client/FxAccountClient.js:1229"
         }
     ]
 }

@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.54</em>
+            <em>API Docs for: 0.1.55</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -1293,14 +1293,22 @@ define([
    *
    * @method smsStatus
    * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {Object} [options={}] Options
+   *   @param {String} [options.country] country Country to force for testing.
    */
-  FxAccountClient.prototype.smsStatus = function (sessionToken) {
+  FxAccountClient.prototype.smsStatus = function (sessionToken, options) {
     required(sessionToken, &#x27;sessionToken&#x27;);
+
+    options = options || {};
 
     var request = this.request;
     return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
       .then(function (creds) {
-        return request.send(&#x27;/sms/status&#x27;, &#x27;GET&#x27;, creds);
+        var url = &#x27;/sms/status&#x27;;
+        if (options.country) {
+          url += &#x27;?country=&#x27; + encodeURIComponent(options.country);
+        }
+        return request.send(url, &#x27;GET&#x27;, creds);
       });
   };
 
