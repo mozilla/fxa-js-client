@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.56"
+        "version": "0.1.57"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -1671,8 +1671,14 @@
                     "props": [
                         {
                             "name": "lang",
-                            "description": "lang Language that sms will be sent in",
+                            "description": "Language that sms will be sent in",
                             "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "features",
+                            "description": "Array of features to be enabled for the request",
+                            "type": "Array",
                             "optional": true
                         },
                         {
@@ -1701,7 +1707,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1217,
+            "line": 1222,
             "description": "Get SMS status for the current user.",
             "itemtype": "method",
             "name": "smsStatus",
@@ -1731,7 +1737,32 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1241,
+            "line": 1246,
+            "description": "Consume a signinCode.",
+            "itemtype": "method",
+            "name": "consumeSigninCode",
+            "params": [
+                {
+                    "name": "code",
+                    "description": "The signinCode entered by the user",
+                    "type": "String"
+                },
+                {
+                    "name": "flowId",
+                    "description": "Identifier for the current event flow",
+                    "type": "String"
+                },
+                {
+                    "name": "flowBeginTime",
+                    "description": "Timestamp for the flow.begin event",
+                    "type": "Number"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1268,
             "description": "Get the recovery emails associated with the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmails",
@@ -1746,7 +1777,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1257,
+            "line": 1284,
             "description": "Create a new recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailCreate",
@@ -1766,7 +1797,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1279,
+            "line": 1306,
             "description": "Remove the recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailDestroy",
@@ -1786,7 +1817,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1301,
+            "line": 1328,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -1830,7 +1861,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1301"
+            "line": " client/FxAccountClient.js:1328"
         }
     ]
 }
