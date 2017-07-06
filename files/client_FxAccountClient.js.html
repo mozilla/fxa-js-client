@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.57</em>
+            <em>API Docs for: 0.1.58</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -182,15 +182,20 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *   @param {Boolean} [options.marketingOptIn]
+   *   If &#x60;true&#x60;, sends opt-in desire for when account is verified.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
     var self = this;
 
-    required(email, &#x27;email&#x27;);
-    required(password, &#x27;password&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(password, &#x27;password&#x27;);
 
-    return credentials.setup(email, password)
+        return credentials.setup(email, password);
+      })
       .then(
         function (result) {
           /*eslint complexity: [2, 13] */
@@ -231,6 +236,10 @@ define([
 
             if (options.metricsContext) {
               data.metricsContext = metricsContext.marshall(options.metricsContext);
+            }
+
+            if (options.marketingOptIn) {
+              data.marketingOptIn = true;
             }
           }
 
@@ -278,10 +287,13 @@ define([
     var self = this;
     options = options || {};
 
-    required(email, &#x27;email&#x27;);
-    required(password, &#x27;password&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(password, &#x27;password&#x27;);
 
-    return credentials.setup(email, password)
+        return credentials.setup(email, password);
+      })
       .then(
         function (result) {
           var endpoint = &#x27;/account/login&#x27;;
@@ -355,29 +367,34 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.verifyCode = function(uid, code, options) {
-    required(uid, &#x27;uid&#x27;);
-    required(code, &#x27;verify code&#x27;);
+    var self = this;
 
-    var data = {
-      uid: uid,
-      code: code
-    };
+    return P()
+      .then(function () {
+        required(uid, &#x27;uid&#x27;);
+        required(code, &#x27;verify code&#x27;);
 
-    if (options) {
-      if (options.service) {
-        data.service = options.service;
-      }
+        var data = {
+          uid: uid,
+          code: code
+        };
 
-      if (options.reminder) {
-        data.reminder = options.reminder;
-      }
+        if (options) {
+          if (options.service) {
+            data.service = options.service;
+          }
 
-      if (options.type) {
-        data.type = options.type;
-      }
-    }
+          if (options.reminder) {
+            data.reminder = options.reminder;
+          }
 
-    return this.request.send(&#x27;/recovery_email/verify_code&#x27;, &#x27;POST&#x27;, null, data);
+          if (options.type) {
+            data.type = options.type;
+          }
+        }
+
+        return self.request.send(&#x27;/recovery_email/verify_code&#x27;, &#x27;POST&#x27;, null, data);
+      });
   };
 
   /**
@@ -387,9 +404,13 @@ define([
    */
   FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
     var self = this;
-    required(sessionToken, &#x27;sessionToken&#x27;);
 
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/recovery_email/status&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -420,33 +441,36 @@ define([
     var data = {};
     var requestOpts = {};
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
 
-    if (options) {
-      if (options.email) {
-        data.email = options.email;
-      }
+        if (options) {
+          if (options.email) {
+            data.email = options.email;
+          }
 
-      if (options.service) {
-        data.service = options.service;
-      }
+          if (options.service) {
+            data.service = options.service;
+          }
 
-      if (options.redirectTo) {
-        data.redirectTo = options.redirectTo;
-      }
+          if (options.redirectTo) {
+            data.redirectTo = options.redirectTo;
+          }
 
-      if (options.resume) {
-        data.resume = options.resume;
-      }
+          if (options.resume) {
+            data.resume = options.resume;
+          }
 
-      if (options.lang) {
-        requestOpts.headers = {
-          &#x27;Accept-Language&#x27;: options.lang
-        };
-      }
-    }
+          if (options.lang) {
+            requestOpts.headers = {
+              &#x27;Accept-Language&#x27;: options.lang
+            };
+          }
+        }
 
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/recovery_email/resend_code&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
       });
@@ -475,38 +499,42 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
+    var self = this;
     var data = {
       email: email
     };
     var requestOpts = {};
 
-    required(email, &#x27;email&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
 
-    if (options) {
-      if (options.service) {
-        data.service = options.service;
-      }
+        if (options) {
+          if (options.service) {
+            data.service = options.service;
+          }
 
-      if (options.redirectTo) {
-        data.redirectTo = options.redirectTo;
-      }
+          if (options.redirectTo) {
+            data.redirectTo = options.redirectTo;
+          }
 
-      if (options.resume) {
-        data.resume = options.resume;
-      }
+          if (options.resume) {
+            data.resume = options.resume;
+          }
 
-      if (options.lang) {
-        requestOpts.headers = {
-          &#x27;Accept-Language&#x27;: options.lang
-        };
-      }
+          if (options.lang) {
+            requestOpts.headers = {
+              &#x27;Accept-Language&#x27;: options.lang
+            };
+          }
 
-      if (options.metricsContext) {
-        data.metricsContext = metricsContext.marshall(options.metricsContext);
-      }
-    }
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          }
+        }
 
-    return this.request.send(&#x27;/password/forgot/send_code&#x27;, &#x27;POST&#x27;, null, data, requestOpts);
+        return self.request.send(&#x27;/password/forgot/send_code&#x27;, &#x27;POST&#x27;, null, data, requestOpts);
+      });
   };
 
   /**
@@ -539,34 +567,37 @@ define([
     };
     var requestOpts = {};
 
-    required(email, &#x27;email&#x27;);
-    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
-    if (options) {
-      if (options.service) {
-        data.service = options.service;
-      }
+        if (options) {
+          if (options.service) {
+            data.service = options.service;
+          }
 
-      if (options.redirectTo) {
-        data.redirectTo = options.redirectTo;
-      }
+          if (options.redirectTo) {
+            data.redirectTo = options.redirectTo;
+          }
 
-      if (options.resume) {
-        data.resume = options.resume;
-      }
+          if (options.resume) {
+            data.resume = options.resume;
+          }
 
-      if (options.lang) {
-        requestOpts.headers = {
-          &#x27;Accept-Language&#x27;: options.lang
-        };
-      }
+          if (options.lang) {
+            requestOpts.headers = {
+              &#x27;Accept-Language&#x27;: options.lang
+            };
+          }
 
-      if (options.metricsContext) {
-        data.metricsContext = metricsContext.marshall(options.metricsContext);
-      }
-    }
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          }
+        }
 
-    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/password/forgot/resend_code&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
       });
@@ -587,19 +618,23 @@ define([
    */
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
     var self = this;
-    required(code, &#x27;reset code&#x27;);
-    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
-    var data = {
-      code: code
-    };
+    return P()
+      .then(function () {
+        required(code, &#x27;reset code&#x27;);
+        required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
-    if (options &amp;&amp; options.metricsContext) {
-      data.metricsContext = metricsContext.marshall(options.metricsContext);
-    }
-
-    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
+        var data = {
+          code: code
+        };
+
+        if (options &amp;&amp; options.metricsContext) {
+          data.metricsContext = metricsContext.marshall(options.metricsContext);
+        }
+
         return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
@@ -615,9 +650,12 @@ define([
   FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
     var self = this;
 
-    required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
+    return P()
+      .then(function () {
+        required(passwordForgotToken, &#x27;passwordForgotToken&#x27;);
 
-    return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(passwordForgotToken, &#x27;passwordForgotToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/password/forgot/status&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -657,15 +695,18 @@ define([
       data.metricsContext = metricsContext.marshall(options.metricsContext);
     }
 
-    required(email, &#x27;email&#x27;);
-    required(newPassword, &#x27;new password&#x27;);
-    required(accountResetToken, &#x27;accountResetToken&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(newPassword, &#x27;new password&#x27;);
+        required(accountResetToken, &#x27;accountResetToken&#x27;);
 
-    if (options.keys) {
-      required(options.sessionToken, &#x27;sessionToken&#x27;);
-    }
+        if (options.keys) {
+          required(options.sessionToken, &#x27;sessionToken&#x27;);
+        }
 
-    return credentials.setup(email, newPassword)
+        return credentials.setup(email, newPassword);
+      })
       .then(
         function (result) {
           if (options.keys) {
@@ -709,10 +750,13 @@ define([
   FxAccountClient.prototype.accountKeys = function(keyFetchToken, oldUnwrapBKey) {
     var self = this;
 
-    required(keyFetchToken, &#x27;keyFetchToken&#x27;);
-    required(oldUnwrapBKey, &#x27;oldUnwrapBKey&#x27;);
+    return P()
+      .then(function () {
+        required(keyFetchToken, &#x27;keyFetchToken&#x27;);
+        required(oldUnwrapBKey, &#x27;oldUnwrapBKey&#x27;);
 
-    return hawkCredentials(keyFetchToken, &#x27;keyFetchToken&#x27;,  3 * 32)
+        return hawkCredentials(keyFetchToken, &#x27;keyFetchToken&#x27;,  3 * 32);
+      })
       .then(function(creds) {
         var bundleKey = sjcl.codec.hex.fromBits(creds.bundleKey);
 
@@ -751,10 +795,13 @@ define([
     var self = this;
     options = options || {};
 
-    required(email, &#x27;email&#x27;);
-    required(password, &#x27;password&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(password, &#x27;password&#x27;);
 
-    return credentials.setup(email, password)
+        return credentials.setup(email, password);
+      })
       .then(
         function (result) {
           var data = {
@@ -790,9 +837,14 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.accountStatus = function(uid) {
-    required(uid, &#x27;uid&#x27;);
+    var self = this;
 
-    return this.request.send(&#x27;/account/status?uid=&#x27; + uid, &#x27;GET&#x27;);
+    return P()
+      .then(function () {
+        required(uid, &#x27;uid&#x27;);
+
+        return self.request.send(&#x27;/account/status?uid=&#x27; + uid, &#x27;GET&#x27;);
+      });
   };
 
   /**
@@ -803,9 +855,14 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.accountStatusByEmail = function(email) {
-    required(email, &#x27;email&#x27;);
+    var self = this;
 
-    return this.request.send(&#x27;/account/status&#x27;, &#x27;POST&#x27;, null, {email: email});
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+
+        return self.request.send(&#x27;/account/status&#x27;, &#x27;POST&#x27;, null, {email: email});
+      });
   };
 
   /**
@@ -826,9 +883,12 @@ define([
       data.customSessionToken = options.customSessionToken;
     }
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
 
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/session/destroy&#x27;, &#x27;POST&#x27;, creds, data);
       });
@@ -844,9 +904,12 @@ define([
   FxAccountClient.prototype.sessionStatus = function(sessionToken) {
     var self = this;
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
 
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return self.request.send(&#x27;/session/status&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -870,19 +933,22 @@ define([
       duration: duration
     };
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(publicKey, &#x27;publicKey&#x27;);
-    required(duration, &#x27;duration&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(publicKey, &#x27;publicKey&#x27;);
+        required(duration, &#x27;duration&#x27;);
 
-    options = options || {};
-
-    var queryString = &#x27;&#x27;;
-    if (options.service) {
-      queryString = &#x27;?service=&#x27; + encodeURIComponent(options.service);
-    }
-
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
+        options = options || {};
+
+        var queryString = &#x27;&#x27;;
+        if (options.service) {
+          queryString = &#x27;?service=&#x27; + encodeURIComponent(options.service);
+        }
+
         return self.request.send(&#x27;/certificate/sign&#x27; + queryString, &#x27;POST&#x27;, creds, data);
       });
   };
@@ -906,11 +972,14 @@ define([
     var self = this;
     options = options || {};
 
-    required(email, &#x27;email&#x27;);
-    required(oldPassword, &#x27;old password&#x27;);
-    required(newPassword, &#x27;new password&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(oldPassword, &#x27;old password&#x27;);
+        required(newPassword, &#x27;new password&#x27;);
 
-    return self._passwordChangeStart(email, oldPassword)
+        return self._passwordChangeStart(email, oldPassword);
+      })
       .then(function (credentials) {
 
         var oldCreds = credentials;
@@ -940,10 +1009,13 @@ define([
     var self = this;
     options = options || {};
 
-    required(email, &#x27;email&#x27;);
-    required(oldPassword, &#x27;old password&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(oldPassword, &#x27;old password&#x27;);
 
-    return credentials.setup(email, oldPassword)
+        return credentials.setup(email, oldPassword);
+      })
       .then(function (oldCreds) {
         var data = {
           email: oldCreds.emailUTF8,
@@ -986,9 +1058,15 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON of &#x60;xhr.responseText&#x60;
    */
   FxAccountClient.prototype._passwordChangeKeys = function(oldCreds) {
-    checkCreds(oldCreds);
+    var self = this;
 
-    return this.accountKeys(oldCreds.keyFetchToken, oldCreds.oldUnwrapBKey);
+    return P()
+      .then(function () {
+        checkCreds(oldCreds);
+      })
+      .then(function () {
+        return self.accountKeys(oldCreds.keyFetchToken, oldCreds.oldUnwrapBKey);
+      });
   };
 
   /**
@@ -1012,22 +1090,25 @@ define([
     options = options || {};
     var self = this;
 
-    required(email, &#x27;email&#x27;);
-    required(newPassword, &#x27;new password&#x27;);
-    checkCreds(oldCreds);
-    required(keys, &#x27;keys&#x27;);
-    required(keys.kB, &#x27;keys.kB&#x27;);
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
+        required(newPassword, &#x27;new password&#x27;);
+        checkCreds(oldCreds);
+        required(keys, &#x27;keys&#x27;);
+        required(keys.kB, &#x27;keys.kB&#x27;);
 
-    var defers = [];
-    defers.push(credentials.setup(email, newPassword));
-    defers.push(hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  HKDF_SIZE));
+        var defers = [];
+        defers.push(credentials.setup(email, newPassword));
+        defers.push(hawkCredentials(oldCreds.passwordChangeToken, &#x27;passwordChangeToken&#x27;,  HKDF_SIZE));
 
-    if (options.sessionToken) {
-      // Unbundle session data to get session id
-      defers.push(hawkCredentials(options.sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE));
-    }
+        if (options.sessionToken) {
+          // Unbundle session data to get session id
+          defers.push(hawkCredentials(options.sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE));
+        }
 
-    return P.all(defers)
+        return P.all(defers);
+      })
       .spread(function (newCreds, hawkCreds, sessionData) {
         var newWrapKb = sjcl.codec.hex.fromBits(
           credentials.xor(
@@ -1085,14 +1166,17 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceRegister = function (sessionToken, deviceName, deviceType, options) {
+    var request = this.request;
     options = options || {};
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(deviceName, &#x27;deviceName&#x27;);
-    required(deviceType, &#x27;deviceType&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(deviceName, &#x27;deviceName&#x27;);
+        required(deviceType, &#x27;deviceType&#x27;);
 
-    var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         var data = {
           name: deviceName,
@@ -1126,14 +1210,17 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceUpdate = function (sessionToken, deviceId, deviceName, options) {
+    var request = this.request;
     options = options || {};
 
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(deviceId, &#x27;deviceId&#x27;);
-    required(deviceName, &#x27;deviceName&#x27;);
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(deviceId, &#x27;deviceId&#x27;);
+        required(deviceName, &#x27;deviceName&#x27;);
 
-    var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         var data = {
           id: deviceId,
@@ -1162,11 +1249,15 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceDestroy = function (sessionToken, deviceId) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(deviceId, &#x27;deviceId&#x27;);
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(deviceId, &#x27;deviceId&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         var data = {
           id: deviceId
@@ -1184,10 +1275,14 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.deviceList = function (sessionToken) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return request.send(&#x27;/account/devices&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -1201,10 +1296,14 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.sessions = function (sessionToken) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return request.send(&#x27;/account/sessions&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -1222,17 +1321,22 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.sendUnblockCode = function (email, options) {
-    required(email, &#x27;email&#x27;);
+    var self = this;
 
-    var data = {
-      email: email
-    };
+    return P()
+      .then(function () {
+        required(email, &#x27;email&#x27;);
 
-    if (options &amp;&amp; options.metricsContext) {
-      data.metricsContext = metricsContext.marshall(options.metricsContext);
-    }
+        var data = {
+          email: email
+        };
 
-    return this.request.send(&#x27;/account/login/send_unblock_code&#x27;, &#x27;POST&#x27;, null, data);
+        if (options &amp;&amp; options.metricsContext) {
+          data.metricsContext = metricsContext.marshall(options.metricsContext);
+        }
+
+        return self.request.send(&#x27;/account/login/send_unblock_code&#x27;, &#x27;POST&#x27;, null, data);
+      });
   };
 
   /**
@@ -1245,15 +1349,20 @@ define([
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.rejectUnblockCode = function (uid, unblockCode) {
-    required(uid, &#x27;uid&#x27;);
-    required(unblockCode, &#x27;unblockCode&#x27;);
+    var self = this;
 
-    var data = {
-      uid: uid,
-      unblockCode: unblockCode
-    };
+    return P()
+      .then(function () {
+        required(uid, &#x27;uid&#x27;);
+        required(unblockCode, &#x27;unblockCode&#x27;);
 
-    return this.request.send(&#x27;/account/login/reject_unblock_code&#x27;, &#x27;POST&#x27;, null, data);
+        var data = {
+          uid: uid,
+          unblockCode: unblockCode
+        };
+
+        return self.request.send(&#x27;/account/login/reject_unblock_code&#x27;, &#x27;POST&#x27;, null, data);
+      });
   };
 
   /**
@@ -1271,36 +1380,39 @@ define([
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    */
   FxAccountClient.prototype.sendSms = function (sessionToken, phoneNumber, messageId, options) {
-
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(phoneNumber, &#x27;phoneNumber&#x27;);
-    required(messageId, &#x27;messageId&#x27;);
-
-    var data = {
-      phoneNumber: phoneNumber,
-      messageId: messageId
-    };
-    var requestOpts = {};
-
-    if (options) {
-      if (options.lang) {
-        requestOpts.headers = {
-          &#x27;Accept-Language&#x27;: options.lang
-        };
-      }
-
-      if (options.features) {
-        data.features = options.features;
-      }
-
-      if (options.metricsContext) {
-        data.metricsContext = metricsContext.marshall(options.metricsContext);
-      }
-    }
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(phoneNumber, &#x27;phoneNumber&#x27;);
+        required(messageId, &#x27;messageId&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
+        var data = {
+          phoneNumber: phoneNumber,
+          messageId: messageId
+        };
+        var requestOpts = {};
+
+        if (options) {
+          if (options.lang) {
+            requestOpts.headers = {
+              &#x27;Accept-Language&#x27;: options.lang
+            };
+          }
+
+          if (options.features) {
+            data.features = options.features;
+          }
+
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          }
+        }
+
         return request.send(&#x27;/sms&#x27;, &#x27;POST&#x27;, creds, data, requestOpts);
       });
   };
@@ -1314,12 +1426,15 @@ define([
    *   @param {String} [options.country] country Country to force for testing.
    */
   FxAccountClient.prototype.smsStatus = function (sessionToken, options) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-
+    var request = this.request;
     options = options || {};
 
-    var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function (creds) {
         var url = &#x27;/sms/status&#x27;;
         if (options.country) {
@@ -1338,17 +1453,22 @@ define([
    * @param {Number} flowBeginTime Timestamp for the flow.begin event
    */
   FxAccountClient.prototype.consumeSigninCode = function (code, flowId, flowBeginTime) {
-    required(code, &#x27;code&#x27;);
-    required(flowId, &#x27;flowId&#x27;);
-    required(flowBeginTime, &#x27;flowBeginTime&#x27;);
+    var self = this;
 
-    return this.request.send(&#x27;/signinCodes/consume&#x27;, &#x27;POST&#x27;, null, {
-      code: code,
-      metricsContext: {
-        flowId: flowId,
-        flowBeginTime: flowBeginTime
-      }
-    });
+    return P()
+      .then(function () {
+        required(code, &#x27;code&#x27;);
+        required(flowId, &#x27;flowId&#x27;);
+        required(flowBeginTime, &#x27;flowBeginTime&#x27;);
+
+        return self.request.send(&#x27;/signinCodes/consume&#x27;, &#x27;POST&#x27;, null, {
+          code: code,
+          metricsContext: {
+            flowId: flowId,
+            flowBeginTime: flowBeginTime
+          }
+        });
+      });
   };
 
   /**
@@ -1358,10 +1478,14 @@ define([
    * @param {String} sessionToken SessionToken obtained from signIn
    */
   FxAccountClient.prototype.recoveryEmails = function (sessionToken) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
         return request.send(&#x27;/recovery_emails&#x27;, &#x27;GET&#x27;, creds);
       });
@@ -1375,16 +1499,20 @@ define([
    * @param {String} email new email to be added
    */
   FxAccountClient.prototype.recoveryEmailCreate = function (sessionToken, email) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(sessionToken, &#x27;email&#x27;);
-
-    var data = {
-      email: email
-    };
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(sessionToken, &#x27;email&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
+        var data = {
+          email: email
+        };
+
         return request.send(&#x27;/recovery_email&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
@@ -1397,17 +1525,41 @@ define([
    * @param {String} email email to be removed
    */
   FxAccountClient.prototype.recoveryEmailDestroy = function (sessionToken, email) {
-    required(sessionToken, &#x27;sessionToken&#x27;);
-    required(sessionToken, &#x27;email&#x27;);
-
-    var data = {
-      email: email
-    };
-
     var request = this.request;
-    return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(sessionToken, &#x27;email&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
       .then(function(creds) {
+        var data = {
+          email: email
+        };
+
         return request.send(&#x27;/recovery_email/destroy&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Check to see if the secondary email feature is enabled for this user.
+   *
+   * @method recoveryEmailSecondaryEmailEnabled
+   * @param {String} sessionToken SessionToken obtained from signIn
+   */
+  FxAccountClient.prototype.recoveryEmailSecondaryEmailEnabled = function (sessionToken) {
+    var request = this.request;
+
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
+      .then(function(creds) {
+        return request.send(&#x27;/recovery_email/check_can_add_secondary_address&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 
