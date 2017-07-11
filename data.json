@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.58"
+        "version": "0.1.59"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -512,12 +512,6 @@
                                     "type": "Number"
                                 }
                             ]
-                        },
-                        {
-                            "name": "marketingOptIn",
-                            "description": "\n  If `true`, sends opt-in desire for when account is verified.",
-                            "type": "Boolean",
-                            "optional": true
                         }
                     ]
                 }
@@ -530,7 +524,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 173,
+            "line": 167,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -623,7 +617,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 270,
+            "line": 264,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -660,6 +654,12 @@
                             "name": "type",
                             "description": "\n  Type of code being verified, only supports `secondary` otherwise will verify account/sign-in",
                             "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "marketingOptIn",
+                            "description": "\n  If `true`, notifies marketing of opt-in intent.",
+                            "type": "Boolean",
                             "optional": true
                         }
                     ]

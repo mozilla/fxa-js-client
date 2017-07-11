@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.58</em>
+            <em>API Docs for: 0.1.59</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -182,8 +182,6 @@ define([
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *   @param {Boolean} [options.marketingOptIn]
-   *   If &#x60;true&#x60;, sends opt-in desire for when account is verified.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -236,10 +234,6 @@ define([
 
             if (options.metricsContext) {
               data.metricsContext = metricsContext.marshall(options.metricsContext);
-            }
-
-            if (options.marketingOptIn) {
-              data.marketingOptIn = true;
             }
           }
 
@@ -364,6 +358,8 @@ define([
    *   Reminder that was used to verify the account
    *   @param {String} [options.type]
    *   Type of code being verified, only supports &#x60;secondary&#x60; otherwise will verify account/sign-in
+   *   @param {Boolean} [options.marketingOptIn]
+   *   If &#x60;true&#x60;, notifies marketing of opt-in intent.
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.verifyCode = function(uid, code, options) {
@@ -390,6 +386,10 @@ define([
 
           if (options.type) {
             data.type = options.type;
+          }
+
+          if (options.marketingOptIn) {
+            data.marketingOptIn = true;
           }
         }
 
