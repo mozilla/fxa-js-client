@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.60</em>
+            <em>API Docs for: 0.1.61</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -325,6 +325,10 @@ define([
             data.unblockCode = options.unblockCode;
           }
 
+          if (options.originalLoginEmail) {
+            data.originalLoginEmail = options.originalLoginEmail;
+          }
+
           return self.request.send(endpoint, &#x27;POST&#x27;, null, data)
             .then(
               function(accountData) {
@@ -336,6 +340,7 @@ define([
               function(error) {
                 if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
                   options.skipCaseError = true;
+                  options.originalLoginEmail = email;
 
                   return self.signIn(error.email, password, options);
                 } else {
@@ -1560,6 +1565,29 @@ define([
       })
       .then(function(creds) {
         return request.send(&#x27;/recovery_email/check_can_add_secondary_address&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * Changes user&#x27;s primary email address.
+   *
+   * @method recoveryEmailSetPrimaryEmail
+   * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {String} email Email that will be the new primary email for user
+   */
+  FxAccountClient.prototype.recoveryEmailSetPrimaryEmail = function (sessionToken, email) {
+    var request = this.request;
+    return P()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
+      .then(function(creds) {
+        var data = {
+          email: email
+        };
+        return request.send(&#x27;/recovery_email/set_primary&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
 
