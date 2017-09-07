@@ -2209,6 +2209,7 @@ define('client/lib/metricsContext',[], function () {
   return {
     marshall: function (data) {
       return {
+        deviceId: data.deviceId,
         flowId: data.flowId,
         flowBeginTime: data.flowBeginTime
       };
@@ -2312,6 +2313,7 @@ define('client/FxAccountClient',[
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2403,6 +2405,7 @@ define('client/FxAccountClient',[
    *   as a querystring parameter, useful for continuing an OAuth flow for
    *   example.
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    *   @param {String} [options.unblockCode]
@@ -2631,6 +2634,7 @@ define('client/FxAccountClient',[
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2693,6 +2697,7 @@ define('client/FxAccountClient',[
    *   @param {String} [options.lang]
    *   set the language for the 'Accept-Language' header
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2749,6 +2754,7 @@ define('client/FxAccountClient',[
    * @param {String} code
    * @param {String} passwordForgotToken
    * @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2813,6 +2819,7 @@ define('client/FxAccountClient',[
    *   @param {Boolean} [options.sessionToken]
    *   If `true`, a new `sessionToken` is provisioned.
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -3453,6 +3460,7 @@ define('client/FxAccountClient',[
    * @param {String} email email where to send the login authorization code
    * @param {Object} [options={}] Options
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -3513,6 +3521,7 @@ define('client/FxAccountClient',[
    *   @param {String} [options.lang] Language that sms will be sent in
    *   @param {Array} [options.features] Array of features to be enabled for the request
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
    */
@@ -3588,8 +3597,9 @@ define('client/FxAccountClient',[
    * @param {String} code The signinCode entered by the user
    * @param {String} flowId Identifier for the current event flow
    * @param {Number} flowBeginTime Timestamp for the flow.begin event
+   * @param {String} [deviceId] Identifier for the current device
    */
-  FxAccountClient.prototype.consumeSigninCode = function (code, flowId, flowBeginTime) {
+  FxAccountClient.prototype.consumeSigninCode = function (code, flowId, flowBeginTime, deviceId) {
     var self = this;
 
     return P()
@@ -3601,6 +3611,7 @@ define('client/FxAccountClient',[
         return self.request.send('/signinCodes/consume', 'POST', null, {
           code: code,
           metricsContext: {
+            deviceId: deviceId,
             flowId: flowId,
             flowBeginTime: flowBeginTime
           }
