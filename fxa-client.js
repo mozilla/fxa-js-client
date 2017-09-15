@@ -3127,11 +3127,12 @@ define('client/FxAccountClient',[
       .then(function (credentials) {
 
         var oldCreds = credentials;
+        var emailToHashWith = credentials.emailToHashWith || email;
 
         return self._passwordChangeKeys(oldCreds)
           .then(function (keys) {
 
-            return self._passwordChangeFinish(email, newPassword, oldCreds, keys, options);
+            return self._passwordChangeFinish(emailToHashWith, newPassword, oldCreds, keys, options);
           });
       });
 
@@ -3170,6 +3171,10 @@ define('client/FxAccountClient',[
           .then(
             function(passwordData) {
               passwordData.oldUnwrapBKey = sjcl.codec.hex.fromBits(oldCreds.unwrapBKey);
+
+              // Similar to password reset, this keeps the contract that we always
+              // hash passwords with the original account email.
+              passwordData.emailToHashWith = email;
               return passwordData;
             },
             function(error) {
