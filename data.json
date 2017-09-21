@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.64"
+        "version": "0.1.65"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -515,6 +515,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -529,7 +554,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 168,
+            "line": 173,
             "itemtype": "method",
             "name": "signIn",
             "params": [
@@ -607,6 +632,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         },
@@ -627,7 +677,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 271,
+            "line": 281,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -683,7 +733,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 321,
+            "line": 331,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -701,7 +751,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 340,
+            "line": 350,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -759,7 +809,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 400,
+            "line": 410,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -821,6 +871,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -835,7 +910,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 462,
+            "line": 477,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -902,6 +977,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -916,7 +1016,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 529,
+            "line": 549,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -952,6 +1052,31 @@
                     "name": "options.metricsContext.flowBeginTime",
                     "description": "flow.begin event time",
                     "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmCampaign",
+                    "description": "marketing campaign identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmContent",
+                    "description": "content identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmMedium",
+                    "description": "acquisition medium",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmSource",
+                    "description": "traffic source",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmTerm",
+                    "description": "search terms",
+                    "type": "Number"
                 }
             ],
             "return": {
@@ -962,7 +1087,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 566,
+            "line": 591,
             "description": "Returns the status for the passwordForgotToken.\nIf the request returns a success response, the token has not yet been consumed.",
             "itemtype": "method",
             "name": "passwordForgotStatus",
@@ -981,7 +1106,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 588,
+            "line": 613,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -1041,6 +1166,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -1055,7 +1205,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 667,
+            "line": 697,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -1079,7 +1229,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 708,
+            "line": 738,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -1118,7 +1268,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 757,
+            "line": 787,
             "description": "Gets the status of an account by uid.",
             "itemtype": "method",
             "name": "accountStatus",
@@ -1137,7 +1287,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 775,
+            "line": 805,
             "description": "Gets the status of an account by email.",
             "itemtype": "method",
             "name": "accountStatusByEmail",
@@ -1156,7 +1306,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 793,
+            "line": 823,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -1190,7 +1340,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 822,
+            "line": 852,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -1209,7 +1359,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 843,
+            "line": 873,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -1252,7 +1402,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 881,
+            "line": 911,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1302,7 +1452,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 922,
+            "line": 952,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1343,7 +1493,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 982,
+            "line": 1012,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1364,7 +1514,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1002,
+            "line": 1032,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1421,7 +1571,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1074,
+            "line": 1104,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1433,7 +1583,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1085,
+            "line": 1115,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1489,7 +1639,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1129,
+            "line": 1159,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1545,7 +1695,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1173,
+            "line": 1203,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1569,7 +1719,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1200,
+            "line": 1230,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",
@@ -1588,7 +1738,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1221,
+            "line": 1251,
             "description": "Get a list of user's sessions",
             "itemtype": "method",
             "name": "sessions",
@@ -1607,7 +1757,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1242,
+            "line": 1272,
             "description": "Send an unblock code",
             "itemtype": "method",
             "name": "sendUnblockCode",
@@ -1645,6 +1795,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -1659,7 +1834,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1273,
+            "line": 1308,
             "description": "Reject a login unblock code. Code will be deleted from the server\nand will not be able to be used again.",
             "itemtype": "method",
             "name": "rejectLoginAuthorizationCode",
@@ -1683,7 +1858,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1299,
+            "line": 1334,
             "description": "Send an sms.",
             "itemtype": "method",
             "name": "sendSms",
@@ -1743,6 +1918,31 @@
                                     "name": "flowBeginTime",
                                     "description": "flow.begin event time",
                                     "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
                                 }
                             ]
                         }
@@ -1753,7 +1953,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1352,
+            "line": 1392,
             "description": "Get SMS status for the current user.",
             "itemtype": "method",
             "name": "smsStatus",
@@ -1783,7 +1983,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1379,
+            "line": 1419,
             "description": "Consume a signinCode.",
             "itemtype": "method",
             "name": "consumeSigninCode",
@@ -1814,7 +2014,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1408,
+            "line": 1448,
             "description": "Get the recovery emails associated with the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmails",
@@ -1829,7 +2029,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1428,
+            "line": 1468,
             "description": "Create a new recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailCreate",
@@ -1849,7 +2049,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1454,
+            "line": 1494,
             "description": "Remove the recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailDestroy",
@@ -1869,7 +2069,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1480,
+            "line": 1520,
             "description": "Check to see if the secondary email feature is enabled for this user.",
             "itemtype": "method",
             "name": "recoveryEmailSecondaryEmailEnabled",
@@ -1884,7 +2084,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1500,
+            "line": 1540,
             "description": "Changes user's primary email address.",
             "itemtype": "method",
             "name": "recoveryEmailSetPrimaryEmail",
@@ -1904,7 +2104,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1523,
+            "line": 1563,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -1948,7 +2148,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1523"
+            "line": " client/FxAccountClient.js:1563"
         }
     ]
 }
