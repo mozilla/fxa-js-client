@@ -447,7 +447,6 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
  * https://github.com/rkatic/p/blob/master/LICENSE
  *
  * High-priority-tasks code-portion based on https://github.com/kriskowal/asap
- * Long-Stack-Support code-portion based on https://github.com/kriskowal/q
  */
 ;(function( factory ){
 	// CommonJS
@@ -465,216 +464,58 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 })(function() {
 	"use strict";
 
-	var withStack = withStackThrowing,
-		pStartingLine = captureLine(),
-		pFileName,
-		currentTrace = null;
-
-	function withStackThrowing( error ) {
-		if ( !error.stack ) {
-			try {
-				throw error;
-			} catch ( e ) {}
-		}
-		return error;
-	}
-
-	if ( new Error().stack ) {
-		withStack = function( error ) {
-			return error;
-		};
-	}
-
-	function getTrace() {
-		var stack = withStack( new Error() ).stack;
-		if ( !stack ) {
-			return null;
-		}
-
-		var stacks = [ filterStackString( stack, 1 ) ];
-
-		if ( currentTrace ) {
-			stacks = stacks.concat( currentTrace );
-
-			if ( stacks.length === 128 ) {
-				stacks.pop();
-			}
-		}
-
-		return stacks;
-	}
-
-	function getFileNameAndLineNumber( stackLine ) {
-		var m =
-			/at .+ \((.+):(\d+):(?:\d+)\)$/.exec( stackLine ) ||
-			/at ([^ ]+):(\d+):(?:\d+)$/.exec( stackLine ) ||
-			/@(.+):(\d+):(?:\d+)$/.exec( stackLine );
-
-		return m ? { fileName: m[1], lineNumber: Number(m[2]) } : null;
-	}
-
-	function captureLine() {
-		var stack = withStack( new Error() ).stack;
-		if ( !stack ) {
-			return 0;
-		}
-
-		var lines = stack.split("\n");
-		var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
-		var pos = getFileNameAndLineNumber( firstLine );
-		if ( !pos ) {
-			return 0;
-		}
-
-		pFileName = pos.fileName;
-		return pos.lineNumber;
-	}
-
-	function filterStackString( stack, ignoreFirstLines ) {
-		var lines = stack.split("\n");
-		var goodLines = [];
-
-		for ( var i = ignoreFirstLines|0, l = lines.length; i < l; ++i ) {
-			var line = lines[i];
-
-			if ( line && !isNodeFrame(line) && !isInternalFrame(line) ) {
-				goodLines.push( line );
-			}
-		}
-
-		return goodLines.join("\n");
-	}
-
-	function isNodeFrame( stackLine ) {
-		return stackLine.indexOf("(module.js:") !== -1 ||
-			   stackLine.indexOf("(node.js:") !== -1;
-	}
-
-	function isInternalFrame( stackLine ) {
-		var pos = getFileNameAndLineNumber( stackLine );
-		return !!pos &&
-			pos.fileName === pFileName &&
-			pos.lineNumber >= pStartingLine &&
-			pos.lineNumber <= pEndingLine;
-	}
-
-	var STACK_JUMP_SEPARATOR = "\nFrom previous event:\n";
-
-	function makeStackTraceLong( error ) {
-		if ( error instanceof Error ) {
-			var stack = error.stack;
-
-			if ( !stack ) {
-				stack = withStack( error ).stack;
-
-			} else if ( ~stack.indexOf(STACK_JUMP_SEPARATOR) ) {
-				return;
-			}
-
-			if ( stack ) {
-				error.stack = [ filterStackString( stack, 0 ) ]
-					.concat( currentTrace || [] )
-					.join(STACK_JUMP_SEPARATOR);
-			}
-		}
-	}
-
-	//__________________________________________________________________________
-
 	var
-		isNodeJS = ot(typeof process) && process != null &&
+		isNodeJS = ot(typeof process) &&
 			({}).toString.call(process) === "[object process]",
 
-		hasSetImmediate = typeof setImmediate === "function",
+		hasSetImmediate = ot(typeof setImmediate),
 
-		gMutationObserver =
-			ot(typeof MutationObserver) && MutationObserver ||
-			ot(typeof WebKitMutationObserver) && WebKitMutationObserver,
-
-		head = new TaskNode(),
-		tail = head,
+		head = { f: null, n: null }, tail = head,
 		flushing = false,
-		nFreeTaskNodes = 0,
 
 		requestFlush =
-			isNodeJS ? requestFlushForNodeJS :
-			gMutationObserver ? makeRequestCallFromMutationObserver( flush ) :
+			isNodeJS && requestFlushForNodeJS ||
+			makeRequestCallFromMutationObserver( flush ) ||
 			makeRequestCallFromTimer( flush ),
 
 		pendingErrors = [],
-		requestErrorThrow = makeRequestCallFromTimer( throwFirstError ),
+		requestErrorThrow = makeRequestCallFromTimer( throwFristError ),
 
-		handleError,
+		wrapTask,
+		asapSafeTask,
 
 		domain,
 
 		call = ot.call,
 		apply = ot.apply;
 
-	tail.next = head;
-
-	function TaskNode() {
-		this.f = null;
-		this.a = null;
-		this.b = null;
-		this.next = null;
-	}
-
 	function ot( type ) {
 		return type === "object" || type === "function";
 	}
 
-	function throwFirstError() {
+	function throwFristError() {
 		if ( pendingErrors.length ) {
 			throw pendingErrors.shift();
 		}
 	}
 
 	function flush() {
-		while ( head !== tail ) {
-			var h = head = head.next;
-
-			if ( nFreeTaskNodes >= 1024 ) {
-				tail.next = tail.next.next;
-			} else {
-				++nFreeTaskNodes;
-			}
-
-			var f = h.f;
-			var a = h.a;
-			var b = h.b;
-			h.f = null;
-			h.a = null;
-			h.b = null;
-
-			f( a, b );
+		while ( head.n ) {
+			head = head.n;
+			var f = head.f;
+			head.f = null;
+			f.call();
 		}
-
 		flushing = false;
-		currentTrace = null;
 	}
 
-	function schedule( f, a, b ) {
-		var node = tail.next;
-
-		if ( node === head ) {
-			tail.next = node = new TaskNode();
-			node.next = head;
-		} else {
-			--nFreeTaskNodes;
-		}
-
-		tail = node;
-
-		node.f = f;
-		node.a = a;
-		node.b = b;
-
+	var runLater = function( f ) {
+		tail = tail.n = { f: f, n: null };
 		if ( !flushing ) {
 			flushing = true;
 			requestFlush();
 		}
-	}
+	};
 
 	function requestFlushForNodeJS() {
 		var currentDomain = process.domain;
@@ -697,9 +538,17 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 	}
 
 	function makeRequestCallFromMutationObserver( callback ) {
+		var observer =
+			ot(typeof MutationObserver) ? new MutationObserver( callback ) :
+			ot(typeof WebKitMutationObserver) ? new WebKitMutationObserver( callback ) :
+			null;
+
+		if ( !observer ) {
+			return null;
+		}
+
 		var toggle = 1;
 		var node = document.createTextNode("");
-		var observer = new gMutationObserver( callback );
 		observer.observe( node, {characterData: true} );
 
 		return function() {
@@ -722,39 +571,86 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 	}
 
 	if ( isNodeJS ) {
-		handleError = function( e ) {
-			currentTrace = null;
-			requestFlush();
-			throw e;
+		wrapTask = function( task ) {
+			var d = process.domain;
+
+			return function() {
+				if ( d ) {
+					if ( d._disposed ) return;
+					d.enter();
+				}
+
+				try {
+					task.call();
+
+				} catch ( e ) {
+					requestFlush();
+					throw e;
+				}
+
+				if ( d ) {
+					d.exit();
+				}
+			};
 		};
 
-	} else {
-		handleError = function( e ) {
-			pendingErrors.push( e );
-			requestErrorThrow();
+		asapSafeTask = function( task ) {
+			var d = process.domain;
+			runLater(!d ? task : function() {
+				if ( !d._disposed ) {
+					d.enter();
+					task.call();
+					d.exit();
+				}
+			});
 		}
+
+	} else {
+		wrapTask = function( task ) {
+			return function() {
+				try {
+					task.call();
+
+				} catch ( e ) {
+					pendingErrors.push( e );
+					requestErrorThrow();
+				}
+			};
+		}
+
+		asapSafeTask = runLater;
+	}
+
+
+	function asap( task ) {
+		runLater( wrapTask(task) );
 	}
 
 	//__________________________________________________________________________
 
-	var FULFILLED = 1;
-	var REJECTED = 2;
 
-	var OP_CALL = -1;
-	var OP_THEN = -2;
-	var OP_MULTIPLE = -3;
-	var OP_END = -4;
-
-	var VOID = P(void 0);
-
-	function DoneEb( e ) {
-		if ( P.onerror ) {
-			(1,P.onerror)( e );
-
-		} else {
-			throw e;
+	function forEach( arr, cb ) {
+		for ( var i = 0, l = arr.length; i < l; ++i ) {
+			if ( i in arr ) {
+				cb( arr[i], i );
+			}
 		}
 	}
+
+	function reportError( error ) {
+		asap(function() {
+			if ( P.onerror ) {
+				P.onerror.call( null, error );
+
+			} else {
+				throw error;
+			}
+		});
+	}
+
+	var PENDING = 0;
+	var FULFILLED = 1;
+	var REJECTED = 2;
 
 	function P( x ) {
 		return x instanceof Promise ?
@@ -762,285 +658,169 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 			Resolve( new Promise(), x );
 	}
 
-	P.longStackSupport = false;
-
-	function Fulfill( p, value ) {
-		if ( p._state > 0 ) {
-			return;
+	function Settle( p, state, value, domain ) {
+		if ( p._state ) {
+			return p;
 		}
 
-		p._state = FULFILLED;
+		p._state = state;
 		p._value = value;
-		p._domain = null;
 
-		HandleSettled( p );
-	}
+		if ( domain ) {
+			p._domain = domain;
 
-	function Reject( p, reason ) {
-		if ( p._state > 0 ) {
-			return;
-		}
-
-		if ( currentTrace ) {
-			makeStackTraceLong( reason );
-		}
-
-		p._state = REJECTED;
-		p._value = reason;
-
-		if ( isNodeJS ) {
+		} else if ( isNodeJS && state === REJECTED ) {
 			p._domain = process.domain;
 		}
 
-		if ( p._op === OP_END ) {
-			handleError( reason );
-
-		} else {
-			HandleSettled( p );
+		if ( p._pending.length ) {
+			forEach( p._pending, runLater );
 		}
+		p._pending = null;
+
+		return p;
 	}
 
-	function Propagate( parent, p ) {
-		if ( p._state > 0 ) {
-			return;
-		}
+	function OnSettled( p, f ) {
+		p._pending.push( f );
+	}
 
-		p._state = parent._state;
-		p._value = parent._value;
-		p._domain = parent._domain;
-
-		HandleSettled( p );
+	function Propagate( p, p2 ) {
+		Settle( p2, p._state, p._value, p._domain );
 	}
 
 	function Resolve( p, x ) {
-		if ( p._state > 0 ) {
+		if ( p._state ) {
 			return p;
 		}
 
 		if ( x instanceof Promise ) {
-			ResolveWithPromise( p, x );
+			if ( x === p ) {
+				Settle( p, REJECTED, new TypeError("You can't resolve a promise with itself") );
 
-		} else {
-			var type = typeof x;
-
-			if ( type === "object" && x !== null || type === "function" ) {
-				ResolveWithObject( p, x )
+			} else if ( x._state ) {
+				Propagate( x, p );
 
 			} else {
-				Fulfill( p, x );
+				OnSettled(x, function() {
+					Propagate( x, p );
+				});
 			}
+
+		} else if ( x !== Object(x) ) {
+			Settle( p, FULFILLED, x );
+
+		} else {
+			asapSafeTask(function() {
+				var r = resolverFor( p );
+
+				try {
+					var then = x.then;
+
+					if ( typeof then === "function" ) {
+						call.call( then, x, r.resolve, r.reject );
+
+					} else {
+						Settle( p, FULFILLED, x );
+					}
+
+				} catch ( e ) {
+					r.reject( e );
+				}
+			});
 		}
 
 		return p;
 	}
 
-	function ResolveWithPromise( p, x ) {
-		if ( x === p ) {
-			Reject( p, new TypeError("You can't resolve a promise with itself") );
+	function resolverFor( promise ) {
+		var done = false;
 
-		} else if ( x._state > 0 ) {
-			Propagate( x, p );
-
-		} else {
-			OnSettled( x, OP_THEN, p );
-		}
-	}
-
-	function ResolveWithObject( p, x ) {
-		var then = GetThen( p, x );
-
-		if ( typeof then === "function" ) {
-			TryResolver( resolverFor(p, false), then, x );
-
-		} else {
-			Fulfill( p, x );
-		}
-	}
-
-	function GetThen( p, x ) {
-		try {
-			return x.then;
-
-		} catch ( e ) {
-			Reject( p, e );
-			return null;
-		}
-	}
-
-	function TryResolver( d, resolver, x ) {
-		try {
-			call.call( resolver, x, d.resolve, d.reject );
-
-		} catch ( e ) {
-			d.reject( e );
-		}
-	}
-
-	function HandleSettled( p ) {
-		if ( p._pending !== null ) {
-			HandlePending( p, p._op, p._pending );
-			p._pending = null;
-		}
-	}
-
-	function HandlePending( p, op, pending ) {
-		if ( op >= 0 ) {
-			pending._cb( p, op );
-
-		} else if ( op === OP_CALL ) {
-			pending( p );
-
-		} else if ( op === OP_THEN ) {
-			schedule( Then, p, pending );
-
-		} else {
-			for ( var i = 0, l = pending.length; i < l; i += 2 ) {
-				HandlePending( p, pending[i], pending[i + 1] );
-			}
-		}
-	}
-
-	function OnSettled( p, op, pending ) {
-		if ( p._state > 0 ) {
-			HandlePending( p, op, pending );
-
-		} else if ( p._pending === null ) {
-			p._pending = pending;
-			p._op = op;
-
-		} else if ( p._op === OP_MULTIPLE ) {
-			p._pending.push( op, pending );
-
-		} else {
-			p._pending = [ p._op, p._pending, op, pending ];
-			p._op = OP_MULTIPLE;
-		}
-	}
-
-	function Then( parent, p ) {
-		var cb = parent._state === FULFILLED ? p._cb : p._eb;
-		p._cb = null;
-		p._eb = null;
-
-		if ( p._trace ) {
-			currentTrace = p._trace;
-			p._trace = null;
-		}
-
-		if ( cb === null ) {
-			Propagate( parent, p );
-
-		} else {
-			HandleCallback( p, cb, parent._value, parent._domain || p._domain );
-		}
-	}
-
-	function HandleCallback( p, cb, value, domain ) {
-		if ( domain ) {
-			if ( domain._disposed ) return;
-			domain.enter();
-		}
-
-		try {
-			value = cb( value );
-
-		} catch ( e ) {
-			Reject( p, e );
-			p = null;
-		}
-
-		if ( p ) Resolve( p, value );
-		if ( domain ) domain.exit();
-	}
-
-	function resolverFor( promise, nodelike ) {
-		var trace = P.longStackSupport ? getTrace() : null;
-
-		function resolve( error, y ) {
-			if ( promise ) {
-				var p = promise;
-				promise = null;
-
-				if ( trace ) {
-					if ( currentTrace ) {
-						trace = null;
-
-					} else {
-						currentTrace = trace;
-					}
-				}
-
-				if ( error ) {
-					Reject( p, nodelike ? error : y );
-
-				} else {
-					Resolve( p, y );
-				}
-
-				if ( trace ) {
-					currentTrace = trace = null;
-				}
-			}
-		}
-
-		return nodelike ? resolve : {
+		return {
 			promise: promise,
 
 			resolve: function( y ) {
-				resolve( false, y );
+				if ( !done ) {
+					done = true;
+					Resolve( promise, y );
+				}
 			},
 
 			reject: function( reason ) {
-				resolve( true, reason );
+				if ( !done ) {
+					done = true;
+					Settle( promise, REJECTED, reason );
+				}
 			}
 		};
 	}
 
 	P.defer = defer;
 	function defer() {
-		return resolverFor( new Promise(), false );
+		return resolverFor( new Promise() );
 	}
 
 	P.reject = reject;
 	function reject( reason ) {
-		var promise = new Promise();
-		Reject( promise, reason );
-		return promise;
+		return Settle( new Promise(), REJECTED, reason );
 	}
 
 	function Promise() {
 		this._state = 0;
 		this._value = void 0;
 		this._domain = null;
-		this._cb = null;
-		this._eb = null;
-		this._op = 0;
-		this._pending = null;
-		this._trace = null;
+		this._pending = [];
 	}
 
 	Promise.prototype.then = function( onFulfilled, onRejected ) {
-		var promise = new Promise();
+		var cb = typeof onFulfilled === "function" ? onFulfilled : null;
+		var eb = typeof onRejected === "function" ? onRejected : null;
 
-		promise._cb = typeof onFulfilled === "function" ? onFulfilled : null;
-		promise._eb = typeof onRejected === "function" ? onRejected : null;
+		var p = this;
+		var p2 = new Promise();
 
-		if ( P.longStackSupport ) {
-			promise._trace = getTrace();
+		var thenDomain = isNodeJS && process.domain;
+
+		function onSettled() {
+			var func = p._state === FULFILLED ? cb : eb;
+			if ( !func ) {
+				Propagate( p, p2 );
+				return;
+			}
+
+			var x, catched = false;
+			var d = p._domain || thenDomain;
+
+			if ( d ) {
+				if ( d._disposed ) return;
+				d.enter();
+			}
+
+			try {
+				x = func( p._value );
+
+			} catch ( e ) {
+				catched = true;
+				Settle( p2, REJECTED, e );
+			}
+
+			if ( !catched ) {
+				Resolve( p2, x );
+			}
+
+			if ( d ) {
+				d.exit();
+			}
 		}
 
-		if ( isNodeJS ) {
-			promise._domain = process.domain;
-		}
-
-		if ( this._state > 0 ) {
-			schedule( Then, this, promise );
+		if ( p._state === PENDING ) {
+			OnSettled( p, onSettled );
 
 		} else {
-			OnSettled( this, OP_THEN, promise );
+			runLater( onSettled );
 		}
 
-		return promise;
+		return p2;
 	};
 
 	Promise.prototype.done = function( cb, eb ) {
@@ -1050,225 +830,141 @@ sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.i
 			p = p.then( cb, eb );
 		}
 
-		p.then( null, DoneEb )._op = OP_END;
+		p.then( null, reportError );
 	};
 
 	Promise.prototype.fail = function( eb ) {
 		return this.then( null, eb );
 	};
 
-	Promise.prototype.fin = function( finback ) {
-		var self = this;
-
-		function fb() {
-			return finback();
-		}
-
-		return self.then( fb, fb ).then(function() {
-			return self;
-		});
-	};
-
 	Promise.prototype.spread = function( cb, eb ) {
-		return this.then( all ).then(function( args ) {
-			return apply.call( cb, void 0, args );
+		return this.then(cb && function( array ) {
+			return all( array, [] ).then(function( values ) {
+				return apply.call( cb, void 0, values );
+			}, eb);
 		}, eb);
 	};
 
 	Promise.prototype.timeout = function( ms, msg ) {
-		var promise = new Promise();
+		var p = this;
+		var p2 = new Promise();
 
-		if ( this._state > 0 ) {
-			Propagate( this, promise );
+		if ( p._state !== PENDING ) {
+			Propagate( p, p2 );
 
 		} else {
-			var timedout = false;
-			var trace = P.longStackSupport ? getTrace() : null;
-
 			var timeoutId = setTimeout(function() {
-				timedout = true;
-				currentTrace = trace;
-				Reject( promise, new Error(msg || "Timed out after " + ms + " ms") );
-				currentTrace = null;
+				Settle( p2, REJECTED,
+					new Error(msg || "Timed out after " + ms + " ms") );
 			}, ms);
 
-			OnSettled(this, OP_CALL, function( p ) {
-				if ( !timedout ) {
-					schedule( Propagate, p, promise );
-					clearTimeout( timeoutId );
-				}
+			OnSettled(p, function() {
+				clearTimeout( timeoutId );
+				Propagate( p, p2 );
 			});
 		}
 
-		return promise;
+		return p2;
 	};
 
 	Promise.prototype.delay = function( ms ) {
-		var promise = new Promise();
+		var d = defer();
 
-		OnSettled(this, OP_CALL, function( p ) {
-			if ( p._state === FULFILLED ) {
-				setTimeout(function() {
-					Propagate( p, promise );
-				}, ms);
+		this.then(function( value ) {
+			setTimeout(function() {
+				d.resolve( value );
+			}, ms);
+		}, d.reject);
 
-			} else {
-				schedule( Propagate, p, promise );
-			}
-		});
-
-		return promise;
-	};
-
-	Promise.prototype.all = function() {
-		return this.then( all );
-	};
-
-	Promise.prototype.allSettled = function() {
-		return this.then( allSettled );
+		return d.promise;
 	};
 
 	Promise.prototype.inspect = function() {
 		switch ( this._state ) {
+			case PENDING:   return { state: "pending" };
 			case FULFILLED: return { state: "fulfilled", value: this._value };
 			case REJECTED:  return { state: "rejected", reason: this._value };
-			default:		return { state: "pending" };
+			default: throw new TypeError("invalid state");
 		}
 	};
 
-	Promise.prototype.nodeify = function( nodeback ) {
-		if ( nodeback ) {
-			this.done(function( value ) {
-				nodeback( null, value );
-			}, nodeback);
-			return void 0;
-
-		} else {
-			return this;
+	function valuesHandler( f ) {
+		function onFulfilled( values ) {
+			return f( values, [] );
 		}
-	};
 
-	function _allSettled_cb( p, i ) {
-		this._value[ i ] = p.inspect();
-		if ( ++this._state === 0 ) {
-			if ( this._pending === null ) {
-				this._state = FULFILLED;
-			} else {
-				schedule( Fulfill, this, this._value );
-			}
+		function handleValues( values ) {
+			return P( values ).then( onFulfilled );
 		}
+
+		handleValues._ = f;
+		return handleValues;
 	}
 
-	function _all_cb( p, i ) {
-		if ( this._state < 0 ) {
-			if ( p._state === REJECTED ) {
-				this._state = 0;
-				if ( this._pending === null ) {
-					Propagate( p, this );
-				} else {
-					schedule( Propagate, p, this );
-				}
-
-			} else {
-				this._value[ i ] = p._value;
-				if ( ++this._state === 0 ) {
-					if ( this._pending === null ) {
-						this._state = FULFILLED;
-					} else {
-						schedule( Fulfill, this, this._value );
-					}
-				}
-			}
-		}
-	}
-
-	var nextIsAllSettled = false;
-
-	P.all = all;
-	function all( input ) {
+	P.allSettled = valuesHandler( allSettled );
+	function allSettled( input, output ) {
+		var waiting = 0;
 		var promise = new Promise();
-		promise._cb = nextIsAllSettled ? _allSettled_cb : _all_cb;
-		nextIsAllSettled = false;
-
-		var len = input.length|0;
-
-		promise._state = len ? -len : FULFILLED;
-		promise._value = new Array( len );
-
-		for ( var i = 0; i < len && promise._state < 0; ++i ) {
-			OnSettled( P(input[i]), i, promise );
+		forEach( input, function( x, index ) {
+			var p = P( x );
+			if ( p._state === PENDING ) {
+				++waiting;
+				OnSettled(p, function() {
+					output[ index ] = p.inspect();
+					if ( --waiting === 0 ) {
+						Settle( promise, FULFILLED, output );
+					}
+				});
+			} else {
+				output[ index ] = p.inspect();
+			}
+		});
+		if ( waiting === 0 ) {
+			Settle( promise, FULFILLED, output );
 		}
-
 		return promise;
 	}
 
-	P.allSettled = allSettled;
-	function allSettled( input ) {
-		nextIsAllSettled = true;
-		return all( input );
-	}
+	P.all = valuesHandler( all );
+	function all( input, output ) {
+		var waiting = 0;
+		var d = defer();
+		forEach( input, function( x, index ) {
+			var p = P( x );
+			if ( p._state === FULFILLED ) {
+				output[ index ] = p._value;
 
-	P.spread = spread;
-	function spread( values, cb, eb ) {
-		return all( values ).then(function( args ) {
-			return apply.call( cb, void 0, args );
-		}, eb);
+			} else {
+				++waiting;
+				p.then(function( value ) {
+					output[ index ] = value;
+					if ( --waiting === 0 ) {
+						d.resolve( output );
+					}
+				}, d.reject);
+			}
+		});
+		if ( waiting === 0 ) {
+			d.resolve( output );
+		}
+		return d.promise;
 	}
 
 	P.promised = promised;
 	function promised( f ) {
 		function onFulfilled( thisAndArgs ) {
-			return call.apply( f, thisAndArgs );
+			return apply.apply( f, thisAndArgs );
 		}
 
 		return function() {
-			var len = arguments.length;
-			var thisAndArgs = new Array( len + 1 );
-			thisAndArgs[0] = this;
-			for ( var i = 0; i < len; ++i ) {
-				thisAndArgs[ i + 1 ] = arguments[ i ];
-			}
-			return all( thisAndArgs ).then( onFulfilled );
+			var allArgs = all( arguments, [] );
+			return all( [this, allArgs], [] ).then( onFulfilled );
 		};
-	}
-
-	P.denodeify = denodeify;
-	function denodeify( f ) {
-		return function() {
-			var promise = new Promise();
-
-			var i = arguments.length;
-			var args = new Array( i + 1 );
-			args[i] = resolverFor( promise, true );
-			while ( i-- ) {
-				args[i] = arguments[i];
-			}
-
-			TryApply( promise, f, this, args );
-
-			return promise;
-		};
-	}
-
-	function TryApply( p, f, that, args ) {
-		try {
-			apply.call( f, that, args );
-
-		} catch ( e ) {
-			Reject( p, e );
-		}
 	}
 
 	P.onerror = null;
 
-	P.nextTick = function nextTick( task ) {
-		// We don't use .done to avoid P.onerror.
-		VOID.then(function() {
-			task.call();
-		})._op = OP_END;
-	};
-
-	var pEndingLine = captureLine();
+	P.nextTick = asap;
 
 	return P;
 });
@@ -2211,7 +1907,12 @@ define('client/lib/metricsContext',[], function () {
       return {
         deviceId: data.deviceId,
         flowId: data.flowId,
-        flowBeginTime: data.flowBeginTime
+        flowBeginTime: data.flowBeginTime,
+        utmCampaign: data.utmCampaign,
+        utmContent: data.utmContent,
+        utmMedium: data.utmMedium,
+        utmSource: data.utmSource,
+        utmTerm: data.utmTerm
       };
     }
   };
@@ -2316,6 +2017,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.signUp = function (email, password, options) {
@@ -2408,6 +2114,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    *   @param {String} [options.unblockCode]
    *   Login unblock code.
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
@@ -2637,6 +2348,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotSendCode = function(email, options) {
@@ -2700,6 +2416,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotResendCode = function(email, passwordForgotToken, options) {
@@ -2757,6 +2478,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
@@ -2822,6 +2548,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.accountReset = function(email, newPassword, accountResetToken, options) {
@@ -3468,6 +3199,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON `xhr.responseText` of the request
    */
   FxAccountClient.prototype.sendUnblockCode = function (email, options) {
@@ -3529,6 +3265,11 @@ define('client/FxAccountClient',[
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
    *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
    */
   FxAccountClient.prototype.sendSms = function (sessionToken, phoneNumber, messageId, options) {
     var request = this.request;
