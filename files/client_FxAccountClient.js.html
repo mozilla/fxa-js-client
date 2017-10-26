@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.65</em>
+            <em>API Docs for: 0.1.66</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -449,6 +449,9 @@ define([
    *   Opaque url-encoded string that will be included in the verification link
    *   as a querystring parameter, useful for continuing an OAuth flow for
    *   example.
+   *   @param {String} [options.type]
+   *   Specifies the type of code to send, currently only supported type is
+   *   &#x60;upgradeSession&#x60;.
    *   @param {String} [options.lang]
    *   set the language for the &#x27;Accept-Language&#x27; header
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
@@ -477,6 +480,10 @@ define([
 
           if (options.resume) {
             data.resume = options.resume;
+          }
+
+          if (options.type) {
+            data.type = options.type;
           }
 
           if (options.lang) {
