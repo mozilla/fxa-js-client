@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.66</em>
+            <em>API Docs for: 0.1.67</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -1607,26 +1607,6 @@ define([
         };
 
         return request.send(&#x27;/recovery_email/destroy&#x27;, &#x27;POST&#x27;, creds, data);
-      });
-  };
-
-  /**
-   * Check to see if the secondary email feature is enabled for this user.
-   *
-   * @method recoveryEmailSecondaryEmailEnabled
-   * @param {String} sessionToken SessionToken obtained from signIn
-   */
-  FxAccountClient.prototype.recoveryEmailSecondaryEmailEnabled = function (sessionToken) {
-    var request = this.request;
-
-    return P()
-      .then(function () {
-        required(sessionToken, &#x27;sessionToken&#x27;);
-
-        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
-      })
-      .then(function(creds) {
-        return request.send(&#x27;/recovery_email/check_can_add_secondary_address&#x27;, &#x27;GET&#x27;, creds);
       });
   };
 

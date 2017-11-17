@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "0.1.66"
+        "version": "0.1.67"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -2076,21 +2076,6 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 1527,
-            "description": "Check to see if the secondary email feature is enabled for this user.",
-            "itemtype": "method",
-            "name": "recoveryEmailSecondaryEmailEnabled",
-            "params": [
-                {
-                    "name": "sessionToken",
-                    "description": "SessionToken obtained from signIn",
-                    "type": "String"
-                }
-            ],
-            "class": "FxAccountClient"
-        },
-        {
-            "file": "client/FxAccountClient.js",
-            "line": 1547,
             "description": "Changes user's primary email address.",
             "itemtype": "method",
             "name": "recoveryEmailSetPrimaryEmail",
@@ -2110,7 +2095,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1570,
+            "line": 1550,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -2154,7 +2139,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1570"
+            "line": " client/FxAccountClient.js:1550"
         }
     ]
 }
