@@ -419,6 +419,1164 @@ var requirejs, require, define;
 
 define("components/almond/almond", function(){});
 
+/*!
+ * @overview es6-promise - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ * @version   4.1.0+f046478d
+ */
+
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define('es6-promise',factory) :
+	(global.ES6Promise = factory());
+}(this, (function () { 'use strict';
+
+function objectOrFunction(x) {
+  var type = typeof x;
+  return x !== null && (type === 'object' || type === 'function');
+}
+
+function isFunction(x) {
+  return typeof x === 'function';
+}
+
+var _isArray = undefined;
+if (Array.isArray) {
+  _isArray = Array.isArray;
+} else {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === '[object Array]';
+  };
+}
+
+var isArray = _isArray;
+
+var len = 0;
+var vertxNext = undefined;
+var customSchedulerFn = undefined;
+
+var asap = function asap(callback, arg) {
+  queue[len] = callback;
+  queue[len + 1] = arg;
+  len += 2;
+  if (len === 2) {
+    // If len is 2, that means that we need to schedule an async flush.
+    // If additional callbacks are queued before the queue is flushed, they
+    // will be processed by this flush that we are scheduling.
+    if (customSchedulerFn) {
+      customSchedulerFn(flush);
+    } else {
+      scheduleFlush();
+    }
+  }
+};
+
+function setScheduler(scheduleFn) {
+  customSchedulerFn = scheduleFn;
+}
+
+function setAsap(asapFn) {
+  asap = asapFn;
+}
+
+var browserWindow = typeof window !== 'undefined' ? window : undefined;
+var browserGlobal = browserWindow || {};
+var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+
+// test for web worker but not in IE10
+var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+
+// node
+function useNextTick() {
+  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+  // see https://github.com/cujojs/when/issues/410 for details
+  return function () {
+    return process.nextTick(flush);
+  };
+}
+
+// vertx
+function useVertxTimer() {
+  if (typeof vertxNext !== 'undefined') {
+    return function () {
+      vertxNext(flush);
+    };
+  }
+
+  return useSetTimeout();
+}
+
+function useMutationObserver() {
+  var iterations = 0;
+  var observer = new BrowserMutationObserver(flush);
+  var node = document.createTextNode('');
+  observer.observe(node, { characterData: true });
+
+  return function () {
+    node.data = iterations = ++iterations % 2;
+  };
+}
+
+// web worker
+function useMessageChannel() {
+  var channel = new MessageChannel();
+  channel.port1.onmessage = flush;
+  return function () {
+    return channel.port2.postMessage(0);
+  };
+}
+
+function useSetTimeout() {
+  // Store setTimeout reference so es6-promise will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var globalSetTimeout = setTimeout;
+  return function () {
+    return globalSetTimeout(flush, 1);
+  };
+}
+
+var queue = new Array(1000);
+function flush() {
+  for (var i = 0; i < len; i += 2) {
+    var callback = queue[i];
+    var arg = queue[i + 1];
+
+    callback(arg);
+
+    queue[i] = undefined;
+    queue[i + 1] = undefined;
+  }
+
+  len = 0;
+}
+
+function attemptVertx() {
+  try {
+    var r = require;
+    var vertx = r('vertx');
+    vertxNext = vertx.runOnLoop || vertx.runOnContext;
+    return useVertxTimer();
+  } catch (e) {
+    return useSetTimeout();
+  }
+}
+
+var scheduleFlush = undefined;
+// Decide what async method to use to triggering processing of queued callbacks:
+if (isNode) {
+  scheduleFlush = useNextTick();
+} else if (BrowserMutationObserver) {
+  scheduleFlush = useMutationObserver();
+} else if (isWorker) {
+  scheduleFlush = useMessageChannel();
+} else if (browserWindow === undefined && typeof require === 'function') {
+  scheduleFlush = attemptVertx();
+} else {
+  scheduleFlush = useSetTimeout();
+}
+
+function then(onFulfillment, onRejection) {
+  var _arguments = arguments;
+
+  var parent = this;
+
+  var child = new this.constructor(noop);
+
+  if (child[PROMISE_ID] === undefined) {
+    makePromise(child);
+  }
+
+  var _state = parent._state;
+
+  if (_state) {
+    (function () {
+      var callback = _arguments[_state - 1];
+      asap(function () {
+        return invokeCallback(_state, child, callback, parent._result);
+      });
+    })();
+  } else {
+    subscribe(parent, child, onFulfillment, onRejection);
+  }
+
+  return child;
+}
+
+/**
+  `Promise.resolve` returns a promise that will become resolved with the
+  passed `value`. It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    resolve(1);
+  });
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.resolve(1);
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  @method resolve
+  @static
+  @param {Any} value value that the returned promise will be resolved with
+  Useful for tooling.
+  @return {Promise} a promise that will become fulfilled with the given
+  `value`
+*/
+function resolve$1(object) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (object && typeof object === 'object' && object.constructor === Constructor) {
+    return object;
+  }
+
+  var promise = new Constructor(noop);
+  resolve(promise, object);
+  return promise;
+}
+
+var PROMISE_ID = Math.random().toString(36).substring(16);
+
+function noop() {}
+
+var PENDING = void 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+
+var GET_THEN_ERROR = new ErrorObject();
+
+function selfFulfillment() {
+  return new TypeError("You cannot resolve a promise with itself");
+}
+
+function cannotReturnOwn() {
+  return new TypeError('A promises callback cannot return that same promise.');
+}
+
+function getThen(promise) {
+  try {
+    return promise.then;
+  } catch (error) {
+    GET_THEN_ERROR.error = error;
+    return GET_THEN_ERROR;
+  }
+}
+
+function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
+  try {
+    then$$1.call(value, fulfillmentHandler, rejectionHandler);
+  } catch (e) {
+    return e;
+  }
+}
+
+function handleForeignThenable(promise, thenable, then$$1) {
+  asap(function (promise) {
+    var sealed = false;
+    var error = tryThen(then$$1, thenable, function (value) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+      if (thenable !== value) {
+        resolve(promise, value);
+      } else {
+        fulfill(promise, value);
+      }
+    }, function (reason) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+
+      reject(promise, reason);
+    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+    if (!sealed && error) {
+      sealed = true;
+      reject(promise, error);
+    }
+  }, promise);
+}
+
+function handleOwnThenable(promise, thenable) {
+  if (thenable._state === FULFILLED) {
+    fulfill(promise, thenable._result);
+  } else if (thenable._state === REJECTED) {
+    reject(promise, thenable._result);
+  } else {
+    subscribe(thenable, undefined, function (value) {
+      return resolve(promise, value);
+    }, function (reason) {
+      return reject(promise, reason);
+    });
+  }
+}
+
+function handleMaybeThenable(promise, maybeThenable, then$$1) {
+  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
+    handleOwnThenable(promise, maybeThenable);
+  } else {
+    if (then$$1 === GET_THEN_ERROR) {
+      reject(promise, GET_THEN_ERROR.error);
+      GET_THEN_ERROR.error = null;
+    } else if (then$$1 === undefined) {
+      fulfill(promise, maybeThenable);
+    } else if (isFunction(then$$1)) {
+      handleForeignThenable(promise, maybeThenable, then$$1);
+    } else {
+      fulfill(promise, maybeThenable);
+    }
+  }
+}
+
+function resolve(promise, value) {
+  if (promise === value) {
+    reject(promise, selfFulfillment());
+  } else if (objectOrFunction(value)) {
+    handleMaybeThenable(promise, value, getThen(value));
+  } else {
+    fulfill(promise, value);
+  }
+}
+
+function publishRejection(promise) {
+  if (promise._onerror) {
+    promise._onerror(promise._result);
+  }
+
+  publish(promise);
+}
+
+function fulfill(promise, value) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+
+  promise._result = value;
+  promise._state = FULFILLED;
+
+  if (promise._subscribers.length !== 0) {
+    asap(publish, promise);
+  }
+}
+
+function reject(promise, reason) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+  promise._state = REJECTED;
+  promise._result = reason;
+
+  asap(publishRejection, promise);
+}
+
+function subscribe(parent, child, onFulfillment, onRejection) {
+  var _subscribers = parent._subscribers;
+  var length = _subscribers.length;
+
+  parent._onerror = null;
+
+  _subscribers[length] = child;
+  _subscribers[length + FULFILLED] = onFulfillment;
+  _subscribers[length + REJECTED] = onRejection;
+
+  if (length === 0 && parent._state) {
+    asap(publish, parent);
+  }
+}
+
+function publish(promise) {
+  var subscribers = promise._subscribers;
+  var settled = promise._state;
+
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  var child = undefined,
+      callback = undefined,
+      detail = promise._result;
+
+  for (var i = 0; i < subscribers.length; i += 3) {
+    child = subscribers[i];
+    callback = subscribers[i + settled];
+
+    if (child) {
+      invokeCallback(settled, child, callback, detail);
+    } else {
+      callback(detail);
+    }
+  }
+
+  promise._subscribers.length = 0;
+}
+
+function ErrorObject() {
+  this.error = null;
+}
+
+var TRY_CATCH_ERROR = new ErrorObject();
+
+function tryCatch(callback, detail) {
+  try {
+    return callback(detail);
+  } catch (e) {
+    TRY_CATCH_ERROR.error = e;
+    return TRY_CATCH_ERROR;
+  }
+}
+
+function invokeCallback(settled, promise, callback, detail) {
+  var hasCallback = isFunction(callback),
+      value = undefined,
+      error = undefined,
+      succeeded = undefined,
+      failed = undefined;
+
+  if (hasCallback) {
+    value = tryCatch(callback, detail);
+
+    if (value === TRY_CATCH_ERROR) {
+      failed = true;
+      error = value.error;
+      value.error = null;
+    } else {
+      succeeded = true;
+    }
+
+    if (promise === value) {
+      reject(promise, cannotReturnOwn());
+      return;
+    }
+  } else {
+    value = detail;
+    succeeded = true;
+  }
+
+  if (promise._state !== PENDING) {
+    // noop
+  } else if (hasCallback && succeeded) {
+      resolve(promise, value);
+    } else if (failed) {
+      reject(promise, error);
+    } else if (settled === FULFILLED) {
+      fulfill(promise, value);
+    } else if (settled === REJECTED) {
+      reject(promise, value);
+    }
+}
+
+function initializePromise(promise, resolver) {
+  try {
+    resolver(function resolvePromise(value) {
+      resolve(promise, value);
+    }, function rejectPromise(reason) {
+      reject(promise, reason);
+    });
+  } catch (e) {
+    reject(promise, e);
+  }
+}
+
+var id = 0;
+function nextId() {
+  return id++;
+}
+
+function makePromise(promise) {
+  promise[PROMISE_ID] = id++;
+  promise._state = undefined;
+  promise._result = undefined;
+  promise._subscribers = [];
+}
+
+function Enumerator$1(Constructor, input) {
+  this._instanceConstructor = Constructor;
+  this.promise = new Constructor(noop);
+
+  if (!this.promise[PROMISE_ID]) {
+    makePromise(this.promise);
+  }
+
+  if (isArray(input)) {
+    this.length = input.length;
+    this._remaining = input.length;
+
+    this._result = new Array(this.length);
+
+    if (this.length === 0) {
+      fulfill(this.promise, this._result);
+    } else {
+      this.length = this.length || 0;
+      this._enumerate(input);
+      if (this._remaining === 0) {
+        fulfill(this.promise, this._result);
+      }
+    }
+  } else {
+    reject(this.promise, validationError());
+  }
+}
+
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
+}
+
+Enumerator$1.prototype._enumerate = function (input) {
+  for (var i = 0; this._state === PENDING && i < input.length; i++) {
+    this._eachEntry(input[i], i);
+  }
+};
+
+Enumerator$1.prototype._eachEntry = function (entry, i) {
+  var c = this._instanceConstructor;
+  var resolve$$1 = c.resolve;
+
+  if (resolve$$1 === resolve$1) {
+    var _then = getThen(entry);
+
+    if (_then === then && entry._state !== PENDING) {
+      this._settledAt(entry._state, i, entry._result);
+    } else if (typeof _then !== 'function') {
+      this._remaining--;
+      this._result[i] = entry;
+    } else if (c === Promise$2) {
+      var promise = new c(noop);
+      handleMaybeThenable(promise, entry, _then);
+      this._willSettleAt(promise, i);
+    } else {
+      this._willSettleAt(new c(function (resolve$$1) {
+        return resolve$$1(entry);
+      }), i);
+    }
+  } else {
+    this._willSettleAt(resolve$$1(entry), i);
+  }
+};
+
+Enumerator$1.prototype._settledAt = function (state, i, value) {
+  var promise = this.promise;
+
+  if (promise._state === PENDING) {
+    this._remaining--;
+
+    if (state === REJECTED) {
+      reject(promise, value);
+    } else {
+      this._result[i] = value;
+    }
+  }
+
+  if (this._remaining === 0) {
+    fulfill(promise, this._result);
+  }
+};
+
+Enumerator$1.prototype._willSettleAt = function (promise, i) {
+  var enumerator = this;
+
+  subscribe(promise, undefined, function (value) {
+    return enumerator._settledAt(FULFILLED, i, value);
+  }, function (reason) {
+    return enumerator._settledAt(REJECTED, i, reason);
+  });
+};
+
+/**
+  `Promise.all` accepts an array of promises, and returns a new promise which
+  is fulfilled with an array of fulfillment values for the passed promises, or
+  rejected with the reason of the first passed promise to be rejected. It casts all
+  elements of the passed iterable to promises as it runs this algorithm.
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = resolve(2);
+  let promise3 = resolve(3);
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // The array here would be [ 1, 2, 3 ];
+  });
+  ```
+
+  If any of the `promises` given to `all` are rejected, the first promise
+  that is rejected will be given as an argument to the returned promises's
+  rejection handler. For example:
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = reject(new Error("2"));
+  let promise3 = reject(new Error("3"));
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // Code here never runs because there are rejected promises!
+  }, function(error) {
+    // error.message === "2"
+  });
+  ```
+
+  @method all
+  @static
+  @param {Array} entries array of promises
+  @param {String} label optional string for labeling the promise.
+  Useful for tooling.
+  @return {Promise} promise that is fulfilled when all `promises` have been
+  fulfilled, or rejected if any of them become rejected.
+  @static
+*/
+function all$1(entries) {
+  return new Enumerator$1(this, entries).promise;
+}
+
+/**
+  `Promise.race` returns a new promise which is settled in the same way as the
+  first passed promise to settle.
+
+  Example:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 2');
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // result === 'promise 2' because it was resolved before promise1
+    // was resolved.
+  });
+  ```
+
+  `Promise.race` is deterministic in that only the state of the first
+  settled promise matters. For example, even if other promises given to the
+  `promises` array argument are resolved, but the first settled promise has
+  become rejected before the other promises became fulfilled, the returned
+  promise will become rejected:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      reject(new Error('promise 2'));
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // Code here never runs
+  }, function(reason){
+    // reason.message === 'promise 2' because promise 2 became rejected before
+    // promise 1 became fulfilled
+  });
+  ```
+
+  An example real-world use case is implementing timeouts:
+
+  ```javascript
+  Promise.race([ajax('foo.json'), timeout(5000)])
+  ```
+
+  @method race
+  @static
+  @param {Array} promises array of promises to observe
+  Useful for tooling.
+  @return {Promise} a promise which settles in the same way as the first passed
+  promise to settle.
+*/
+function race$1(entries) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (!isArray(entries)) {
+    return new Constructor(function (_, reject) {
+      return reject(new TypeError('You must pass an array to race.'));
+    });
+  } else {
+    return new Constructor(function (resolve, reject) {
+      var length = entries.length;
+      for (var i = 0; i < length; i++) {
+        Constructor.resolve(entries[i]).then(resolve, reject);
+      }
+    });
+  }
+}
+
+/**
+  `Promise.reject` returns a promise rejected with the passed `reason`.
+  It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    reject(new Error('WHOOPS'));
+  });
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.reject(new Error('WHOOPS'));
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  @method reject
+  @static
+  @param {Any} reason value that the returned promise will be rejected with.
+  Useful for tooling.
+  @return {Promise} a promise rejected with the given `reason`.
+*/
+function reject$1(reason) {
+  /*jshint validthis:true */
+  var Constructor = this;
+  var promise = new Constructor(noop);
+  reject(promise, reason);
+  return promise;
+}
+
+function needsResolver() {
+  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+}
+
+function needsNew() {
+  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+}
+
+/**
+  Promise objects represent the eventual result of an asynchronous operation. The
+  primary way of interacting with a promise is through its `then` method, which
+  registers callbacks to receive either a promise's eventual value or the reason
+  why the promise cannot be fulfilled.
+
+  Terminology
+  -----------
+
+  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+  - `thenable` is an object or function that defines a `then` method.
+  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+  - `exception` is a value that is thrown using the throw statement.
+  - `reason` is a value that indicates why a promise was rejected.
+  - `settled` the final resting state of a promise, fulfilled or rejected.
+
+  A promise can be in one of three states: pending, fulfilled, or rejected.
+
+  Promises that are fulfilled have a fulfillment value and are in the fulfilled
+  state.  Promises that are rejected have a rejection reason and are in the
+  rejected state.  A fulfillment value is never a thenable.
+
+  Promises can also be said to *resolve* a value.  If this value is also a
+  promise, then the original promise's settled state will match the value's
+  settled state.  So a promise that *resolves* a promise that rejects will
+  itself reject, and a promise that *resolves* a promise that fulfills will
+  itself fulfill.
+
+
+  Basic Usage:
+  ------------
+
+  ```js
+  let promise = new Promise(function(resolve, reject) {
+    // on success
+    resolve(value);
+
+    // on failure
+    reject(reason);
+  });
+
+  promise.then(function(value) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Advanced Usage:
+  ---------------
+
+  Promises shine when abstracting away asynchronous interactions such as
+  `XMLHttpRequest`s.
+
+  ```js
+  function getJSON(url) {
+    return new Promise(function(resolve, reject){
+      let xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url);
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'json';
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+
+      function handler() {
+        if (this.readyState === this.DONE) {
+          if (this.status === 200) {
+            resolve(this.response);
+          } else {
+            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+          }
+        }
+      };
+    });
+  }
+
+  getJSON('/posts.json').then(function(json) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Unlike callbacks, promises are great composable primitives.
+
+  ```js
+  Promise.all([
+    getJSON('/posts'),
+    getJSON('/comments')
+  ]).then(function(values){
+    values[0] // => postsJSON
+    values[1] // => commentsJSON
+
+    return values;
+  });
+  ```
+
+  @class Promise
+  @param {function} resolver
+  Useful for tooling.
+  @constructor
+*/
+function Promise$2(resolver) {
+  this[PROMISE_ID] = nextId();
+  this._result = this._state = undefined;
+  this._subscribers = [];
+
+  if (noop !== resolver) {
+    typeof resolver !== 'function' && needsResolver();
+    this instanceof Promise$2 ? initializePromise(this, resolver) : needsNew();
+  }
+}
+
+Promise$2.all = all$1;
+Promise$2.race = race$1;
+Promise$2.resolve = resolve$1;
+Promise$2.reject = reject$1;
+Promise$2._setScheduler = setScheduler;
+Promise$2._setAsap = setAsap;
+Promise$2._asap = asap;
+
+Promise$2.prototype = {
+  constructor: Promise$2,
+
+  /**
+    The primary way of interacting with a promise is through its `then` method,
+    which registers callbacks to receive either a promise's eventual value or the
+    reason why the promise cannot be fulfilled.
+  
+    ```js
+    findUser().then(function(user){
+      // user is available
+    }, function(reason){
+      // user is unavailable, and you are given the reason why
+    });
+    ```
+  
+    Chaining
+    --------
+  
+    The return value of `then` is itself a promise.  This second, 'downstream'
+    promise is resolved with the return value of the first promise's fulfillment
+    or rejection handler, or rejected if the handler throws an exception.
+  
+    ```js
+    findUser().then(function (user) {
+      return user.name;
+    }, function (reason) {
+      return 'default name';
+    }).then(function (userName) {
+      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+      // will be `'default name'`
+    });
+  
+    findUser().then(function (user) {
+      throw new Error('Found user, but still unhappy');
+    }, function (reason) {
+      throw new Error('`findUser` rejected and we're unhappy');
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+    });
+    ```
+    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+  
+    ```js
+    findUser().then(function (user) {
+      throw new PedagogicalException('Upstream error');
+    }).then(function (value) {
+      // never reached
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // The `PedgagocialException` is propagated all the way down to here
+    });
+    ```
+  
+    Assimilation
+    ------------
+  
+    Sometimes the value you want to propagate to a downstream promise can only be
+    retrieved asynchronously. This can be achieved by returning a promise in the
+    fulfillment or rejection handler. The downstream promise will then be pending
+    until the returned promise is settled. This is called *assimilation*.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // The user's comments are now available
+    });
+    ```
+  
+    If the assimliated promise rejects, then the downstream promise will also reject.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // If `findCommentsByAuthor` fulfills, we'll have the value here
+    }, function (reason) {
+      // If `findCommentsByAuthor` rejects, we'll have the reason here
+    });
+    ```
+  
+    Simple Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let result;
+  
+    try {
+      result = findResult();
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+    findResult(function(result, err){
+      if (err) {
+        // failure
+      } else {
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findResult().then(function(result){
+      // success
+    }, function(reason){
+      // failure
+    });
+    ```
+  
+    Advanced Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let author, books;
+  
+    try {
+      author = findAuthor();
+      books  = findBooksByAuthor(author);
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+  
+    function foundBooks(books) {
+  
+    }
+  
+    function failure(reason) {
+  
+    }
+  
+    findAuthor(function(author, err){
+      if (err) {
+        failure(err);
+        // failure
+      } else {
+        try {
+          findBoooksByAuthor(author, function(books, err) {
+            if (err) {
+              failure(err);
+            } else {
+              try {
+                foundBooks(books);
+              } catch(reason) {
+                failure(reason);
+              }
+            }
+          });
+        } catch(error) {
+          failure(err);
+        }
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findAuthor().
+      then(findBooksByAuthor).
+      then(function(books){
+        // found books
+    }).catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method then
+    @param {Function} onFulfilled
+    @param {Function} onRejected
+    Useful for tooling.
+    @return {Promise}
+  */
+  then: then,
+
+  /**
+    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+    as the catch block of a try/catch statement.
+  
+    ```js
+    function findAuthor(){
+      throw new Error('couldn't find that author');
+    }
+  
+    // synchronous
+    try {
+      findAuthor();
+    } catch(reason) {
+      // something went wrong
+    }
+  
+    // async with promises
+    findAuthor().catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method catch
+    @param {Function} onRejection
+    Useful for tooling.
+    @return {Promise}
+  */
+  'catch': function _catch(onRejection) {
+    return this.then(null, onRejection);
+  }
+};
+
+/*global self*/
+function polyfill$1() {
+    var local = undefined;
+
+    if (typeof global !== 'undefined') {
+        local = global;
+    } else if (typeof self !== 'undefined') {
+        local = self;
+    } else {
+        try {
+            local = Function('return this')();
+        } catch (e) {
+            throw new Error('polyfill failed because global object is unavailable in this environment');
+        }
+    }
+
+    var P = local.Promise;
+
+    if (P) {
+        var promiseToString = null;
+        try {
+            promiseToString = Object.prototype.toString.call(P.resolve());
+        } catch (e) {
+            // silently ignored
+        }
+
+        if (promiseToString === '[object Promise]' && !P.cast) {
+            return;
+        }
+    }
+
+    local.Promise = Promise$2;
+}
+
+// Strange compat..
+Promise$2.polyfill = polyfill$1;
+Promise$2.Promise = Promise$2;
+
+return Promise$2;
+
+})));
+
+//# sourceMappingURL=es6-promise.map
+;
 define('sjcl',[], function () {"use strict";var sjcl={cipher:{},hash:{},keyexchange:{},mode:{},misc:{},codec:{},exception:{corrupt:function(a){this.toString=function(){return"CORRUPT: "+this.message};this.message=a},invalid:function(a){this.toString=function(){return"INVALID: "+this.message};this.message=a},bug:function(a){this.toString=function(){return"BUG: "+this.message};this.message=a},notReady:function(a){this.toString=function(){return"NOT READY: "+this.message};this.message=a}}};
 "undefined"!==typeof module&&module.exports&&(module.exports=sjcl);
 sjcl.cipher.aes=function(a){this.b[0][0][0]||this.g();var b,c,d,e,g=this.b[0][4],f=this.b[1];b=a.length;var h=1;if(4!==b&&6!==b&&8!==b)throw new sjcl.exception.invalid("invalid aes key size");this.e=[d=a.slice(0),e=[]];for(a=b;a<4*b+28;a++){c=d[a-1];if(0===a%b||8===b&&4===a%b)c=g[c>>>24]<<24^g[c>>16&255]<<16^g[c>>8&255]<<8^g[c&255],0===a%b&&(c=c<<8^c>>>24^h<<24,h=h<<1^283*(h>>7));d[a]=d[a-b]^c}for(b=0;a;b++,a--)c=d[b&3?a:a-4],e[b]=4>=a||4>b?c:f[0][g[c>>>24]]^f[1][g[c>>16&255]]^f[2][g[c>>8&255]]^f[3][g[c&
@@ -441,838 +1599,6 @@ f[6]+q|0;f[7]=f[7]+r|0}sjcl.misc.hmac=function(a,b){this.j=b=b||sjcl.hash.sha256
 sjcl.misc.hmac.prototype.reset=function(){this.h=new this.j(this.c[0]);this.m=!1};sjcl.misc.hmac.prototype.update=function(a){this.m=!0;this.h.update(a)};sjcl.misc.hmac.prototype.digest=function(){var a=this.h.finalize(),a=(new this.j(this.c[1])).update(a).finalize();this.reset();return a};
 sjcl.misc.pbkdf2=function(a,b,c,d,e){c=c||1E3;if(0>d||0>c)throw sjcl.exception.invalid("invalid params to pbkdf2");"string"===typeof a&&(a=sjcl.codec.utf8String.toBits(a));"string"===typeof b&&(b=sjcl.codec.utf8String.toBits(b));e=e||sjcl.misc.hmac;a=new e(a);var g,f,h,p,k=[],n=sjcl.bitArray;for(p=1;32*k.length<(d||1);p++){e=g=a.encrypt(n.concat(b,[p]));for(f=1;f<c;f++){g=a.encrypt(g);for(h=0;h<g.length;h++)e[h]^=g[h]}k=k.concat(e)}d&&(k=n.clamp(k,d));return k};
   return sjcl; });
-/*!
- * Copyright 2013 Robert Katić
- * Released under the MIT license
- * https://github.com/rkatic/p/blob/master/LICENSE
- *
- * High-priority-tasks code-portion based on https://github.com/kriskowal/asap
- * Long-Stack-Support code-portion based on https://github.com/kriskowal/q
- */
-;(function( factory ){
-	// CommonJS
-	if ( typeof module !== "undefined" && module && module.exports ) {
-		module.exports = factory();
-
-	// RequireJS
-	} else if ( typeof define === "function" && define.amd ) {
-		define( 'p',factory );
-
-	// global
-	} else {
-		P = factory();
-	}
-})(function() {
-	"use strict";
-
-	var withStack = withStackThrowing,
-		pStartingLine = captureLine(),
-		pFileName,
-		currentTrace = null;
-
-	function withStackThrowing( error ) {
-		if ( !error.stack ) {
-			try {
-				throw error;
-			} catch ( e ) {}
-		}
-		return error;
-	}
-
-	if ( new Error().stack ) {
-		withStack = function( error ) {
-			return error;
-		};
-	}
-
-	function getTrace() {
-		var stack = withStack( new Error() ).stack;
-		if ( !stack ) {
-			return null;
-		}
-
-		var stacks = [ filterStackString( stack, 1 ) ];
-
-		if ( currentTrace ) {
-			stacks = stacks.concat( currentTrace );
-
-			if ( stacks.length === 128 ) {
-				stacks.pop();
-			}
-		}
-
-		return stacks;
-	}
-
-	function getFileNameAndLineNumber( stackLine ) {
-		var m =
-			/at .+ \((.+):(\d+):(?:\d+)\)$/.exec( stackLine ) ||
-			/at ([^ ]+):(\d+):(?:\d+)$/.exec( stackLine ) ||
-			/@(.+):(\d+):(?:\d+)$/.exec( stackLine );
-
-		return m ? { fileName: m[1], lineNumber: Number(m[2]) } : null;
-	}
-
-	function captureLine() {
-		var stack = withStack( new Error() ).stack;
-		if ( !stack ) {
-			return 0;
-		}
-
-		var lines = stack.split("\n");
-		var firstLine = lines[0].indexOf("@") > 0 ? lines[1] : lines[2];
-		var pos = getFileNameAndLineNumber( firstLine );
-		if ( !pos ) {
-			return 0;
-		}
-
-		pFileName = pos.fileName;
-		return pos.lineNumber;
-	}
-
-	function filterStackString( stack, ignoreFirstLines ) {
-		var lines = stack.split("\n");
-		var goodLines = [];
-
-		for ( var i = ignoreFirstLines|0, l = lines.length; i < l; ++i ) {
-			var line = lines[i];
-
-			if ( line && !isNodeFrame(line) && !isInternalFrame(line) ) {
-				goodLines.push( line );
-			}
-		}
-
-		return goodLines.join("\n");
-	}
-
-	function isNodeFrame( stackLine ) {
-		return stackLine.indexOf("(module.js:") !== -1 ||
-			   stackLine.indexOf("(node.js:") !== -1;
-	}
-
-	function isInternalFrame( stackLine ) {
-		var pos = getFileNameAndLineNumber( stackLine );
-		return !!pos &&
-			pos.fileName === pFileName &&
-			pos.lineNumber >= pStartingLine &&
-			pos.lineNumber <= pEndingLine;
-	}
-
-	var STACK_JUMP_SEPARATOR = "\nFrom previous event:\n";
-
-	function makeStackTraceLong( error ) {
-		if ( error instanceof Error ) {
-			var stack = error.stack;
-
-			if ( !stack ) {
-				stack = withStack( error ).stack;
-
-			} else if ( ~stack.indexOf(STACK_JUMP_SEPARATOR) ) {
-				return;
-			}
-
-			if ( stack ) {
-				error.stack = [ filterStackString( stack, 0 ) ]
-					.concat( currentTrace || [] )
-					.join(STACK_JUMP_SEPARATOR);
-			}
-		}
-	}
-
-	//__________________________________________________________________________
-
-	var
-		isNodeJS = ot(typeof process) && process != null &&
-			({}).toString.call(process) === "[object process]",
-
-		hasSetImmediate = typeof setImmediate === "function",
-
-		gMutationObserver =
-			ot(typeof MutationObserver) && MutationObserver ||
-			ot(typeof WebKitMutationObserver) && WebKitMutationObserver,
-
-		head = new TaskNode(),
-		tail = head,
-		flushing = false,
-		nFreeTaskNodes = 0,
-
-		requestFlush =
-			isNodeJS ? requestFlushForNodeJS :
-			gMutationObserver ? makeRequestCallFromMutationObserver( flush ) :
-			makeRequestCallFromTimer( flush ),
-
-		pendingErrors = [],
-		requestErrorThrow = makeRequestCallFromTimer( throwFirstError ),
-
-		handleError,
-
-		domain,
-
-		call = ot.call,
-		apply = ot.apply;
-
-	tail.next = head;
-
-	function TaskNode() {
-		this.f = null;
-		this.a = null;
-		this.b = null;
-		this.next = null;
-	}
-
-	function ot( type ) {
-		return type === "object" || type === "function";
-	}
-
-	function throwFirstError() {
-		if ( pendingErrors.length ) {
-			throw pendingErrors.shift();
-		}
-	}
-
-	function flush() {
-		while ( head !== tail ) {
-			var h = head = head.next;
-
-			if ( nFreeTaskNodes >= 1024 ) {
-				tail.next = tail.next.next;
-			} else {
-				++nFreeTaskNodes;
-			}
-
-			var f = h.f;
-			var a = h.a;
-			var b = h.b;
-			h.f = null;
-			h.a = null;
-			h.b = null;
-
-			f( a, b );
-		}
-
-		flushing = false;
-		currentTrace = null;
-	}
-
-	function schedule( f, a, b ) {
-		var node = tail.next;
-
-		if ( node === head ) {
-			tail.next = node = new TaskNode();
-			node.next = head;
-		} else {
-			--nFreeTaskNodes;
-		}
-
-		tail = node;
-
-		node.f = f;
-		node.a = a;
-		node.b = b;
-
-		if ( !flushing ) {
-			flushing = true;
-			requestFlush();
-		}
-	}
-
-	function requestFlushForNodeJS() {
-		var currentDomain = process.domain;
-
-		if ( currentDomain ) {
-			if ( !domain ) domain = (1,require)("domain");
-			domain.active = process.domain = null;
-		}
-
-		if ( flushing && hasSetImmediate ) {
-			setImmediate( flush );
-
-		} else {
-			process.nextTick( flush );
-		}
-
-		if ( currentDomain ) {
-			domain.active = process.domain = currentDomain;
-		}
-	}
-
-	function makeRequestCallFromMutationObserver( callback ) {
-		var toggle = 1;
-		var node = document.createTextNode("");
-		var observer = new gMutationObserver( callback );
-		observer.observe( node, {characterData: true} );
-
-		return function() {
-			toggle = -toggle;
-			node.data = toggle;
-		};
-	}
-
-	function makeRequestCallFromTimer( callback ) {
-		return function() {
-			var timeoutHandle = setTimeout( handleTimer, 0 );
-			var intervalHandle = setInterval( handleTimer, 50 );
-
-			function handleTimer() {
-				clearTimeout( timeoutHandle );
-				clearInterval( intervalHandle );
-				callback();
-			}
-		};
-	}
-
-	if ( isNodeJS ) {
-		handleError = function( e ) {
-			currentTrace = null;
-			requestFlush();
-			throw e;
-		};
-
-	} else {
-		handleError = function( e ) {
-			pendingErrors.push( e );
-			requestErrorThrow();
-		}
-	}
-
-	//__________________________________________________________________________
-
-	var FULFILLED = 1;
-	var REJECTED = 2;
-
-	var OP_CALL = -1;
-	var OP_THEN = -2;
-	var OP_MULTIPLE = -3;
-	var OP_END = -4;
-
-	var VOID = P(void 0);
-
-	function DoneEb( e ) {
-		if ( P.onerror ) {
-			(1,P.onerror)( e );
-
-		} else {
-			throw e;
-		}
-	}
-
-	function P( x ) {
-		return x instanceof Promise ?
-			x :
-			Resolve( new Promise(), x );
-	}
-
-	P.longStackSupport = false;
-
-	function Fulfill( p, value ) {
-		if ( p._state > 0 ) {
-			return;
-		}
-
-		p._state = FULFILLED;
-		p._value = value;
-		p._domain = null;
-
-		HandleSettled( p );
-	}
-
-	function Reject( p, reason ) {
-		if ( p._state > 0 ) {
-			return;
-		}
-
-		if ( currentTrace ) {
-			makeStackTraceLong( reason );
-		}
-
-		p._state = REJECTED;
-		p._value = reason;
-
-		if ( isNodeJS ) {
-			p._domain = process.domain;
-		}
-
-		if ( p._op === OP_END ) {
-			handleError( reason );
-
-		} else {
-			HandleSettled( p );
-		}
-	}
-
-	function Propagate( parent, p ) {
-		if ( p._state > 0 ) {
-			return;
-		}
-
-		p._state = parent._state;
-		p._value = parent._value;
-		p._domain = parent._domain;
-
-		HandleSettled( p );
-	}
-
-	function Resolve( p, x ) {
-		if ( p._state > 0 ) {
-			return p;
-		}
-
-		if ( x instanceof Promise ) {
-			ResolveWithPromise( p, x );
-
-		} else {
-			var type = typeof x;
-
-			if ( type === "object" && x !== null || type === "function" ) {
-				ResolveWithObject( p, x )
-
-			} else {
-				Fulfill( p, x );
-			}
-		}
-
-		return p;
-	}
-
-	function ResolveWithPromise( p, x ) {
-		if ( x === p ) {
-			Reject( p, new TypeError("You can't resolve a promise with itself") );
-
-		} else if ( x._state > 0 ) {
-			Propagate( x, p );
-
-		} else {
-			OnSettled( x, OP_THEN, p );
-		}
-	}
-
-	function ResolveWithObject( p, x ) {
-		var then = GetThen( p, x );
-
-		if ( typeof then === "function" ) {
-			TryResolver( resolverFor(p, false), then, x );
-
-		} else {
-			Fulfill( p, x );
-		}
-	}
-
-	function GetThen( p, x ) {
-		try {
-			return x.then;
-
-		} catch ( e ) {
-			Reject( p, e );
-			return null;
-		}
-	}
-
-	function TryResolver( d, resolver, x ) {
-		try {
-			call.call( resolver, x, d.resolve, d.reject );
-
-		} catch ( e ) {
-			d.reject( e );
-		}
-	}
-
-	function HandleSettled( p ) {
-		if ( p._pending !== null ) {
-			HandlePending( p, p._op, p._pending );
-			p._pending = null;
-		}
-	}
-
-	function HandlePending( p, op, pending ) {
-		if ( op >= 0 ) {
-			pending._cb( p, op );
-
-		} else if ( op === OP_CALL ) {
-			pending( p );
-
-		} else if ( op === OP_THEN ) {
-			schedule( Then, p, pending );
-
-		} else {
-			for ( var i = 0, l = pending.length; i < l; i += 2 ) {
-				HandlePending( p, pending[i], pending[i + 1] );
-			}
-		}
-	}
-
-	function OnSettled( p, op, pending ) {
-		if ( p._state > 0 ) {
-			HandlePending( p, op, pending );
-
-		} else if ( p._pending === null ) {
-			p._pending = pending;
-			p._op = op;
-
-		} else if ( p._op === OP_MULTIPLE ) {
-			p._pending.push( op, pending );
-
-		} else {
-			p._pending = [ p._op, p._pending, op, pending ];
-			p._op = OP_MULTIPLE;
-		}
-	}
-
-	function Then( parent, p ) {
-		var cb = parent._state === FULFILLED ? p._cb : p._eb;
-		p._cb = null;
-		p._eb = null;
-
-		if ( p._trace ) {
-			currentTrace = p._trace;
-			p._trace = null;
-		}
-
-		if ( cb === null ) {
-			Propagate( parent, p );
-
-		} else {
-			HandleCallback( p, cb, parent._value, parent._domain || p._domain );
-		}
-	}
-
-	function HandleCallback( p, cb, value, domain ) {
-		if ( domain ) {
-			if ( domain._disposed ) return;
-			domain.enter();
-		}
-
-		try {
-			value = cb( value );
-
-		} catch ( e ) {
-			Reject( p, e );
-			p = null;
-		}
-
-		if ( p ) Resolve( p, value );
-		if ( domain ) domain.exit();
-	}
-
-	function resolverFor( promise, nodelike ) {
-		var trace = P.longStackSupport ? getTrace() : null;
-
-		function resolve( error, y ) {
-			if ( promise ) {
-				var p = promise;
-				promise = null;
-
-				if ( trace ) {
-					if ( currentTrace ) {
-						trace = null;
-
-					} else {
-						currentTrace = trace;
-					}
-				}
-
-				if ( error ) {
-					Reject( p, nodelike ? error : y );
-
-				} else {
-					Resolve( p, y );
-				}
-
-				if ( trace ) {
-					currentTrace = trace = null;
-				}
-			}
-		}
-
-		return nodelike ? resolve : {
-			promise: promise,
-
-			resolve: function( y ) {
-				resolve( false, y );
-			},
-
-			reject: function( reason ) {
-				resolve( true, reason );
-			}
-		};
-	}
-
-	P.defer = defer;
-	function defer() {
-		return resolverFor( new Promise(), false );
-	}
-
-	P.reject = reject;
-	function reject( reason ) {
-		var promise = new Promise();
-		Reject( promise, reason );
-		return promise;
-	}
-
-	function Promise() {
-		this._state = 0;
-		this._value = void 0;
-		this._domain = null;
-		this._cb = null;
-		this._eb = null;
-		this._op = 0;
-		this._pending = null;
-		this._trace = null;
-	}
-
-	Promise.prototype.then = function( onFulfilled, onRejected ) {
-		var promise = new Promise();
-
-		promise._cb = typeof onFulfilled === "function" ? onFulfilled : null;
-		promise._eb = typeof onRejected === "function" ? onRejected : null;
-
-		if ( P.longStackSupport ) {
-			promise._trace = getTrace();
-		}
-
-		if ( isNodeJS ) {
-			promise._domain = process.domain;
-		}
-
-		if ( this._state > 0 ) {
-			schedule( Then, this, promise );
-
-		} else {
-			OnSettled( this, OP_THEN, promise );
-		}
-
-		return promise;
-	};
-
-	Promise.prototype.done = function( cb, eb ) {
-		var p = this;
-
-		if ( cb || eb ) {
-			p = p.then( cb, eb );
-		}
-
-		p.then( null, DoneEb )._op = OP_END;
-	};
-
-	Promise.prototype.fail = function( eb ) {
-		return this.then( null, eb );
-	};
-
-	Promise.prototype.fin = function( finback ) {
-		var self = this;
-
-		function fb() {
-			return finback();
-		}
-
-		return self.then( fb, fb ).then(function() {
-			return self;
-		});
-	};
-
-	Promise.prototype.spread = function( cb, eb ) {
-		return this.then( all ).then(function( args ) {
-			return apply.call( cb, void 0, args );
-		}, eb);
-	};
-
-	Promise.prototype.timeout = function( ms, msg ) {
-		var promise = new Promise();
-
-		if ( this._state > 0 ) {
-			Propagate( this, promise );
-
-		} else {
-			var timedout = false;
-			var trace = P.longStackSupport ? getTrace() : null;
-
-			var timeoutId = setTimeout(function() {
-				timedout = true;
-				currentTrace = trace;
-				Reject( promise, new Error(msg || "Timed out after " + ms + " ms") );
-				currentTrace = null;
-			}, ms);
-
-			OnSettled(this, OP_CALL, function( p ) {
-				if ( !timedout ) {
-					schedule( Propagate, p, promise );
-					clearTimeout( timeoutId );
-				}
-			});
-		}
-
-		return promise;
-	};
-
-	Promise.prototype.delay = function( ms ) {
-		var promise = new Promise();
-
-		OnSettled(this, OP_CALL, function( p ) {
-			if ( p._state === FULFILLED ) {
-				setTimeout(function() {
-					Propagate( p, promise );
-				}, ms);
-
-			} else {
-				schedule( Propagate, p, promise );
-			}
-		});
-
-		return promise;
-	};
-
-	Promise.prototype.all = function() {
-		return this.then( all );
-	};
-
-	Promise.prototype.allSettled = function() {
-		return this.then( allSettled );
-	};
-
-	Promise.prototype.inspect = function() {
-		switch ( this._state ) {
-			case FULFILLED: return { state: "fulfilled", value: this._value };
-			case REJECTED:  return { state: "rejected", reason: this._value };
-			default:		return { state: "pending" };
-		}
-	};
-
-	Promise.prototype.nodeify = function( nodeback ) {
-		if ( nodeback ) {
-			this.done(function( value ) {
-				nodeback( null, value );
-			}, nodeback);
-			return void 0;
-
-		} else {
-			return this;
-		}
-	};
-
-	function _allSettled_cb( p, i ) {
-		this._value[ i ] = p.inspect();
-		if ( ++this._state === 0 ) {
-			if ( this._pending === null ) {
-				this._state = FULFILLED;
-			} else {
-				schedule( Fulfill, this, this._value );
-			}
-		}
-	}
-
-	function _all_cb( p, i ) {
-		if ( this._state < 0 ) {
-			if ( p._state === REJECTED ) {
-				this._state = 0;
-				if ( this._pending === null ) {
-					Propagate( p, this );
-				} else {
-					schedule( Propagate, p, this );
-				}
-
-			} else {
-				this._value[ i ] = p._value;
-				if ( ++this._state === 0 ) {
-					if ( this._pending === null ) {
-						this._state = FULFILLED;
-					} else {
-						schedule( Fulfill, this, this._value );
-					}
-				}
-			}
-		}
-	}
-
-	var nextIsAllSettled = false;
-
-	P.all = all;
-	function all( input ) {
-		var promise = new Promise();
-		promise._cb = nextIsAllSettled ? _allSettled_cb : _all_cb;
-		nextIsAllSettled = false;
-
-		var len = input.length|0;
-
-		promise._state = len ? -len : FULFILLED;
-		promise._value = new Array( len );
-
-		for ( var i = 0; i < len && promise._state < 0; ++i ) {
-			OnSettled( P(input[i]), i, promise );
-		}
-
-		return promise;
-	}
-
-	P.allSettled = allSettled;
-	function allSettled( input ) {
-		nextIsAllSettled = true;
-		return all( input );
-	}
-
-	P.spread = spread;
-	function spread( values, cb, eb ) {
-		return all( values ).then(function( args ) {
-			return apply.call( cb, void 0, args );
-		}, eb);
-	}
-
-	P.promised = promised;
-	function promised( f ) {
-		function onFulfilled( thisAndArgs ) {
-			return call.apply( f, thisAndArgs );
-		}
-
-		return function() {
-			var len = arguments.length;
-			var thisAndArgs = new Array( len + 1 );
-			thisAndArgs[0] = this;
-			for ( var i = 0; i < len; ++i ) {
-				thisAndArgs[ i + 1 ] = arguments[ i ];
-			}
-			return all( thisAndArgs ).then( onFulfilled );
-		};
-	}
-
-	P.denodeify = denodeify;
-	function denodeify( f ) {
-		return function() {
-			var promise = new Promise();
-
-			var i = arguments.length;
-			var args = new Array( i + 1 );
-			args[i] = resolverFor( promise, true );
-			while ( i-- ) {
-				args[i] = arguments[i];
-			}
-
-			TryApply( promise, f, this, args );
-
-			return promise;
-		};
-	}
-
-	function TryApply( p, f, that, args ) {
-		try {
-			apply.call( f, that, args );
-
-		} catch ( e ) {
-			Reject( p, e );
-		}
-	}
-
-	P.onerror = null;
-
-	P.nextTick = function nextTick( task ) {
-		// We don't use .done to avoid P.onerror.
-		VOID.then(function() {
-			task.call();
-		})._op = OP_END;
-	};
-
-	var pEndingLine = captureLine();
-
-	return P;
-});
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -1798,7 +2124,7 @@ define('client/lib/errors',[], function () {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRORS) {
+define('client/lib/request',['./hawk', './errors'], function (hawk, ERRORS) {
   'use strict';
   /* global XMLHttpRequest */
 
@@ -1836,7 +2162,6 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
    */
   Request.prototype.send = function request(path, method, credentials, jsonPayload, options) {
     /*eslint complexity: [2, 8] */
-    var deferred = P.defer();
     var xhr = new this.xhr();
     var uri = this.baseUri + path;
     var payload = null;
@@ -1850,70 +2175,70 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
     try {
       xhr.open(method, uri);
     } catch (e) {
-      return P.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
+      return Promise.reject({ error: 'Unknown error', message: e.toString(), errno: 999 });
     }
 
-    xhr.timeout = this.timeout;
+    return new Promise(function (resolve, reject) {
+      xhr.timeout = self.timeout;
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        var result = xhr.responseText;
-        try {
-          result = JSON.parse(xhr.responseText);
-        } catch (e) { }
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          var result = xhr.responseText;
+          try {
+            result = JSON.parse(xhr.responseText);
+          } catch (e) { }
 
-        if (result.errno) {
-          // Try to recover from a timeskew error and not already tried
-          if (result.errno === ERRORS.INVALID_TIMESTAMP && !options.retrying) {
-            var serverTime = result.serverTime;
-            self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
+          if (result.errno) {
+            // Try to recover from a timeskew error and not already tried
+            if (result.errno === ERRORS.INVALID_TIMESTAMP && !options.retrying) {
+              var serverTime = result.serverTime;
+              self._localtimeOffsetMsec = (serverTime * 1000) - new Date().getTime();
 
-            // add to options that the request is retrying
-            options.retrying = true;
+              // add to options that the request is retrying
+              options.retrying = true;
 
-            return self.send(path, method, credentials, jsonPayload, options)
-              .then(deferred.resolve, deferred.reject);
+              return self.send(path, method, credentials, jsonPayload, options)
+                .then(resolve, reject);
 
-          } else {
-            return deferred.reject(result);
+            } else {
+              return reject(result);
+            }
           }
-        }
 
-        if (typeof xhr.status === 'undefined' || xhr.status !== 200) {
-          if (result.length === 0) {
-            return deferred.reject({ error: 'Timeout error', errno: 999 });
-          } else {
-            return deferred.reject({ error: 'Unknown error', message: result, errno: 999, code: xhr.status });
+          if (typeof xhr.status === 'undefined' || xhr.status !== 200) {
+            if (result.length === 0) {
+              return reject({ error: 'Timeout error', errno: 999 });
+            } else {
+              return reject({ error: 'Unknown error', message: result, errno: 999, code: xhr.status });
+            }
           }
+
+          resolve(result);
         }
+      };
 
-        deferred.resolve(result);
+      // calculate Hawk header if credentials are supplied
+      if (credentials) {
+        var hawkHeader = hawk.client.header(uri, method, {
+                            credentials: credentials,
+                            payload: payload,
+                            contentType: 'application/json',
+                            localtimeOffsetMsec: self._localtimeOffsetMsec || 0
+                          });
+        xhr.setRequestHeader('authorization', hawkHeader.field);
       }
-    };
 
-    // calculate Hawk header if credentials are supplied
-    if (credentials) {
-      var hawkHeader = hawk.client.header(uri, method, {
-                          credentials: credentials,
-                          payload: payload,
-                          contentType: 'application/json',
-                          localtimeOffsetMsec: this._localtimeOffsetMsec || 0
-                        });
-      xhr.setRequestHeader('authorization', hawkHeader.field);
-    }
+      xhr.setRequestHeader('Content-Type', 'application/json');
 
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    if (options && options.headers) {
-      // set extra headers for this request
-      for (var header in options.headers) {
-        xhr.setRequestHeader(header, options.headers[header]);
+      if (options && options.headers) {
+        // set extra headers for this request
+        for (var header in options.headers) {
+          xhr.setRequestHeader(header, options.headers[header]);
+        }
       }
-    }
 
-    xhr.send(payload);
-
-    return deferred.promise;
+      xhr.send(payload);
+    });
   };
 
   return Request;
@@ -1923,7 +2248,7 @@ define('client/lib/request',['./hawk', 'p', './errors'], function (hawk, P, ERRO
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
+define('client/lib/hkdf',['sjcl'], function (sjcl) {
   'use strict';
 
   /**
@@ -1967,7 +2292,7 @@ define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
 
     var truncated = sjcl.bitArray.clamp(sjcl.codec.hex.toBits(output), length * 8);
 
-    return P(truncated);
+    return Promise.resolve(truncated);
   }
 
   return hkdf;
@@ -1977,7 +2302,7 @@ define('client/lib/hkdf',['sjcl', 'p'], function (sjcl, P) {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
+define('client/lib/pbkdf2',['sjcl'], function (sjcl, P) {
   'use strict';
 
   /**
@@ -1993,7 +2318,7 @@ define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
      */
     derive: function(input, salt, iterations, len) {
       var result = sjcl.misc.pbkdf2(input, salt, iterations, len, sjcl.misc.hmac);
-      return P(result);
+      return Promise.resolve(result);
     }
   };
 
@@ -2004,7 +2329,7 @@ define('client/lib/pbkdf2',['sjcl', 'p'], function (sjcl, P) {
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-define('client/lib/credentials',['./request', 'sjcl', 'p', './hkdf', './pbkdf2'], function (Request, sjcl, P, hkdf, pbkdf2) {
+define('client/lib/credentials',['./request', 'sjcl', './hkdf', './pbkdf2'], function (Request, sjcl, hkdf, pbkdf2) {
   'use strict';
 
   // Key wrapping and stretching configuration.
@@ -2226,15 +2551,18 @@ define('client/lib/metricsContext',[], function () {
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 define('client/FxAccountClient',[
+  'es6-promise',
   'sjcl',
-  'p',
   './lib/credentials',
   './lib/errors',
   './lib/hawkCredentials',
   './lib/metricsContext',
   './lib/request',
-], function (sjcl, P, credentials, ERRORS, hawkCredentials, metricsContext, Request) {
+], function (ES6Promise, sjcl, credentials, ERRORS, hawkCredentials, metricsContext, Request) {
   'use strict';
+
+  // polyfill ES6 promises on browsers that do not support them.
+  ES6Promise.polyfill();
 
   var VERSION = 'v1';
   var uriVersionRegExp = new RegExp('/' + VERSION + '$');
@@ -2331,7 +2659,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.signUp = function (email, password, options) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(password, 'password');
@@ -2431,7 +2759,7 @@ define('client/FxAccountClient',[
     var self = this;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(password, 'password');
@@ -2520,7 +2848,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.verifyCode = function(uid, code, options) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(uid, 'uid');
         required(code, 'verify code');
@@ -2560,7 +2888,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.recoveryEmailStatus = function(sessionToken) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -2599,7 +2927,7 @@ define('client/FxAccountClient',[
     var data = {};
     var requestOpts = {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -2673,7 +3001,7 @@ define('client/FxAccountClient',[
     };
     var requestOpts = {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
 
@@ -2741,7 +3069,7 @@ define('client/FxAccountClient',[
     };
     var requestOpts = {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(passwordForgotToken, 'passwordForgotToken');
@@ -2799,7 +3127,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(code, 'reset code');
         required(passwordForgotToken, 'passwordForgotToken');
@@ -2830,7 +3158,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.passwordForgotStatus = function(passwordForgotToken) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(passwordForgotToken, 'passwordForgotToken');
 
@@ -2881,7 +3209,7 @@ define('client/FxAccountClient',[
       data.metricsContext = metricsContext.marshall(options.metricsContext);
     }
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(newPassword, 'new password');
@@ -2936,7 +3264,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.accountKeys = function(keyFetchToken, oldUnwrapBKey) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(keyFetchToken, 'keyFetchToken');
         required(oldUnwrapBKey, 'oldUnwrapBKey');
@@ -2981,7 +3309,7 @@ define('client/FxAccountClient',[
     var self = this;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(password, 'password');
@@ -3025,7 +3353,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.accountStatus = function(uid) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(uid, 'uid');
 
@@ -3043,7 +3371,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.accountStatusByEmail = function(email) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
 
@@ -3069,7 +3397,7 @@ define('client/FxAccountClient',[
       data.customSessionToken = options.customSessionToken;
     }
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3090,7 +3418,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.sessionStatus = function(sessionToken) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3119,7 +3447,7 @@ define('client/FxAccountClient',[
       duration: duration
     };
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(publicKey, 'publicKey');
@@ -3158,7 +3486,7 @@ define('client/FxAccountClient',[
     var self = this;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(oldPassword, 'old password');
@@ -3196,7 +3524,7 @@ define('client/FxAccountClient',[
     var self = this;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(oldPassword, 'old password');
@@ -3251,7 +3579,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype._passwordChangeKeys = function(oldCreds) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         checkCreds(oldCreds);
       })
@@ -3281,7 +3609,7 @@ define('client/FxAccountClient',[
     options = options || {};
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
         required(newPassword, 'new password');
@@ -3298,9 +3626,12 @@ define('client/FxAccountClient',[
           defers.push(hawkCredentials(options.sessionToken, 'sessionToken',  HKDF_SIZE));
         }
 
-        return P.all(defers);
+        return Promise.all(defers);
       })
-      .spread(function (newCreds, hawkCreds, sessionData) {
+      .then(function (results) {
+        var newCreds = results[0];
+        var hawkCreds = results[1];
+        var sessionData = results[2];
         var newWrapKb = sjcl.codec.hex.fromBits(
           credentials.xor(
             sjcl.codec.hex.toBits(keys.kB),
@@ -3360,7 +3691,7 @@ define('client/FxAccountClient',[
     var request = this.request;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(deviceName, 'deviceName');
@@ -3404,7 +3735,7 @@ define('client/FxAccountClient',[
     var request = this.request;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(deviceId, 'deviceId');
@@ -3442,7 +3773,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.deviceDestroy = function (sessionToken, deviceId) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(deviceId, 'deviceId');
@@ -3468,7 +3799,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.deviceList = function (sessionToken) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3489,7 +3820,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.sessions = function (sessionToken) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3520,7 +3851,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.sendUnblockCode = function (email, options) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(email, 'email');
 
@@ -3548,7 +3879,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.rejectUnblockCode = function (uid, unblockCode) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(uid, 'uid');
         required(unblockCode, 'unblockCode');
@@ -3585,7 +3916,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.sendSms = function (sessionToken, phoneNumber, messageId, options) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(phoneNumber, 'phoneNumber');
@@ -3632,7 +3963,7 @@ define('client/FxAccountClient',[
     var request = this.request;
     options = options || {};
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3659,7 +3990,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.consumeSigninCode = function (code, flowId, flowBeginTime, deviceId) {
     var self = this;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(code, 'code');
         required(flowId, 'flowId');
@@ -3685,7 +4016,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.recoveryEmails = function (sessionToken) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
@@ -3706,7 +4037,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.recoveryEmailCreate = function (sessionToken, email) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(sessionToken, 'email');
@@ -3732,7 +4063,7 @@ define('client/FxAccountClient',[
   FxAccountClient.prototype.recoveryEmailDestroy = function (sessionToken, email) {
     var request = this.request;
 
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
         required(sessionToken, 'email');
@@ -3757,7 +4088,7 @@ define('client/FxAccountClient',[
    */
   FxAccountClient.prototype.recoveryEmailSetPrimaryEmail = function (sessionToken, email) {
     var request = this.request;
-    return P()
+    return Promise.resolve()
       .then(function () {
         required(sessionToken, 'sessionToken');
 
