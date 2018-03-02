@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.1</em>
+            <em>API Docs for: 1.0.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -279,6 +279,12 @@ define([
    *   Opaque url-encoded string that will be included in the verification link
    *   as a querystring parameter, useful for continuing an OAuth flow for
    *   example.
+   *   @param {String} [options.originalLoginEmail]
+   *   If retrying after an &quot;incorrect email case&quot; error, this specifies
+   *   the email address as originally entered by the user.
+   *   @param {String} [options.verificationMethod]
+   *   Request a specific verification method be used for verifying the session,
+   *   e.g. &#x27;email-2fa&#x27; or &#x27;totp-2fa&#x27;.
    *   @param {Object} [options.metricsContext={}] Metrics context metadata
    *     @param {String} options.metricsContext.deviceId identifier for the current device
    *     @param {String} options.metricsContext.flowId identifier for the current event flow
@@ -992,6 +998,129 @@ define([
   };
 
   /**
+   * @method sessionReauth
+   * @param {String} sessionToken sessionToken obtained from signIn
+   * @param {String} email Email input
+   * @param {String} password Password input
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.keys]
+   *   If &#x60;true&#x60;, calls the API with &#x60;?keys=true&#x60; to get the keyFetchToken
+   *   @param {Boolean} [options.skipCaseError]
+   *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   *   @param {String} [options.service]
+   *   Service being accessed that needs reauthentication
+   *   @param {String} [options.reason]
+   *   Reason for reauthentication. Can be one of: &#x60;signin&#x60;, &#x60;password_check&#x60;,
+   *   &#x60;password_change&#x60;, &#x60;password_reset&#x60;
+   *   @param {String} [options.redirectTo]
+   *   a URL that the client should be redirected to after handling the request
+   *   @param {String} [options.resume]
+   *   Opaque url-encoded string that will be included in the verification link
+   *   as a querystring parameter, useful for continuing an OAuth flow for
+   *   example.
+   *   @param {String} [options.originalLoginEmail]
+   *   If retrying after an &quot;incorrect email case&quot; error, this specifies
+   *   the email address as originally entered by the user.
+   *   @param {String} [options.verificationMethod]
+   *   Request a specific verification method be used for verifying the session,
+   *   e.g. &#x27;email-2fa&#x27; or &#x27;totp-2fa&#x27;.
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *     @param {String} options.metricsContext.deviceId identifier for the current device
+   *     @param {String} options.metricsContext.flowId identifier for the current event flow
+   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *     @param {Number} options.metricsContext.utmContent content identifier
+   *     @param {Number} options.metricsContext.utmMedium acquisition medium
+   *     @param {Number} options.metricsContext.utmSource traffic source
+   *     @param {Number} options.metricsContext.utmTerm search terms
+   *   @param {String} [options.unblockCode]
+   *   Login unblock code.
+   * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
+   */
+  FxAccountClient.prototype.sessionReauth = function (sessionToken, email, password, options) {
+    var self = this;
+    options = options || {};
+
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(email, &#x27;email&#x27;);
+        required(password, &#x27;password&#x27;);
+
+        return credentials.setup(email, password);
+      })
+      .then(
+        function (result) {
+          var endpoint = &#x27;/session/reauth&#x27;;
+
+          if (options.keys) {
+            endpoint += &#x27;?keys=true&#x27;;
+          }
+
+          var data = {
+            email: result.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(result.authPW)
+          };
+
+          if (options.metricsContext) {
+            data.metricsContext = metricsContext.marshall(options.metricsContext);
+          }
+
+          if (options.reason) {
+            data.reason = options.reason;
+          }
+
+          if (options.redirectTo) {
+            data.redirectTo = options.redirectTo;
+          }
+
+          if (options.resume) {
+            data.resume = options.resume;
+          }
+
+          if (options.service) {
+            data.service = options.service;
+          }
+
+          if (options.unblockCode) {
+            data.unblockCode = options.unblockCode;
+          }
+
+          if (options.originalLoginEmail) {
+            data.originalLoginEmail = options.originalLoginEmail;
+          }
+
+          if (options.verificationMethod) {
+            data.verificationMethod = options.verificationMethod;
+          }
+
+          return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE)
+            .then(function (creds) {
+              return self.request.send(endpoint, &#x27;POST&#x27;, creds, data);
+            })
+            .then(
+              function(accountData) {
+                if (options.keys) {
+                  accountData.unwrapBKey = sjcl.codec.hex.fromBits(result.unwrapBKey);
+                }
+                return accountData;
+              },
+              function(error) {
+                if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
+                  options.skipCaseError = true;
+                  options.originalLoginEmail = email;
+
+                  return self.sessionReauth(sessionToken, error.email, password, options);
+                } else {
+                  throw error;
+                }
+              }
+            );
+        }
+      );
+  };
+
+  /**
    * Sign a BrowserID public key
    *
    * @method certificateSign
@@ -1661,6 +1790,117 @@ define([
           email: email
         };
         return request.send(&#x27;/recovery_email/set_primary&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Creates a new TOTP token for the user associated with this session.
+   *
+   * @method createTotpToken
+   * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {Object} [options.metricsContext={}] Metrics context metadata
+   *   @param {String} options.metricsContext.deviceId identifier for the current device
+   *   @param {String} options.metricsContext.flowId identifier for the current event flow
+   *   @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *   @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *   @param {Number} options.metricsContext.utmContent content identifier
+   *   @param {Number} options.metricsContext.utmMedium acquisition medium
+   *   @param {Number} options.metricsContext.utmSource traffic source
+   *   @param {Number} options.metricsContext.utmTerm search terms
+   */
+  FxAccountClient.prototype.createTotpToken = function (sessionToken, options) {
+    var request = this.request;
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;, HKDF_SIZE);
+      })
+      .then(function (creds) {
+        var data = {};
+
+        if (options &amp;&amp; options.metricsContext) {
+          data.metricsContext = metricsContext.marshall(options.metricsContext);
+        }
+
+        return request.send(&#x27;/totp/create&#x27;, &#x27;POST&#x27;, creds, data);
+      });
+  };
+
+  /**
+   * Deletes this user&#x27;s TOTP token.
+   *
+   * @method deleteTotpToken
+   * @param {String} sessionToken SessionToken obtained from signIn
+   */
+  FxAccountClient.prototype.deleteTotpToken = function (sessionToken) {
+    var request = this.request;
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
+      .then(function(creds) {
+        return request.send(&#x27;/totp/destroy&#x27;, &#x27;POST&#x27;, creds, {});
+      });
+  };
+
+  /**
+   * Check to see if the current user has a TOTP token associated with
+   * their account.
+   *
+   * @method checkTotpTokenExists
+   * @param {String} sessionToken SessionToken obtained from signIn
+   */
+  FxAccountClient.prototype.checkTotpTokenExists = function (sessionToken) {
+    var request = this.request;
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;,  HKDF_SIZE);
+      })
+      .then(function(creds) {
+        return request.send(&#x27;/totp/exists&#x27;, &#x27;GET&#x27;, creds);
+      });
+  };
+
+  /**
+   * Verify tokens if using a valid TOTP code.
+   *
+   * @method verifyTotpCode
+   * @param {String} sessionToken SessionToken obtained from signIn
+   * @param {String} code TOTP code to verif
+   * @param {Object} [options.metricsContext={}] Metrics context metadata
+   *   @param {String} options.metricsContext.deviceId identifier for the current device
+   *   @param {String} options.metricsContext.flowId identifier for the current event flow
+   *   @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *   @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *   @param {Number} options.metricsContext.utmContent content identifier
+   *   @param {Number} options.metricsContext.utmMedium acquisition medium
+   *   @param {Number} options.metricsContext.utmSource traffic source
+   *   @param {Number} options.metricsContext.utmTerm search terms
+   */
+  FxAccountClient.prototype.verifyTotpCode = function (sessionToken, code, options) {
+    var request = this.request;
+    return Promise.resolve()
+      .then(function () {
+        required(sessionToken, &#x27;sessionToken&#x27;);
+        required(code, &#x27;code&#x27;);
+
+        return hawkCredentials(sessionToken, &#x27;sessionToken&#x27;, HKDF_SIZE);
+      })
+      .then(function (creds) {
+        var data = {
+          code: code
+        };
+
+        if (options &amp;&amp; options.metricsContext) {
+          data.metricsContext = metricsContext.marshall(options.metricsContext);
+        }
+
+        return request.send(&#x27;/session/verify/totp&#x27;, &#x27;POST&#x27;, creds, data);
       });
   };
 

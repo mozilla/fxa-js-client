@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "1.0.1"
+        "version": "1.0.2"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -612,6 +612,18 @@
                             "optional": true
                         },
                         {
+                            "name": "originalLoginEmail",
+                            "description": "\n  If retrying after an \"incorrect email case\" error, this specifies\n  the email address as originally entered by the user.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "verificationMethod",
+                            "description": "\n  Request a specific verification method be used for verifying the session,\n  e.g. 'email-2fa' or 'totp-2fa'.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
                             "name": "metricsContext",
                             "description": "Metrics context metadata",
                             "type": "Object",
@@ -677,7 +689,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 288,
+            "line": 294,
             "itemtype": "method",
             "name": "verifyCode",
             "params": [
@@ -733,7 +745,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 359,
+            "line": 365,
             "itemtype": "method",
             "name": "recoveryEmailStatus",
             "params": [
@@ -751,7 +763,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 378,
+            "line": 384,
             "description": "Re-sends a verification code to the account's recovery email address.",
             "itemtype": "method",
             "name": "recoveryEmailResendCode",
@@ -815,7 +827,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 445,
+            "line": 451,
             "description": "Used to ask the server to send a recovery code.\nThe API returns passwordForgotToken to the client.",
             "itemtype": "method",
             "name": "passwordForgotSendCode",
@@ -916,7 +928,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 512,
+            "line": 518,
             "description": "Re-sends a verification code to the account's recovery email address.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotResendCode",
@@ -1022,7 +1034,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 584,
+            "line": 590,
             "description": "Submits the verification token to the server.\nThe API returns accountResetToken to the client.\nHAWK-authenticated with the passwordForgotToken.",
             "itemtype": "method",
             "name": "passwordForgotVerifyCode",
@@ -1093,7 +1105,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 626,
+            "line": 632,
             "description": "Returns the status for the passwordForgotToken.\nIf the request returns a success response, the token has not yet been consumed.",
             "itemtype": "method",
             "name": "passwordForgotStatus",
@@ -1112,7 +1124,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 648,
+            "line": 654,
             "description": "The API returns reset result to the client.\nHAWK-authenticated with accountResetToken",
             "itemtype": "method",
             "name": "accountReset",
@@ -1211,7 +1223,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 732,
+            "line": 738,
             "description": "Get the base16 bundle of encrypted kA|wrapKb.",
             "itemtype": "method",
             "name": "accountKeys",
@@ -1235,7 +1247,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 773,
+            "line": 779,
             "description": "This deletes the account completely. All stored data is erased.",
             "itemtype": "method",
             "name": "accountDestroy",
@@ -1274,7 +1286,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 822,
+            "line": 828,
             "description": "Gets the status of an account by uid.",
             "itemtype": "method",
             "name": "accountStatus",
@@ -1293,7 +1305,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 840,
+            "line": 846,
             "description": "Gets the status of an account by email.",
             "itemtype": "method",
             "name": "accountStatusByEmail",
@@ -1312,7 +1324,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 858,
+            "line": 864,
             "description": "Destroys this session, by invalidating the sessionToken.",
             "itemtype": "method",
             "name": "sessionDestroy",
@@ -1346,7 +1358,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 887,
+            "line": 893,
             "description": "Responds successfully if the session status is valid, requires the sessionToken.",
             "itemtype": "method",
             "name": "sessionStatus",
@@ -1365,7 +1377,147 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 908,
+            "line": 914,
+            "itemtype": "method",
+            "name": "sessionReauth",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "sessionToken obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "email",
+                    "description": "Email input",
+                    "type": "String"
+                },
+                {
+                    "name": "password",
+                    "description": "Password input",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "keys",
+                            "description": "\n  If `true`, calls the API with `?keys=true` to get the keyFetchToken",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "skipCaseError",
+                            "description": "\n  If `true`, the request will skip the incorrect case error",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "service",
+                            "description": "\n  Service being accessed that needs reauthentication",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "reason",
+                            "description": "\n  Reason for reauthentication. Can be one of: `signin`, `password_check`,\n  `password_change`, `password_reset`",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "redirectTo",
+                            "description": "\n  a URL that the client should be redirected to after handling the request",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "resume",
+                            "description": "\n  Opaque url-encoded string that will be included in the verification link\n  as a querystring parameter, useful for continuing an OAuth flow for\n  example.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "originalLoginEmail",
+                            "description": "\n  If retrying after an \"incorrect email case\" error, this specifies\n  the email address as originally entered by the user.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "verificationMethod",
+                            "description": "\n  Request a specific verification method be used for verifying the session,\n  e.g. 'email-2fa' or 'totp-2fa'.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "metricsContext",
+                            "description": "Metrics context metadata",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "{}",
+                            "props": [
+                                {
+                                    "name": "deviceId",
+                                    "description": "identifier for the current device",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "flowId",
+                                    "description": "identifier for the current event flow",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "flowBeginTime",
+                                    "description": "flow.begin event time",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "unblockCode",
+                            "description": "\n  Login unblock code.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with JSON `xhr.responseText` of the request",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1037,
             "description": "Sign a BrowserID public key",
             "itemtype": "method",
             "name": "certificateSign",
@@ -1408,7 +1560,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 946,
+            "line": 1075,
             "description": "Change the password from one known value to another.",
             "itemtype": "method",
             "name": "passwordChange",
@@ -1458,7 +1610,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 987,
+            "line": 1116,
             "description": "First step to change the password.",
             "itemtype": "method",
             "name": "passwordChangeStart",
@@ -1499,7 +1651,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1047,
+            "line": 1176,
             "description": "Second step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeKeys",
@@ -1520,7 +1672,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1067,
+            "line": 1196,
             "description": "Third step to change the password.",
             "itemtype": "method",
             "name": "_passwordChangeFinish",
@@ -1577,7 +1729,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1142,
+            "line": 1271,
             "description": "Get 32 bytes of random data. This should be combined with locally-sourced entropy when creating salts, etc.",
             "itemtype": "method",
             "name": "getRandomBytes",
@@ -1589,7 +1741,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1153,
+            "line": 1282,
             "description": "Add a new device",
             "itemtype": "method",
             "name": "deviceRegister",
@@ -1645,7 +1797,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1197,
+            "line": 1326,
             "description": "Update the name of an existing device",
             "itemtype": "method",
             "name": "deviceUpdate",
@@ -1701,7 +1853,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1241,
+            "line": 1370,
             "description": "Unregister an existing device",
             "itemtype": "method",
             "name": "deviceDestroy",
@@ -1725,7 +1877,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1268,
+            "line": 1397,
             "description": "Get a list of all devices for a user",
             "itemtype": "method",
             "name": "deviceList",
@@ -1744,7 +1896,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1289,
+            "line": 1418,
             "description": "Get a list of user's sessions",
             "itemtype": "method",
             "name": "sessions",
@@ -1763,7 +1915,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1310,
+            "line": 1439,
             "description": "Send an unblock code",
             "itemtype": "method",
             "name": "sendUnblockCode",
@@ -1840,7 +1992,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1346,
+            "line": 1475,
             "description": "Reject a login unblock code. Code will be deleted from the server\nand will not be able to be used again.",
             "itemtype": "method",
             "name": "rejectLoginAuthorizationCode",
@@ -1864,7 +2016,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1372,
+            "line": 1501,
             "description": "Send an sms.",
             "itemtype": "method",
             "name": "sendSms",
@@ -1959,7 +2111,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1430,
+            "line": 1559,
             "description": "Get SMS status for the current user.",
             "itemtype": "method",
             "name": "smsStatus",
@@ -1989,7 +2141,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1457,
+            "line": 1586,
             "description": "Consume a signinCode.",
             "itemtype": "method",
             "name": "consumeSigninCode",
@@ -2020,7 +2172,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1486,
+            "line": 1615,
             "description": "Get the recovery emails associated with the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmails",
@@ -2035,7 +2187,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1506,
+            "line": 1635,
             "description": "Create a new recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailCreate",
@@ -2055,7 +2207,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1532,
+            "line": 1661,
             "description": "Remove the recovery email for the signed in account.",
             "itemtype": "method",
             "name": "recoveryEmailDestroy",
@@ -2075,7 +2227,7 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1558,
+            "line": 1687,
             "description": "Changes user's primary email address.",
             "itemtype": "method",
             "name": "recoveryEmailSetPrimaryEmail",
@@ -2095,7 +2247,166 @@
         },
         {
             "file": "client/FxAccountClient.js",
-            "line": 1581,
+            "line": 1710,
+            "description": "Creates a new TOTP token for the user associated with this session.",
+            "itemtype": "method",
+            "name": "createTotpToken",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext",
+                    "description": "Metrics context metadata",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}"
+                },
+                {
+                    "name": "options.metricsContext.deviceId",
+                    "description": "identifier for the current device",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowId",
+                    "description": "identifier for the current event flow",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowBeginTime",
+                    "description": "flow.begin event time",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmCampaign",
+                    "description": "marketing campaign identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmContent",
+                    "description": "content identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmMedium",
+                    "description": "acquisition medium",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmSource",
+                    "description": "traffic source",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmTerm",
+                    "description": "search terms",
+                    "type": "Number"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1744,
+            "description": "Deletes this user's TOTP token.",
+            "itemtype": "method",
+            "name": "deleteTotpToken",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1763,
+            "description": "Check to see if the current user has a TOTP token associated with\ntheir account.",
+            "itemtype": "method",
+            "name": "checkTotpTokenExists",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1783,
+            "description": "Verify tokens if using a valid TOTP code.",
+            "itemtype": "method",
+            "name": "verifyTotpCode",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "code",
+                    "description": "TOTP code to verif",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext",
+                    "description": "Metrics context metadata",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}"
+                },
+                {
+                    "name": "options.metricsContext.deviceId",
+                    "description": "identifier for the current device",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowId",
+                    "description": "identifier for the current event flow",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowBeginTime",
+                    "description": "flow.begin event time",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmCampaign",
+                    "description": "marketing campaign identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmContent",
+                    "description": "content identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmMedium",
+                    "description": "acquisition medium",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmSource",
+                    "description": "traffic source",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmTerm",
+                    "description": "search terms",
+                    "type": "Number"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1821,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -2139,7 +2450,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1581"
+            "line": " client/FxAccountClient.js:1821"
         }
     ]
 }

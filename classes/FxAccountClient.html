@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.1</em>
+            <em>API Docs for: 1.0.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -215,7 +215,19 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_checkTotpTokenExists">checkTotpTokenExists</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_consumeSigninCode">consumeSigninCode</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_createTotpToken">createTotpToken</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_deleteTotpToken">deleteTotpToken</a>
 
                             </li>
                             <li class="index-item method">
@@ -303,6 +315,10 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_sessionReauth">sessionReauth</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_sessions">sessions</a>
 
                             </li>
@@ -324,6 +340,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_verifyCode">verifyCode</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_verifyTotpCode">verifyTotpCode</a>
 
                             </li>
                     </ul>
@@ -373,7 +393,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1067"><code>client&#x2F;FxAccountClient.js:1067</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1196"><code>client&#x2F;FxAccountClient.js:1196</code></a>
         </p>
 
 
@@ -508,7 +528,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1047"><code>client&#x2F;FxAccountClient.js:1047</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1176"><code>client&#x2F;FxAccountClient.js:1176</code></a>
         </p>
 
 
@@ -580,7 +600,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l773"><code>client&#x2F;FxAccountClient.js:773</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l779"><code>client&#x2F;FxAccountClient.js:779</code></a>
         </p>
 
 
@@ -685,7 +705,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l732"><code>client&#x2F;FxAccountClient.js:732</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l738"><code>client&#x2F;FxAccountClient.js:738</code></a>
         </p>
 
 
@@ -769,7 +789,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l648"><code>client&#x2F;FxAccountClient.js:648</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l654"><code>client&#x2F;FxAccountClient.js:654</code></a>
         </p>
 
 
@@ -969,7 +989,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l822"><code>client&#x2F;FxAccountClient.js:822</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l828"><code>client&#x2F;FxAccountClient.js:828</code></a>
         </p>
 
 
@@ -1035,7 +1055,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l840"><code>client&#x2F;FxAccountClient.js:840</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l846"><code>client&#x2F;FxAccountClient.js:846</code></a>
         </p>
 
 
@@ -1113,7 +1133,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l908"><code>client&#x2F;FxAccountClient.js:908</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1037"><code>client&#x2F;FxAccountClient.js:1037</code></a>
         </p>
 
 
@@ -1201,6 +1221,61 @@ is required if <code>options.keys</code> is true.</p>
 
 
 </div>
+<div id="method_checkTotpTokenExists" class="method item">
+    <h3 class="name"><code>checkTotpTokenExists</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1763"><code>client&#x2F;FxAccountClient.js:1763</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check to see if the current user has a TOTP token associated with
+their account.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_consumeSigninCode" class="method item">
     <h3 class="name"><code>consumeSigninCode</code></h3>
 
@@ -1231,7 +1306,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1457"><code>client&#x2F;FxAccountClient.js:1457</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1586"><code>client&#x2F;FxAccountClient.js:1586</code></a>
         </p>
 
 
@@ -1298,6 +1373,241 @@ is required if <code>options.keys</code> is true.</p>
 
 
 </div>
+<div id="method_createTotpToken" class="method item">
+    <h3 class="name"><code>createTotpToken</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options.metricsContext={}]</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.deviceId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowBeginTime</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmCampaign</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmContent</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmMedium</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmSource</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmTerm</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1710"><code>client&#x2F;FxAccountClient.js:1710</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Creates a new TOTP token for the user associated with this session.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options.metricsContext={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Metrics context metadata</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.deviceId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current event flow</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowBeginTime</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>flow.begin event time</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmCampaign</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>marketing campaign identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmContent</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>content identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmMedium</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>acquisition medium</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmSource</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>traffic source</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmTerm</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>search terms</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_deleteTotpToken" class="method item">
+    <h3 class="name"><code>deleteTotpToken</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1744"><code>client&#x2F;FxAccountClient.js:1744</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Deletes this user's TOTP token.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_deviceDestroy" class="method item">
     <h3 class="name"><code>deviceDestroy</code></h3>
 
@@ -1325,7 +1635,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1241"><code>client&#x2F;FxAccountClient.js:1241</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1370"><code>client&#x2F;FxAccountClient.js:1370</code></a>
         </p>
 
 
@@ -1402,7 +1712,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1268"><code>client&#x2F;FxAccountClient.js:1268</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1397"><code>client&#x2F;FxAccountClient.js:1397</code></a>
         </p>
 
 
@@ -1477,7 +1787,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1153"><code>client&#x2F;FxAccountClient.js:1153</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1282"><code>client&#x2F;FxAccountClient.js:1282</code></a>
         </p>
 
 
@@ -1621,7 +1931,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1197"><code>client&#x2F;FxAccountClient.js:1197</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1326"><code>client&#x2F;FxAccountClient.js:1326</code></a>
         </p>
 
 
@@ -1750,7 +2060,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1142"><code>client&#x2F;FxAccountClient.js:1142</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1271"><code>client&#x2F;FxAccountClient.js:1271</code></a>
         </p>
 
 
@@ -1808,7 +2118,7 @@ is required if <code>options.keys</code> is true.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l946"><code>client&#x2F;FxAccountClient.js:946</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1075"><code>client&#x2F;FxAccountClient.js:1075</code></a>
         </p>
 
 
@@ -1937,7 +2247,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l987"><code>client&#x2F;FxAccountClient.js:987</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1116"><code>client&#x2F;FxAccountClient.js:1116</code></a>
         </p>
 
 
@@ -2043,7 +2353,7 @@ with the same <code>verified</code> status as the existing sessionToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l512"><code>client&#x2F;FxAccountClient.js:512</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l518"><code>client&#x2F;FxAccountClient.js:518</code></a>
         </p>
 
 
@@ -2259,7 +2569,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l445"><code>client&#x2F;FxAccountClient.js:445</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l451"><code>client&#x2F;FxAccountClient.js:451</code></a>
         </p>
 
 
@@ -2462,7 +2772,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l626"><code>client&#x2F;FxAccountClient.js:626</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l632"><code>client&#x2F;FxAccountClient.js:632</code></a>
         </p>
 
 
@@ -2558,7 +2868,7 @@ If the request returns a success response, the token has not yet been consumed.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l584"><code>client&#x2F;FxAccountClient.js:584</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l590"><code>client&#x2F;FxAccountClient.js:590</code></a>
         </p>
 
 
@@ -2735,7 +3045,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1506"><code>client&#x2F;FxAccountClient.js:1506</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1635"><code>client&#x2F;FxAccountClient.js:1635</code></a>
         </p>
 
 
@@ -2803,7 +3113,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1532"><code>client&#x2F;FxAccountClient.js:1532</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1661"><code>client&#x2F;FxAccountClient.js:1661</code></a>
         </p>
 
 
@@ -2874,7 +3184,7 @@ HAWK-authenticated with the passwordForgotToken.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l378"><code>client&#x2F;FxAccountClient.js:378</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l384"><code>client&#x2F;FxAccountClient.js:384</code></a>
         </p>
 
 
@@ -3020,7 +3330,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1486"><code>client&#x2F;FxAccountClient.js:1486</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1615"><code>client&#x2F;FxAccountClient.js:1615</code></a>
         </p>
 
 
@@ -3077,7 +3387,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1558"><code>client&#x2F;FxAccountClient.js:1558</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1687"><code>client&#x2F;FxAccountClient.js:1687</code></a>
         </p>
 
 
@@ -3145,7 +3455,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l359"><code>client&#x2F;FxAccountClient.js:359</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l365"><code>client&#x2F;FxAccountClient.js:365</code></a>
         </p>
 
 
@@ -3213,7 +3523,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1346"><code>client&#x2F;FxAccountClient.js:1346</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1475"><code>client&#x2F;FxAccountClient.js:1475</code></a>
         </p>
 
 
@@ -3297,7 +3607,7 @@ and will not be able to be used again.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1372"><code>client&#x2F;FxAccountClient.js:1372</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1501"><code>client&#x2F;FxAccountClient.js:1501</code></a>
         </p>
 
 
@@ -3492,7 +3802,7 @@ and will not be able to be used again.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1310"><code>client&#x2F;FxAccountClient.js:1310</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1439"><code>client&#x2F;FxAccountClient.js:1439</code></a>
         </p>
 
 
@@ -3652,7 +3962,7 @@ and will not be able to be used again.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l858"><code>client&#x2F;FxAccountClient.js:858</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l864"><code>client&#x2F;FxAccountClient.js:864</code></a>
         </p>
 
 
@@ -3719,6 +4029,297 @@ and will not be able to be used again.</p>
 
 
 </div>
+<div id="method_sessionReauth" class="method item">
+    <h3 class="name"><code>sessionReauth</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>email</code>
+                </li>
+                <li class="arg">
+                        <code>password</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options={}]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Promise</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l914"><code>client&#x2F;FxAccountClient.js:914</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>sessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">email</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Email input</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">password</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Password input</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Options</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[keys]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>If <code>true</code>, calls the API with <code>?keys=true</code> to get the keyFetchToken</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[skipCaseError]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>If <code>true</code>, the request will skip the incorrect case error</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[service]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Service being accessed that needs reauthentication</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[reason]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Reason for reauthentication. Can be one of: <code>signin</code>, <code>password_check</code>,
+<code>password_change</code>, <code>password_reset</code></p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[redirectTo]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>a URL that the client should be redirected to after handling the request</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[resume]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Opaque url-encoded string that will be included in the verification link
+as a querystring parameter, useful for continuing an OAuth flow for
+example.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[originalLoginEmail]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>If retrying after an &quot;incorrect email case&quot; error, this specifies
+the email address as originally entered by the user.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[verificationMethod]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Request a specific verification method be used for verifying the session,
+e.g. 'email-2fa' or 'totp-2fa'.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[metricsContext={}]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Metrics context metadata</p>
+
+                                </div>
+
+                                    <ul class="params-list">
+                                        <li class="param">
+                                                <code class="param-name">deviceId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current device
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowId</code>
+                                                <span class="type">String</span>
+
+                                            <div class="param-description">
+                                                identifier for the current event flow
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">flowBeginTime</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                flow.begin event time
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">utmCampaign</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                marketing campaign identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">utmContent</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                content identifier
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">utmMedium</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                acquisition medium
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">utmSource</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                traffic source
+                                            </div>
+                                        </li>
+                                        <li class="param">
+                                                <code class="param-name">utmTerm</code>
+                                                <span class="type">Number</span>
+
+                                            <div class="param-description">
+                                                search terms
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[unblockCode]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Login unblock code.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Promise</span>:
+                    <p>A promise that will be fulfilled with JSON <code>xhr.responseText</code> of the request</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_sessions" class="method item">
     <h3 class="name"><code>sessions</code></h3>
 
@@ -3743,7 +4344,7 @@ and will not be able to be used again.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1289"><code>client&#x2F;FxAccountClient.js:1289</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1418"><code>client&#x2F;FxAccountClient.js:1418</code></a>
         </p>
 
 
@@ -3809,7 +4410,7 @@ and will not be able to be used again.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l887"><code>client&#x2F;FxAccountClient.js:887</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l893"><code>client&#x2F;FxAccountClient.js:893</code></a>
         </p>
 
 
@@ -3995,6 +4596,30 @@ and will not be able to be used again.</p>
                                     <p>Opaque url-encoded string that will be included in the verification link
 as a querystring parameter, useful for continuing an OAuth flow for
 example.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[originalLoginEmail]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>If retrying after an &quot;incorrect email case&quot; error, this specifies
+the email address as originally entered by the user.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[verificationMethod]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Request a specific verification method be used for verifying the session,
+e.g. 'email-2fa' or 'totp-2fa'.</p>
 
                                 </div>
 
@@ -4369,7 +4994,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l1430"><code>client&#x2F;FxAccountClient.js:1430</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l1559"><code>client&#x2F;FxAccountClient.js:1559</code></a>
         </p>
 
 
@@ -4457,7 +5082,7 @@ example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/client_FxAccountClient.js.html#l288"><code>client&#x2F;FxAccountClient.js:288</code></a>
+        <a href="../files/client_FxAccountClient.js.html#l294"><code>client&#x2F;FxAccountClient.js:294</code></a>
         </p>
 
 
@@ -4564,6 +5189,201 @@ example.</p>
 
             </div>
         </div>
+
+
+</div>
+<div id="method_verifyTotpCode" class="method item">
+    <h3 class="name"><code>verifyTotpCode</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>code</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options.metricsContext={}]</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.deviceId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowBeginTime</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmCampaign</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmContent</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmMedium</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmSource</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmTerm</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1783"><code>client&#x2F;FxAccountClient.js:1783</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Verify tokens if using a valid TOTP code.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">code</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>TOTP code to verif</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options.metricsContext={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Metrics context metadata</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.deviceId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current event flow</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowBeginTime</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>flow.begin event time</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmCampaign</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>marketing campaign identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmContent</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>content identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmMedium</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>acquisition medium</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmSource</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>traffic source</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmTerm</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>search terms</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
