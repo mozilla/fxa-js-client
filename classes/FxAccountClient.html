@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.2</em>
+            <em>API Docs for: 1.0.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -219,6 +219,10 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_consumeRecoveryCode">consumeRecoveryCode</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_consumeSigninCode">consumeSigninCode</a>
 
                             </li>
@@ -300,6 +304,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_rejectLoginAuthorizationCode">rejectLoginAuthorizationCode</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_replaceRecoveryCodes">replaceRecoveryCodes</a>
 
                             </li>
                             <li class="index-item method">
@@ -1266,6 +1274,201 @@ their account.</p>
 
                     <div class="param-description">
                         <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_consumeRecoveryCode" class="method item">
+    <h3 class="name"><code>consumeRecoveryCode</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+                <li class="arg">
+                        <code>code</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options.metricsContext={}]</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.deviceId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowId</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.flowBeginTime</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmCampaign</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmContent</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmMedium</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmSource</code>
+                </li>
+                <li class="arg">
+                        <code>options.metricsContext.utmTerm</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1841"><code>client&#x2F;FxAccountClient.js:1841</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Consume recovery code.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">code</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>recovery code</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options.metricsContext={}]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Metrics context metadata</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.deviceId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current device</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowId</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>identifier for the current event flow</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.flowBeginTime</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>flow.begin event time</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmCampaign</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>marketing campaign identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmContent</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>content identifier</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmMedium</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>acquisition medium</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmSource</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>traffic source</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">options.metricsContext.utmTerm</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>search terms</p>
 
                     </div>
 
@@ -3574,6 +3777,60 @@ and will not be able to be used again.</p>
 
             </div>
         </div>
+
+
+</div>
+<div id="method_replaceRecoveryCodes" class="method item">
+    <h3 class="name"><code>replaceRecoveryCodes</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>sessionToken</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/client_FxAccountClient.js.html#l1821"><code>client&#x2F;FxAccountClient.js:1821</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Replace user's recovery codes.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">sessionToken</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>SessionToken obtained from signIn</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>

@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "1.0.2"
+        "version": "1.0.3"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -2407,6 +2407,88 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 1821,
+            "description": "Replace user's recovery codes.",
+            "itemtype": "method",
+            "name": "replaceRecoveryCodes",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1841,
+            "description": "Consume recovery code.",
+            "itemtype": "method",
+            "name": "consumeRecoveryCode",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": "SessionToken obtained from signIn",
+                    "type": "String"
+                },
+                {
+                    "name": "code",
+                    "description": "recovery code",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext",
+                    "description": "Metrics context metadata",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}"
+                },
+                {
+                    "name": "options.metricsContext.deviceId",
+                    "description": "identifier for the current device",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowId",
+                    "description": "identifier for the current event flow",
+                    "type": "String"
+                },
+                {
+                    "name": "options.metricsContext.flowBeginTime",
+                    "description": "flow.begin event time",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmCampaign",
+                    "description": "marketing campaign identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmContent",
+                    "description": "content identifier",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmMedium",
+                    "description": "acquisition medium",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmSource",
+                    "description": "traffic source",
+                    "type": "Number"
+                },
+                {
+                    "name": "options.metricsContext.utmTerm",
+                    "description": "search terms",
+                    "type": "Number"
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1879,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -2450,7 +2532,7 @@
         },
         {
             "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
-            "line": " client/FxAccountClient.js:1821"
+            "line": " client/FxAccountClient.js:1879"
         }
     ]
 }
