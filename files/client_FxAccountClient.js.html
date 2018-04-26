@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.3</em>
+            <em>API Docs for: 1.0.4</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -871,9 +871,10 @@ define([
    * @param {Object} [options={}] Options
    *   @param {Boolean} [options.skipCaseError]
    *   If &#x60;true&#x60;, the request will skip the incorrect case error
+   * @param {String} sessionToken User session token
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
-  FxAccountClient.prototype.accountDestroy = function(email, password, options) {
+  FxAccountClient.prototype.accountDestroy = function (email, password, options, sessionToken) {
     var self = this;
     options = options || {};
 
@@ -882,26 +883,33 @@ define([
         required(email, &#x27;email&#x27;);
         required(password, &#x27;password&#x27;);
 
-        return credentials.setup(email, password);
+        var defers = [credentials.setup(email, password)];
+        if (sessionToken) {
+          defers.push(hawkCredentials(sessionToken, &#x27;sessionToken&#x27;, HKDF_SIZE));
+        }
+
+        return Promise.all(defers);
       })
       .then(
-        function (result) {
+        function (results) {
+          var auth = results[0];
+          var creds = results[1];
           var data = {
-            email: result.emailUTF8,
-            authPW: sjcl.codec.hex.fromBits(result.authPW)
+            email: auth.emailUTF8,
+            authPW: sjcl.codec.hex.fromBits(auth.authPW)
           };
 
-          return self.request.send(&#x27;/account/destroy&#x27;, &#x27;POST&#x27;, null, data)
+          return self.request.send(&#x27;/account/destroy&#x27;, &#x27;POST&#x27;, creds, data)
             .then(
-              function(response) {
+              function (response) {
                 return response;
               },
-              function(error) {
+              function (error) {
                 // if incorrect email case error
                 if (error &amp;&amp; error.email &amp;&amp; error.errno === ERRORS.INCORRECT_EMAIL_CASE &amp;&amp; !options.skipCaseError) {
                   options.skipCaseError = true;
 
-                  return self.accountDestroy(error.email, password, options);
+                  return self.accountDestroy(error.email, password, options, sessionToken);
                 } else {
                   throw error;
                 }
@@ -1881,6 +1889,7 @@ define([
    *   @param {Number} options.metricsContext.utmMedium acquisition medium
    *   @param {Number} options.metricsContext.utmSource traffic source
    *   @param {Number} options.metricsContext.utmTerm search terms
+   * @param {String} [options.service] Service being used
    */
   FxAccountClient.prototype.verifyTotpCode = function (sessionToken, code, options) {
     var request = this.request;
@@ -1895,6 +1904,10 @@ define([
         var data = {
           code: code
         };
+
+        if (options &amp;&amp; options.service) {
+          data.service = options.service;
+        }
 
         if (options &amp;&amp; options.metricsContext) {
           data.metricsContext = metricsContext.marshall(options.metricsContext);
