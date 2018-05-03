@@ -1121,7 +1121,55 @@ define([
 
   };
 
-  /**
+  FxAccountClient.prototype.passwordChangeWithSessionToken = function(sessionToken, email, oldPassword, newPassword, options) {
+    var self = this;
+    var keys;
+    return Promise.resolve()
+      .then(function () {
+        required(email, 'email');
+        required(sessionToken, 'sessionToken');
+        required(oldPassword, 'oldPassword');
+        required(newPassword, 'new password');
+
+        return self.sessionReauth(sessionToken, email, oldPassword, options);
+      })
+      .then(function (result) {
+        return self.accountKeys(result.keyFetchToken, result.unwrapBKey);
+      })
+      .then(function (result) {
+        keys = result;
+
+        var defers = [];
+        defers.push(hawkCredentials(sessionToken, 'sessionToken',  HKDF_SIZE));
+        defers.push(credentials.setup(email, newPassword));
+
+        return Promise.all(defers);
+      })
+      .then((result) => {
+        var hawkCreds = result[0];
+        var newCreds = result[1];
+
+        var wrapKb = sjcl.codec.hex.fromBits(
+          credentials.xor(
+            sjcl.codec.hex.toBits(keys.kB),
+            newCreds.unwrapBKey
+          )
+        );
+
+        var data = {
+          authPW: sjcl.codec.hex.fromBits(newCreds.authPW),
+          wrapKb: wrapKb
+        };
+
+        var queryParams = '';
+        if (options.keys) {
+          queryParams = '?keys=true';
+        }
+        return self.request.send('/password/change' + queryParams, 'POST', hawkCreds, data);
+      });
+  };
+
+    /**
    * First step to change the password.
    *
    * @method passwordChangeStart
