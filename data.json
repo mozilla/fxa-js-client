@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "1.0.4"
+        "version": "1.0.5"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -2500,6 +2500,185 @@
         {
             "file": "client/FxAccountClient.js",
             "line": 1892,
+            "description": "Creates a new recovery key for the account. The recovery key contains encrypted\ndata the corresponds the the accounts current `kB`. This data can be used during\nthe password reset process to avoid regenerating the `kB`.",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": ""
+                },
+                {
+                    "name": "recoveryKeyId",
+                    "description": "The recoveryKeyId that can be used to retrieve saved bundle"
+                },
+                {
+                    "name": "bundle",
+                    "description": "The encrypted recovery bundle to store"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with decoded recovery data (`kB`)",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1922,
+            "description": "Retrieves the encrypted recovery data that corresponds to the recovery key which\nthen gets decoded into the stored `kB`.",
+            "params": [
+                {
+                    "name": "accountResetToken",
+                    "description": ""
+                },
+                {
+                    "name": "recoveryKeyId",
+                    "description": "The recovery key id to retrieve encrypted bundle"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with decoded recovery data (`kB`)",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 1944,
+            "description": "Reset a user's account using keys (kB) derived from a recovery key. This\nprocess can be used to maintain the account's original kB.",
+            "params": [
+                {
+                    "name": "accountResetToken",
+                    "description": "The account reset token"
+                },
+                {
+                    "name": "email",
+                    "description": "The current email of the account"
+                },
+                {
+                    "name": "newPassword",
+                    "description": "The new password of the account"
+                },
+                {
+                    "name": "recoveryKeyId",
+                    "description": "The recovery key id used for account recovery"
+                },
+                {
+                    "name": "keys",
+                    "description": "Keys used to create the new wrapKb"
+                },
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "{}",
+                    "props": [
+                        {
+                            "name": "keys",
+                            "description": "\n  If `true`, a new `keyFetchToken` is provisioned. `options.sessionToken`\n  is required if `options.keys` is true.",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "sessionToken",
+                            "description": "\n  If `true`, a new `sessionToken` is provisioned.",
+                            "type": "Boolean",
+                            "optional": true
+                        },
+                        {
+                            "name": "metricsContext",
+                            "description": "Metrics context metadata",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "{}",
+                            "props": [
+                                {
+                                    "name": "deviceId",
+                                    "description": "identifier for the current device",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "flowId",
+                                    "description": "identifier for the current event flow",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "flowBeginTime",
+                                    "description": "flow.begin event time",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmCampaign",
+                                    "description": "marketing campaign identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmContent",
+                                    "description": "content identifier",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmMedium",
+                                    "description": "acquisition medium",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmSource",
+                                    "description": "traffic source",
+                                    "type": "Number"
+                                },
+                                {
+                                    "name": "utmTerm",
+                                    "description": "search terms",
+                                    "type": "Number"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with updated account data",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 2031,
+            "description": "Deletes the recovery key associated with this user.",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": ""
+                }
+            ],
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 2049,
+            "description": "This checks to see if a recovery key exists for a user. This check\ncan be performed with either a sessionToken or an email.\n\nTypically, sessionToken is used when checking from within the `/settings`\nview. If it exists, we can give the user an option to revoke the key.\n\nChecking with an email is typically performed during the password reset\nflow. It is used to decide whether or not we can redirect a user to\nthe `Reset password with recovery key` page or regular password reset page.",
+            "params": [
+                {
+                    "name": "sessionToken",
+                    "description": ""
+                },
+                {
+                    "name": "email",
+                    "description": "User's email",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "A promise that will be fulfilled with whether or not account has recovery ket",
+                "type": "Promise"
+            },
+            "class": "FxAccountClient"
+        },
+        {
+            "file": "client/FxAccountClient.js",
+            "line": 2080,
             "description": "Check for a required argument. Exposed for unit testing.",
             "params": [
                 {
@@ -2534,6 +2713,22 @@
             "line": " client/lib/hawkCredentials.js:11"
         },
         {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/FxAccountClient.js:1892"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/FxAccountClient.js:1922"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/FxAccountClient.js:1944"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " client/FxAccountClient.js:2049"
+        },
+        {
             "message": "Missing item type\nUnbundle the WrapKB",
             "line": " client/lib/credentials.js:100"
         },
@@ -2542,8 +2737,28 @@
             "line": " client/lib/credentials.js:131"
         },
         {
-            "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
+            "message": "Missing item type\nCreates a new recovery key for the account. The recovery key contains encrypted\ndata the corresponds the the accounts current `kB`. This data can be used during\nthe password reset process to avoid regenerating the `kB`.",
             "line": " client/FxAccountClient.js:1892"
+        },
+        {
+            "message": "Missing item type\nRetrieves the encrypted recovery data that corresponds to the recovery key which\nthen gets decoded into the stored `kB`.",
+            "line": " client/FxAccountClient.js:1922"
+        },
+        {
+            "message": "Missing item type\nReset a user's account using keys (kB) derived from a recovery key. This\nprocess can be used to maintain the account's original kB.",
+            "line": " client/FxAccountClient.js:1944"
+        },
+        {
+            "message": "Missing item type\nDeletes the recovery key associated with this user.",
+            "line": " client/FxAccountClient.js:2031"
+        },
+        {
+            "message": "Missing item type\nThis checks to see if a recovery key exists for a user. This check\ncan be performed with either a sessionToken or an email.\n\nTypically, sessionToken is used when checking from within the `/settings`\nview. If it exists, we can give the user an option to revoke the key.\n\nChecking with an email is typically performed during the password reset\nflow. It is used to decide whether or not we can redirect a user to\nthe `Reset password with recovery key` page or regular password reset page.",
+            "line": " client/FxAccountClient.js:2049"
+        },
+        {
+            "message": "Missing item type\nCheck for a required argument. Exposed for unit testing.",
+            "line": " client/FxAccountClient.js:2080"
         }
     ]
 }
