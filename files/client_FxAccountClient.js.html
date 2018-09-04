@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="fxa-js-client" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.5</em>
+            <em>API Docs for: 1.0.6</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -681,15 +681,17 @@ define([
    * @method passwordForgotVerifyCode
    * @param {String} code
    * @param {String} passwordForgotToken
-   * @param {Object} [options.metricsContext={}] Metrics context metadata
-   *     @param {String} options.metricsContext.deviceId identifier for the current device
-   *     @param {String} options.metricsContext.flowId identifier for the current event flow
-   *     @param {Number} options.metricsContext.flowBeginTime flow.begin event time
-   *     @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
-   *     @param {Number} options.metricsContext.utmContent content identifier
-   *     @param {Number} options.metricsContext.utmMedium acquisition medium
-   *     @param {Number} options.metricsContext.utmSource traffic source
-   *     @param {Number} options.metricsContext.utmTerm search terms
+   * @param {Object} [options={}] Options
+   *   @param {Boolean} [options.accountResetWithRecoveryKey] verifying code to be use in account recovery
+   *   @param {Object} [options.metricsContext={}] Metrics context metadata
+   *      @param {String} options.metricsContext.deviceId identifier for the current device
+   *      @param {String} options.metricsContext.flowId identifier for the current event flow
+   *      @param {Number} options.metricsContext.flowBeginTime flow.begin event time
+   *      @param {Number} options.metricsContext.utmCampaign marketing campaign identifier
+   *      @param {Number} options.metricsContext.utmContent content identifier
+   *      @param {Number} options.metricsContext.utmMedium acquisition medium
+   *      @param {Number} options.metricsContext.utmSource traffic source
+   *      @param {Number} options.metricsContext.utmTerm search terms
    * @return {Promise} A promise that will be fulfilled with JSON &#x60;xhr.responseText&#x60; of the request
    */
   FxAccountClient.prototype.passwordForgotVerifyCode = function(code, passwordForgotToken, options) {
@@ -709,6 +711,10 @@ define([
 
         if (options &amp;&amp; options.metricsContext) {
           data.metricsContext = metricsContext.marshall(options.metricsContext);
+        }
+
+        if (options &amp;&amp; options.accountResetWithRecoveryKey ) {
+          data.accountResetWithRecoveryKey = options.accountResetWithRecoveryKey;
         }
 
         return self.request.send(&#x27;/password/forgot/verify_code&#x27;, &#x27;POST&#x27;, creds, data);
