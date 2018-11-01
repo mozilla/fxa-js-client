@@ -6,7 +6,7 @@ define(['./request', 'sjcl', './hkdf', './pbkdf2'], function (Request, sjcl, hkd
 
   // Key wrapping and stretching configuration.
   var NAMESPACE = 'identity.mozilla.com/picl/v1/';
-  var PBKDF2_ROUNDS = 1000;
+  var PBKDF2_ROUNDS = 100000;
   var STRETCHED_PASS_LENGTH_BYTES = 32 * 8;
 
   var HKDF_SALT = sjcl.codec.hex.toBits('00');
@@ -54,6 +54,7 @@ define(['./request', 'sjcl', './hkdf', './pbkdf2'], function (Request, sjcl, hkd
       var result = {};
       var email = kwe('quickStretch', emailInput);
       var password = sjcl.codec.utf8String.toBits(passwordInput);
+      var tStart = Date.now();
 
       result.emailUTF8 = emailInput;
       result.passwordUTF8 = passwordInput;
@@ -61,6 +62,7 @@ define(['./request', 'sjcl', './hkdf', './pbkdf2'], function (Request, sjcl, hkd
       return pbkdf2.derive(password, email, PBKDF2_ROUNDS, STRETCHED_PASS_LENGTH_BYTES)
         .then(
         function (quickStretchedPW) {
+          console.log('key-stretching took', Date.now() - tStart, 'milliseconds');
           result.quickStretchedPW = quickStretchedPW;
 
           return hkdf(quickStretchedPW, kw('authPW'), HKDF_SALT, HKDF_LENGTH)
