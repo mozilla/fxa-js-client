@@ -7,7 +7,12 @@ module.exports = function (grunt) {
 
   grunt.config('conventionalChangelog', {
     options: {
-      from: 'source-<%= pkgReadOnly.version %>'
+      changelogOpts: {
+        from: 'source-<%= pkgReadOnly.version %>'
+      },
+    },
+    release: {
+      src: 'CHANGELOG.md'
     }
   });
 };
