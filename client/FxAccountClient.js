@@ -1234,12 +1234,12 @@ define([
           authPW: sjcl.codec.hex.fromBits(newCreds.authPW),
           sessionToken: sessionTokenId
         })
-        .then(function (accountData) {
-          if (options.keys && accountData.keyFetchToken) {
-            accountData.unwrapBKey = sjcl.codec.hex.fromBits(newCreds.unwrapBKey);
-          }
-          return accountData;
-        });
+          .then(function (accountData) {
+            if (options.keys && accountData.keyFetchToken) {
+              accountData.unwrapBKey = sjcl.codec.hex.fromBits(newCreds.unwrapBKey);
+            }
+            return accountData;
+          });
       });
   };
 

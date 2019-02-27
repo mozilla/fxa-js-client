@@ -95,8 +95,11 @@ define([
               var req = requests[requests.length - 1];
               var args = JSON.parse(req.requestBody);
               var expectedNewWrapKB = sjcl.codec.hex.fromBits(
-                credentials.xor(sjcl.codec.hex.toBits(kB),
-                                sjcl.codec.hex.toBits(newUnwrapBKey)));
+                credentials.xor(
+                  sjcl.codec.hex.toBits(kB),
+                  sjcl.codec.hex.toBits(newUnwrapBKey)
+                )
+              );
               assert.equal(args.wrapKb, expectedNewWrapKB);
             }
             assert.notProperty(result, 'keyFetchToken');
@@ -180,8 +183,11 @@ define([
               var req = requests[requests.length - 1];
               var args = JSON.parse(req.requestBody);
               var expectedNewWrapKB = sjcl.codec.hex.fromBits(
-                credentials.xor(sjcl.codec.hex.toBits(kB),
-                                sjcl.codec.hex.toBits(newUnwrapBKey)));
+                credentials.xor(
+                  sjcl.codec.hex.toBits(kB),
+                  sjcl.codec.hex.toBits(newUnwrapBKey)
+                )
+              );
               assert.equal(args.wrapKb, expectedNewWrapKB);
             }
             assert.property(result, 'sessionToken');

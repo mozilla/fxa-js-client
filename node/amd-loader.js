@@ -52,12 +52,12 @@ module.exports = function amdload(absoluteFilename, map) {
     // return value captured by define()
     return loaded[fullpath];
   };
-  var define = function define(deps, factory) {
+  function define(deps, factory) {
     // Load all dependencies
     var modules = deps.map(amdrequire);
     // Capture the exported value
     exported = factory.apply(null, modules);
-  };
+  }
   define.amd = true;
 
   return amdrequire(absoluteFilename);

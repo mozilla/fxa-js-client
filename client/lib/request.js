@@ -1,6 +1,9 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* eslint-disable complexity */
+
 define(['./hawk', './errors'], function (hawk, ERRORS) {
   'use strict';
   /* global XMLHttpRequest */
@@ -97,11 +100,11 @@ define(['./hawk', './errors'], function (hawk, ERRORS) {
       // calculate Hawk header if credentials are supplied
       if (credentials) {
         var hawkHeader = hawk.client.header(uri, method, {
-                            credentials: credentials,
-                            payload: payload,
-                            contentType: 'application/json',
-                            localtimeOffsetMsec: self._localtimeOffsetMsec || 0
-                          });
+          credentials: credentials,
+          payload: payload,
+          contentType: 'application/json',
+          localtimeOffsetMsec: self._localtimeOffsetMsec || 0
+        });
         xhr.setRequestHeader('authorization', hawkHeader.field);
       }
 

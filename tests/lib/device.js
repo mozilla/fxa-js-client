@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* eslint-disable no-console */
+
 define([
   'intern!tdd',
   'intern/chai!assert',
@@ -71,17 +73,17 @@ define([
               }
             ), RequestMocks.deviceRegister)
 
-            .then(function (device) {
+              .then(function (device) {
 
-              return respond(client.deviceUpdate(
-                account.signIn.sessionToken,
-                device.id,
-                DEVICE_NAME_2,
-                {
-                  deviceCallback: DEVICE_CALLBACK
-                }
-              ), RequestMocks.deviceUpdate);
-            });
+                return respond(client.deviceUpdate(
+                  account.signIn.sessionToken,
+                  device.id,
+                  DEVICE_NAME_2,
+                  {
+                    deviceCallback: DEVICE_CALLBACK
+                  }
+                ), RequestMocks.deviceUpdate);
+              });
           })
           .then(
             function(res) {
@@ -107,13 +109,13 @@ define([
               }
             ), RequestMocks.deviceRegister)
 
-            .then(function (device) {
+              .then(function (device) {
 
-              return respond(client.deviceDestroy(
-                account.signIn.sessionToken,
-                device.id
-              ), RequestMocks.deviceDestroy);
-            });
+                return respond(client.deviceDestroy(
+                  account.signIn.sessionToken,
+                  device.id
+                ), RequestMocks.deviceDestroy);
+              });
           })
           .then(
             function(res) {
@@ -137,20 +139,20 @@ define([
               }
             ), RequestMocks.deviceRegister)
 
-            .then(function (device) {
-              return respond(client.deviceList(account.signIn.sessionToken),
-                RequestMocks.deviceList);
-            })
+              .then(function (device) {
+                return respond(client.deviceList(account.signIn.sessionToken),
+                  RequestMocks.deviceList);
+              })
 
-            .then(function (devices) {
-              assert.equal(devices.length, 1);
+              .then(function (devices) {
+                assert.equal(devices.length, 1);
 
-              var device = devices[0];
-              assert.ok(device.id);
-              assert.equal(device.name, DEVICE_NAME);
-              assert.equal(device.pushCallback, DEVICE_CALLBACK);
-              assert.equal(device.type, DEVICE_TYPE);
-            });
+                var device = devices[0];
+                assert.ok(device.id);
+                assert.equal(device.name, DEVICE_NAME);
+                assert.equal(device.pushCallback, DEVICE_CALLBACK);
+                assert.equal(device.type, DEVICE_TYPE);
+              });
           });
       });
 

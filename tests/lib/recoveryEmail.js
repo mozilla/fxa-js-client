@@ -34,8 +34,7 @@ define([
 
             return respond(client.recoveryEmailResendCode(account.signIn.sessionToken), RequestMocks.recoveryEmailResendCode);
           })
-          .then(
-          function(res) {
+          .then(function(res) {
             assert.ok(res);
 
             return respond(mail.wait(user, 3), RequestMocks.resetMailrecoveryEmailResendCode);
@@ -65,31 +64,30 @@ define([
 
             return respond(client.recoveryEmailResendCode(account.signIn.sessionToken, opts), RequestMocks.recoveryEmailResendCode);
           })
-          .then(
-          function(res) {
+          .then(function(res) {
             assert.ok(res);
 
             return respond(mail.wait(user, 3), RequestMocks.resetMailWithServiceAndRedirectNoSignup);
           })
           .then(
-          function (emails) {
-            // second email, the code is resent.
-            var code = emails[2].html.match(/code=([A-Za-z0-9]+)/);
-            assert.ok(code, 'code found');
-            var service = emails[2].html.match(/service=([A-Za-z0-9]+)/);
-            assert.ok(service, 'service found');
-            var redirectTo = emails[2].html.match(/redirectTo=([A-Za-z0-9]+)/);
-            assert.ok(redirectTo, 'redirectTo found');
-            var resume = emails[2].html.match(/resume=([A-Za-z0-9]+)/);
-            assert.ok(resume, 'resume found');
+            function (emails) {
+              // second email, the code is resent.
+              var code = emails[2].html.match(/code=([A-Za-z0-9]+)/);
+              assert.ok(code, 'code found');
+              var service = emails[2].html.match(/service=([A-Za-z0-9]+)/);
+              assert.ok(service, 'service found');
+              var redirectTo = emails[2].html.match(/redirectTo=([A-Za-z0-9]+)/);
+              assert.ok(redirectTo, 'redirectTo found');
+              var resume = emails[2].html.match(/resume=([A-Za-z0-9]+)/);
+              assert.ok(resume, 'resume found');
 
-            assert.ok(code[1], 'code is returned');
-            assert.equal(service[1], 'sync', 'service is returned');
-            assert.equal(redirectTo[1], 'https', 'redirectTo is returned');
-            assert.equal(resume[1], 'resumejwt', 'resume is returned');
-          },
-          assert.notOk
-        );
+              assert.ok(code[1], 'code is returned');
+              assert.equal(service[1], 'sync', 'service is returned');
+              assert.equal(redirectTo[1], 'https', 'redirectTo is returned');
+              assert.equal(resume[1], 'resumejwt', 'resume is returned');
+            },
+            assert.notOk
+          );
       });
 
     });

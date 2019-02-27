@@ -80,8 +80,10 @@ define([
             assert.ok(result.sessionToken, 'sessionToken is returned');
             sessionToken = result.sessionToken;
 
-            return respond(client.recoveryEmailStatus(sessionToken),
-                    RequestMocks.recoveryEmailUnverified);
+            return respond(
+              client.recoveryEmailStatus(sessionToken),
+              RequestMocks.recoveryEmailUnverified
+            );
           })
           .then(function (result) {
             assert.equal(result.verified, false, 'Email should not be verified.');
@@ -92,13 +94,14 @@ define([
             var code = emails[0].html.match(/code=([A-Za-z0-9]+)/)[1];
             assert.ok(code, 'code is returned: ' + code);
 
-            return respond(client.verifyCode(uid, code),
-                    RequestMocks.verifyCode);
+            return respond(client.verifyCode(uid, code), RequestMocks.verifyCode);
           })
           .then(function (result) {
 
-            return respond(client.recoveryEmailStatus(sessionToken),
-                    RequestMocks.recoveryEmailVerified);
+            return respond(
+              client.recoveryEmailStatus(sessionToken),
+              RequestMocks.recoveryEmailVerified
+            );
           })
           .then(
             function (result) {
@@ -125,8 +128,10 @@ define([
             var code = emails[0].html.match(/code=([A-Za-z0-9]+)/)[1];
             assert.ok(code, 'code is returned');
 
-            return respond(client.verifyCode(uid, code, { service: 'sync' }),
-                    RequestMocks.verifyCode);
+            return respond(
+              client.verifyCode(uid, code, { service: 'sync' }),
+              RequestMocks.verifyCode
+            );
           })
           .then(
             function (result) {

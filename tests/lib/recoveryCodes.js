@@ -50,14 +50,14 @@ define([
             var code = authenticator.generate(res.secret);
             return respond(client.verifyTotpCode(account.signIn.sessionToken, code), RequestMocks.verifyTotpCodeTrueEnableToken);
           })
-        .then(function (res) {
-          assert.equal(res.recoveryCodes.length, 8, 'should return recovery codes');
-          recoveryCodes = res.recoveryCodes;
+          .then(function (res) {
+            assert.equal(res.recoveryCodes.length, 8, 'should return recovery codes');
+            recoveryCodes = res.recoveryCodes;
 
-          xhr = env.xhr;
-          xhrOpen = sinon.spy(xhr.prototype, 'open');
-          xhrSend = sinon.spy(xhr.prototype, 'send');
-        });
+            xhr = env.xhr;
+            xhrOpen = sinon.spy(xhr.prototype, 'open');
+            xhrSend = sinon.spy(xhr.prototype, 'send');
+          });
       });
 
       afterEach(function () {

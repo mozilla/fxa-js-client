@@ -224,14 +224,14 @@ define([
             return respond(client.signUp(account.input.email, 'somepass'), ErrorMocks.accountExists);
           })
           .then(
-          function (res) {
-            assert.fail();
-          },
-          function (err) {
-            assert.equal(err.code, 400);
-            assert.equal(err.errno, 101);
-          }
-        );
+            function (res) {
+              assert.fail();
+            },
+            function (err) {
+              assert.equal(err.code, 400);
+              assert.equal(err.errno, 101);
+            }
+          );
       });
 
       test('#with metricsContext metadata', function () {
@@ -254,12 +254,12 @@ define([
           }),
           RequestMocks.signUp
         )
-        .then(
-          function (resp) {
-            assert.ok(resp);
-          },
-          assert.notOk
-        );
+          .then(
+            function (resp) {
+              assert.ok(resp);
+            },
+            assert.notOk
+          );
       });
     });
   }

@@ -59,26 +59,20 @@ define(['./request', 'sjcl', './hkdf', './pbkdf2'], function (Request, sjcl, hkd
       result.passwordUTF8 = passwordInput;
 
       return pbkdf2.derive(password, email, PBKDF2_ROUNDS, STRETCHED_PASS_LENGTH_BYTES)
-        .then(
-        function (quickStretchedPW) {
+        .then(function (quickStretchedPW) {
           result.quickStretchedPW = quickStretchedPW;
 
           return hkdf(quickStretchedPW, kw('authPW'), HKDF_SALT, HKDF_LENGTH)
-            .then(
-            function (authPW) {
+            .then(function (authPW) {
               result.authPW = authPW;
 
               return hkdf(quickStretchedPW, kw('unwrapBkey'), HKDF_SALT, HKDF_LENGTH);
-            }
-          );
-        }
-      )
-        .then(
-        function (unwrapBKey) {
+            });
+        })
+        .then(function (unwrapBKey) {
           result.unwrapBKey = unwrapBKey;
           return result;
-        }
-      );
+        });
     },
     /**
      * Wrap

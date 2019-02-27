@@ -88,8 +88,7 @@ define([
 
             return respond(client.recoveryEmailResendCode(account.signIn.sessionToken, opts), RequestMocks.recoveryEmailResendCode);
           })
-          .then(
-          function(res) {
+          .then(function(res) {
             assert.ok(res);
 
             return respond(mail.wait(user, 3), RequestMocks.resetMailLang);

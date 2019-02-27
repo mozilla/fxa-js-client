@@ -76,12 +76,12 @@ define([
             return respond(client.passwordForgotStatus(fakeToken), ErrorMocks.invalidAuthToken);
           })
           .then(
-          assert.notOk,
-          function (err) {
-            assert.equal(err.code, 401);
-            assert.equal(err.errno, 110);
-          }
-        );
+            assert.notOk,
+            function (err) {
+              assert.equal(err.code, 401);
+              assert.equal(err.errno, 110);
+            }
+          );
       });
 
       test('#sessions', function () {

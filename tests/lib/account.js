@@ -52,7 +52,7 @@ define([
               assert.equal(error.errno, 102, 'Account is gone');
               assert.equal(error.code, 400, 'Correct status code');
             }
-        );
+          );
       });
 
       test('#destroy with sessionToken', function () {
@@ -156,22 +156,21 @@ define([
 
             return respond(client.accountDestroy(incorrectCaseEmail, account.input.password), RequestMocks.accountDestroy);
           })
-          .then(
-          function(res) {
+          .then(function(res) {
             assert.ok(res);
 
             return respond(client.signIn(account.input.email, account.input.password), ErrorMocks.accountDoesNotExist);
-          }
-        ).then(
-          function () {
-            assert.fail();
-          },
-          function (error) {
-            assert.ok(error);
-            assert.equal(error.errno, 102);
-            assert.equal(error.code, 400, 'Correct status code');
-          }
-        );
+          })
+          .then(
+            function () {
+              assert.fail();
+            },
+            function (error) {
+              assert.ok(error);
+              assert.equal(error.errno, 102);
+              assert.equal(error.code, 400, 'Correct status code');
+            }
+          );
       });
 
       test('#destroy with incorrect case with skipCaseError', function () {
@@ -357,7 +356,7 @@ define([
               assert.equal(res.exists, false);
             },
             assert.notOk
-        );
+          );
       });
 
       test('#accountStatus with no uid', function () {
