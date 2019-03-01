@@ -9,7 +9,8 @@
     "test": "grunt test",
     "test-local": "intern-client config=tests/intern auth_server=LOCAL",
     "setup": "npm install && grunt sjcl",
-    "contributors": "git shortlog -s | cut -c8- | sort -f > CONTRIBUTORS.md"
+    "contributors": "git shortlog -s | cut -c8- | sort -f > CONTRIBUTORS.md",
+    "release": "npm run setup && grunt release"
   },
   "main": "node/index.js",
   "files": [
