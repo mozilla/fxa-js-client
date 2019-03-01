@@ -8,13 +8,12 @@ module.exports = function (grunt) {
   grunt.config('buildcontrol', {
     options: {
       commit: true,
-      push: true,
-      remote: 'git@github.com:mozilla/fxa-js-client.git'
     },
     release: {
       options: {
         branch: 'release',
         dir: 'build',
+        push: false,
         tag: '<%= pkg.version %>'
       }
     },
@@ -22,6 +21,8 @@ module.exports = function (grunt) {
       options: {
         branch: 'gh-pages',
         dir: 'docs',
+        push: true,
+        remote: 'git@github.com:mozilla/fxa-js-client.git',
         tag: 'docs-<%= pkg.version %>'
       }
     }

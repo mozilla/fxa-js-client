@@ -9,8 +9,7 @@ module.exports = function (grunt) {
     options: {
       files: ['package.json'],
       updateConfigs: ['pkg'],
-      push: true,
-      pushTo: 'git@github.com:mozilla/fxa-js-client.git update-master',
+      push: false,
       commitMessage: 'source-%VERSION%',
       tagName: 'source-%VERSION%',
       // commit all modified files
