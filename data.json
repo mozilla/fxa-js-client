@@ -2,7 +2,7 @@
     "project": {
         "name": "fxa-js-client",
         "description": "Web client that talks to the Firefox Accounts API server",
-        "version": "1.0.7"
+        "version": "1.0.8"
     },
     "files": {
         "client/lib/credentials.js": {
@@ -165,7 +165,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/lib/request.js",
-            "line": 8,
+            "line": 11,
             "is_constructor": 1,
             "params": [
                 {
@@ -220,6 +220,7 @@
             ]
         }
     },
+    "elements": {},
     "classitems": [
         {
             "file": "client/lib/credentials.js",
@@ -292,7 +293,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 83,
+            "line": 77,
             "description": "Wrap",
             "itemtype": "method",
             "name": "wrap",
@@ -316,7 +317,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 100,
+            "line": 94,
             "description": "Unbundle the WrapKB",
             "params": [
                 {
@@ -338,7 +339,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 131,
+            "line": 125,
             "description": "Derive the HMAC and XOR keys required to encrypt a given size of payload.",
             "params": [
                 {
@@ -383,7 +384,7 @@
         },
         {
             "file": "client/lib/request.js",
-            "line": 27,
+            "line": 30,
             "itemtype": "method",
             "name": "send",
             "params": [
@@ -2429,11 +2430,11 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " client/lib/credentials.js:100"
+            "line": " client/lib/credentials.js:94"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " client/lib/credentials.js:131"
+            "line": " client/lib/credentials.js:125"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -2457,11 +2458,11 @@
         },
         {
             "message": "Missing item type\nUnbundle the WrapKB",
-            "line": " client/lib/credentials.js:100"
+            "line": " client/lib/credentials.js:94"
         },
         {
             "message": "Missing item type\nDerive the HMAC and XOR keys required to encrypt a given size of payload.",
-            "line": " client/lib/credentials.js:131"
+            "line": " client/lib/credentials.js:125"
         },
         {
             "message": "Missing item type\nCreates a new recovery key for the account. The recovery key contains encrypted\ndata the corresponds the the accounts current `kB`. This data can be used during\nthe password reset process to avoid regenerating the `kB`.",

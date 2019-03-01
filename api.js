@@ -9,6 +9,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "pbkdf2"
     ],
     "modules": [],
-    "allModules": []
+    "allModules": [],
+    "elements": []
 } };
 });
