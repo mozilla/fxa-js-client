@@ -4305,6 +4305,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* This Source C
     marshall: function (data) {
       return {
         deviceId: data.deviceId,
+        entrypoint: data.entrypoint,
         flowId: data.flowId,
         flowBeginTime: data.flowBeginTime,
         utmCampaign: data.utmCampaign,
