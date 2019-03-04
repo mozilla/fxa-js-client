@@ -46,7 +46,6 @@
                                 <li><a href="../classes/Request.html">Request</a></li>
                             </ul>
                 
-                
                             <ul id="api-modules" class="apis modules">
                             </ul>
                         </div>
@@ -1321,12 +1320,12 @@ define([
           authPW: sjcl.codec.hex.fromBits(newCreds.authPW),
           sessionToken: sessionTokenId
         })
-          .then(function (accountData) {
-            if (options.keys &amp;&amp; accountData.keyFetchToken) {
-              accountData.unwrapBKey = sjcl.codec.hex.fromBits(newCreds.unwrapBKey);
-            }
-            return accountData;
-          });
+        .then(function (accountData) {
+          if (options.keys &amp;&amp; accountData.keyFetchToken) {
+            accountData.unwrapBKey = sjcl.codec.hex.fromBits(newCreds.unwrapBKey);
+          }
+          return accountData;
+        });
       });
   };
 

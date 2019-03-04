@@ -165,7 +165,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "client/lib/request.js",
-            "line": 11,
+            "line": 8,
             "is_constructor": 1,
             "params": [
                 {
@@ -220,7 +220,6 @@
             ]
         }
     },
-    "elements": {},
     "classitems": [
         {
             "file": "client/lib/credentials.js",
@@ -293,7 +292,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 77,
+            "line": 83,
             "description": "Wrap",
             "itemtype": "method",
             "name": "wrap",
@@ -317,7 +316,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 94,
+            "line": 100,
             "description": "Unbundle the WrapKB",
             "params": [
                 {
@@ -339,7 +338,7 @@
         },
         {
             "file": "client/lib/credentials.js",
-            "line": 125,
+            "line": 131,
             "description": "Derive the HMAC and XOR keys required to encrypt a given size of payload.",
             "params": [
                 {
@@ -384,7 +383,7 @@
         },
         {
             "file": "client/lib/request.js",
-            "line": 30,
+            "line": 27,
             "itemtype": "method",
             "name": "send",
             "params": [
@@ -2430,11 +2429,11 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " client/lib/credentials.js:94"
+            "line": " client/lib/credentials.js:100"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " client/lib/credentials.js:125"
+            "line": " client/lib/credentials.js:131"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -2458,11 +2457,11 @@
         },
         {
             "message": "Missing item type\nUnbundle the WrapKB",
-            "line": " client/lib/credentials.js:94"
+            "line": " client/lib/credentials.js:100"
         },
         {
             "message": "Missing item type\nDerive the HMAC and XOR keys required to encrypt a given size of payload.",
-            "line": " client/lib/credentials.js:125"
+            "line": " client/lib/credentials.js:131"
         },
         {
             "message": "Missing item type\nCreates a new recovery key for the account. The recovery key contains encrypted\ndata the corresponds the the accounts current `kB`. This data can be used during\nthe password reset process to avoid regenerating the `kB`.",
